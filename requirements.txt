@@ -1,0 +1,48 @@
+﻿# Requisitos de entorno para la aplicación Hub App
+# Este archivo no es un requirements.txt de Python, sino un listado de software y extensiones necesarias.
+
+PHP ^8.2
+Composer 2
+Node.js >=18
+npm (incluido con Node.js)
+
+# Extensiones PHP necesarias
+bcmath
+ctype
+fileinfo
+json
+mbstring
+openssl
+pdo
+pdo_sqlite
+tokenizer
+xml
+zip
+
+# Base de datos
+SQLite (por defecto)
+# o MySQL / MariaDB si prefieres otra base de datos
+
+# Herramientas adicionales
+Git
+
+# Dependencias PHP clave (Composer)
+laravel/framework ^12.0
+guzzlehttp/guzzle ^7.10
+laravel/tinker ^2.10.1
+
+# Dependencias de desarrollo
+fakerphp/faker ^1.23
+laravel/breeze ^2.3
+laravel/pint ^1.24
+phpunit/phpunit ^11.5.3
+
+# Dependencias JS clave (npm)
+@tailwindcss/forms ^0.5.2
+@tailwindcss/vite ^4.0.0
+alpinejs ^3.4.2
+axios ^1.11.0
+laravel-vite-plugin ^2.0.0
+postcss ^8.4.31
+tailwindcss ^3.1.0
+vite ^7.0.7

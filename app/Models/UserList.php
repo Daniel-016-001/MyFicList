@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class UserList extends Model
+{
+    // Nombre de la tabla en la base de datos (el que pusimos en el script SQL)
+    protected $table = 'user_lists';
+
+    protected $fillable = [
+        'user_id',
+        'media_id',
+        'status',
+        'progress',
+        'score'
+    ];
+
+    // Relación: Una entrada de la lista pertenece a un Media (Anime/Peli/Juego)
+    public function media()
+    {
+        return $this->belongsTo(Media::class);
+    }
+
+    // Relación: Una entrada de la lista pertenece a un Usuario
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
