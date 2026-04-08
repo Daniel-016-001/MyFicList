@@ -12,6 +12,7 @@ Route::get('/', function () {
 
 // El buscador y la ficha técnica también son públicos (para que la gente vea info)
 Route::get('/search', [MediaController::class, 'search'])->name('media.search');
+Route::post('/media/add-from-search', [MediaController::class, 'addFromSearch'])->name('media.add-from-search');
 Route::get('/catalogo/{id}', [MediaController::class, 'show'])->name('media.show');
 
 // 2. PRIVADAS: Solo para usuarios registrados
