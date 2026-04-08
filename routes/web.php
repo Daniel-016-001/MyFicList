@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Guardar en la lista (ahora protegida por middleware)
     Route::post('/user-list', [UserListController::class, 'store'])->name('user-list.store');
+    Route::put('/user-list/{id}', [UserListController::class, 'update'])->name('user-list.update');
+    Route::delete('/user-list/{id}', [UserListController::class, 'destroy'])->name('user-list.destroy');
 
     // Perfil de usuario (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

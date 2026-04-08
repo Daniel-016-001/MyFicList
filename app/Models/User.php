@@ -45,4 +45,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relación: Un usuario tiene muchas entradas en su lista
+     */
+    public function userLists()
+    {
+        return $this->hasMany(UserList::class);
+    }
 }

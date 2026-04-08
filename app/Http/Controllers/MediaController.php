@@ -89,6 +89,7 @@ class MediaController extends Controller
 
         if ($dataToSave) {
             $dataToSave['media_type'] = $type;
+            $dataToSave['source'] = $source;
             $newMedia = Media::create($dataToSave);
             return redirect()->route('media.show', $newMedia->id);
         }

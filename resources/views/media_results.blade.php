@@ -1,80 +1,113 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="py-12">
+<div class="bg-gray-950 min-h-screen py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                Resultados de búsqueda
-            </h1>
-            <p class="text-gray-600">
-                Buscando: <span class="font-semibold">{{ $query }}</span> 
-                ({{ count($results) }} resultados encontrados)
-            </p>
+        <div class="mb-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                        Resultados de búsqueda
+                    </h1>
+                    <p class="text-gray-400 text-lg">
+                        <span class="text-yellow-400 font-semibold">{{ count($results) }}</span> resultado{{ count($results) !== 1 ? 's' : '' }} encontrado{{ count($results) !== 1 ? 's' : '' }}
+                        @if($query)
+                            para <span class="text-blue-400 font-semibold">"{{ $query }}"</span>
+                        @endif
+                        en <span class="text-purple-400 font-semibold">{{ ucfirst($type) }}</span>
+                    </p>
+                </div>
+                <a href="/" class="flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-plus"></i><span>Nueva Búsqueda</span>
+                </a>
+            </div>
         </div>
 
+        <!-- Empty State -->
         @if(empty($results))
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                <p class="text-yellow-800">No se encontraron resultados para "{{ $query }}"</p>
+            <div class="text-center py-20">
+                <div class="text-6xl mb-4">🔍</div>
+                <h2 class="text-2xl font-bold text-gray-300 mb-2">No se encontraron resultados</h2>
+                <p class="text-gray-500 mb-8">
+                    No pudimos encontrar resultados para "<span class="font-semibold">{{ $query }}</span>"
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <a href="/" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-6 py-3 rounded-lg transition">
+                        <i class="fas fa-search mr-2"></i>Intentar otra búsqueda
+                    </a>
+                    <a href="/" class="inline-block bg-gray-900 hover:bg-gray-800 border border-gray-800 text-white font-bold px-6 py-3 rounded-lg transition">
+                        <i class="fas fa-home mr-2"></i>Ir al inicio
+                    </a>
+                </div>
             </div>
         @else
-            <!-- Grid de resultados -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Results Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 @foreach($results as $result)
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <!-- Portada -->
-                        <div class="aspect-w-3 aspect-h-4 bg-gray-200 overflow-hidden h-64">
+                    <div class="group relative bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-blue-500 transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105">
+                        
+                        <!-- Cover Image Container -->
+                        <div class="relative overflow-hidden h-80 bg-gray-800">
                             @if($result['cover_url'])
                                 <img src="{{ $result['cover_url'] }}" 
                                      alt="{{ $result['title'] }}" 
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover group-hover:brightness-50 transition duration-300">
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                                    <svg class="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
+                                <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-600 text-4xl"></i>
                                 </div>
                             @endif
+
+                            <!-- Overlay Info - Only on hover -->
+                            <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                                <div class="text-right">
+                                    <span class="inline-block bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-200">
+                                        {{ ucfirst($result['media_type'] ?? $type) }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm leading-relaxed line-clamp-3">
+                                        {{ substr($result['synopsis'] ?? 'Sin descripción', 0, 100) }}...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Badge's -->
+                            <div class="absolute top-2 left-2 flex gap-2">
+                                <span class="inline-block px-2 py-1 text-xs font-bold rounded backdrop-blur-sm
+                                    @if($result['source'] === 'TMDB') bg-blue-600/80 text-blue-100
+                                    @elseif($result['source'] === 'Jikan') bg-purple-600/80 text-purple-100
+                                    @elseif($result['source'] === 'RAWG') bg-green-600/80 text-green-100
+                                    @else bg-gray-700/80 text-gray-100 @endif">
+                                    {{ $result['source'] }}
+                                </span>
+                                @if($result['is_stored'])
+                                    <span class="inline-block px-2 py-1 text-xs font-bold bg-green-600/80 text-green-100 rounded backdrop-blur-sm">
+                                        ✓ Guardado
+                                    </span>
+                                @endif
+                            </div>
                         </div>
 
-                        <!-- Contenido -->
-                        <div class="p-4 flex flex-col h-full">
-                            <!-- Título -->
-                            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                        <!-- Content -->
+                        <div class="p-4 flex flex-col h-32">
+                            <!-- Title -->
+                            <h3 class="text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition">
                                 {{ $result['title'] }}
                             </h3>
 
-                            <!-- Badge de fuente -->
-                            <div class="mb-3">
-                                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
-                                    @if($result['source'] === 'TMDB') bg-blue-100 text-blue-800
-                                    @elseif($result['source'] === 'Jikan') bg-purple-100 text-purple-800
-                                    @elseif($result['source'] === 'RAWG') bg-green-100 text-green-800
-                                    @else bg-gray-100 text-gray-800 @endif">
-                                    {{ $result['source'] }}
-                                </span>
-                            </div>
-
-                            <!-- Sinopsis (preview) -->
-                            @if($result['synopsis'])
-                                <p class="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">
-                                    {{ substr($result['synopsis'], 0, 150) }}{{ strlen($result['synopsis']) > 150 ? '...' : '' }}
-                                </p>
-                            @else
-                                <p class="text-sm text-gray-500 italic mb-4">Sin descripción disponible</p>
-                            @endif
-
-                            <!-- Botones de acción -->
+                            <!-- Action Buttons -->
                             <div class="flex gap-2 mt-auto">
                                 @if($result['is_stored'])
-                                    <!-- Si ya está en BD, mostrar enlace a detalles -->
+                                    <!-- If already in DB, show details link -->
                                     <a href="{{ route('media.show', $result['id']) }}" 
-                                       class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center transition-colors duration-200">
-                                        Ver detalles
+                                       class="flex-1 text-center bg-blue-600/80 hover:bg-blue-600 text-white text-xs font-bold py-2 rounded transition">
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                 @else
-                                    <!-- Si es un resultado nuevo, mostrar formulario para agregar -->
+                                    <!-- If new result, show add button -->
                                     <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
                                         @csrf
                                         <input type="hidden" name="external_id" value="{{ $result['external_id'] ?? $result['id'] }}">
@@ -84,15 +117,26 @@
                                         <input type="hidden" name="cover_url" value="{{ $result['cover_url'] ?? '' }}">
                                         <input type="hidden" name="synopsis" value="{{ $result['synopsis'] ?? '' }}">
                                         <button type="submit" 
-                                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
-                                            + Agregar y ver
+                                                class="w-full bg-green-600/80 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">
+                                            <i class="fas fa-plus"></i>
                                         </button>
                                     </form>
                                 @endif
+                                
+                                <!-- View Details -->
+                                <a href="{{ $result['is_stored'] ? route('media.show', $result['id']) : '#' }}" 
+                                   class="flex-1 text-center bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-bold py-2 rounded transition">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 @endforeach
+            </div>
+
+            <!-- Pagination Info -->
+            <div class="mt-12 text-center text-gray-500">
+                <p>Mostrando {{ count($results) }} de {{ count($results) }} resultados</p>
             </div>
         @endif
     </div>

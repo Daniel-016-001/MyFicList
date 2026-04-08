@@ -11,6 +11,7 @@ class Media extends Model
         'external_id',
         'title',
         'media_type',
+        'source',
         'cover_url',
         'synopsis',
         'extra_data'
