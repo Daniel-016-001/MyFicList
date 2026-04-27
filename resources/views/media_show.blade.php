@@ -76,6 +76,42 @@
                     @endif
                 </div>
 
+                <!-- Comentarios -->
+                <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 mt-8">
+                    <h3 class="text-2xl font-bold mb-4">Comentarios</h3>
+                    @auth
+                    <form action="{{ route('media.comments.store', $m->id) }}" method="POST" class="mb-6">
+                        @csrf
+                        <textarea name="content" rows="3" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none mb-2" placeholder="Escribe tu comentario..."></textarea>
+                        <input type="hidden" name="media_id" value="{{ $m->id }}">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg">Publicar</button>
+                    </form>
+                    @else
+                        <p class="mb-4 text-gray-400">Inicia sesión para comentar.</p>
+                    @endauth
+
+                    <!-- Listado de comentarios -->
+                    <div id="comments-list">
+                        @foreach(App\Models\Comment::where('media_id', $m->id)->whereNull('parent_id')->with('user', 'replies.user')->latest()->get() as $comment)
+                            <div class="mb-6 border-b border-gray-800 pb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="font-bold text-blue-400 mr-2">{{ $comment->user->name }}</span>
+                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                </div>
+                                <div class="text-gray-200 mb-2">{{ $comment->content }}</div>
+                                <!-- Respuestas -->
+                                @foreach($comment->replies as $reply)
+                                    <div class="ml-6 mt-2 border-l-2 border-blue-800 pl-4">
+                                        <span class="font-bold text-purple-400 mr-2">{{ $reply->user->name }}</span>
+                                        <span class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</span>
+                                        <div class="text-gray-300">{{ $reply->content }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <!-- Sidebar -->
                 <div class="lg:col-span-1">
                     <!-- Add to List Form -->

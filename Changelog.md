@@ -3,13 +3,26 @@
 Todos los cambios notables de este proyecto se documentarán en este archivo.
 
 ## [En Progreso / Futuro Roadmap]
-- Unificar el buscador para no tener que especificar si lo que buscamos es anime o videojuegos o añadir un filtro de buscador general.
-- Agregar un filtro anti contenido NSFW/Hentai
-- Agregar una página individual para ver los detalles del contenido + comentarios de los usuarios
 - Agregar página para que la comunidad pueda conversar libremente, publicar contenido y debatir
-- Agregar un mostrador para cada categoria con los contenidos más populares.
-- Separar el dashboard en categorias para mejorar la visibilidad del contenido.
-- Incluir API para libros y novelas
+- Agregar mostrador para cada categoría con los contenidos más populares
+
+---
+
+## [1.1.0] - 2026-04-26
+### Añadido (Added)
+- **Buscador Unificado**: Ahora puedes buscar sin especificar tipo. El sistema busca en todas las fuentes (Jikan, TMDB, RAWG) y muestra resultados combinados.
+- **Filtro Anti-NSFW**: Se implementó filtro de contenido para excluir resultados no apropiados en las búsquedas.
+- **Página de Detalles con Comentarios**: Cada contenido ahora muestra página individual con información completa y sistema de comentarios de usuarios.
+- **Dashboard Separado por Categorías**: El dashboard ahora muestra secciones diferenciadas para Anime, Manga, Películas, Series y Videojuegos.
+- **API para Libros y Novelas**: Integración con Open Library API para buscar y agregar libros y novelas a tu colección.
+
+### Mejorado (Changed)
+- El buscador ahora permite búsqueda libre sin necesidad de seleccionar tipo específico
+- La página de detalles (`media_show`) ahora incluye sección de comentarios
+- El dashboard muestra filtros por categoría para mejor navegación
+
+### Arreglado (Fixed)
+- Mejoras en el rendimiento de búsquedas múltiples
 
 ---
 

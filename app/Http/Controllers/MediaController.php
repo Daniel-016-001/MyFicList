@@ -11,9 +11,95 @@ class MediaController extends Controller
 {
     protected AnimeSearchService $animeSearchService;
 
+    // Términos NSFW a filtrar
+    private const NSFW_TERMS = [
+        'hentai', 'ecchi', 'ero', 'adult', '18+', 'xxx', 'porn',
+        'yaoi', 'yuri' // Opcional: dependiendo de preferencias
+    ];
+
     public function __construct(AnimeSearchService $animeSearchService)
     {
         $this->animeSearchService = $animeSearchService;
+    }
+
+    /**
+     * Búsqueda unificada sin tipo obligatorio
+     */
+    public function searchUnified(Request $request)
+    {
+        $query = $request->input('q');
+        $excludeNsfw = $request->boolean('safe', true);
+
+        if (!$query) {
+            return view('media_results', [
+                'results' => [],
+                'type' => 'all',
+                'query' => $query
+            ]);
+        }
+
+        // Buscar en todas las categorías
+        $allResults = [];
+        $types = ['anime', 'manga', 'movie', 'series', 'game', 'book'];
+        
+        foreach ($types as $type) {
+            $results = $this->animeSearchService->searchMultiple($query, $type);
+            foreach ($results as $result) {
+                $result['search_type'] = $type;
+                $allResults[] = $result;
+            }
+        }
+
+        // Filtrar NSFW si está habilitado
+        if ($excludeNsfw) {
+            $allResults = $this->filterNsfw($allResults);
+        }
+
+        // Eliminar duplicados
+        $uniqueResults = $this->removeDuplicates($allResults);
+
+        return view('media_results', [
+            'results' => $uniqueResults,
+            'type' => 'all',
+            'query' => $query
+        ]);
+    }
+
+    /**
+     * Filtra contenido NSFW de los resultados
+     */
+    private function filterNsfw(array $results): array
+    {
+        return array_filter($results, function ($item) {
+            $title = strtolower($item['title'] ?? '');
+            foreach (self::NSFW_TERMS as $term) {
+                if (stripos($title, $term) !== false) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    /**
+     * Elimina resultados duplicados basándose en título similar
+     */
+    private function removeDuplicates(array $results): array
+    {
+        $seen = [];
+        $unique = [];
+
+        foreach ($results as $result) {
+            $normalizedTitle = strtolower(trim($result['title'] ?? ''));
+            $key = substr($normalizedTitle, 0, 30); // Usar primeros 30 chars como clave
+
+            if (!isset($seen[$key])) {
+                $seen[$key] = true;
+                $unique[] = $result;
+            }
+        }
+
+        return array_slice($unique, 0, 20); // Máximo 20 resultados
     }
 
     public function search(Request $request)

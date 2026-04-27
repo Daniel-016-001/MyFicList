@@ -64,6 +64,12 @@ class AnimeSearchService
                 $rawgResults = $this->searchMultipleInRawg($query);
                 $results = array_merge($results, $rawgResults);
             }
+
+            // 6. Para libros/novelas buscar en Open Library
+            if ($type === 'book') {
+                $bookResults = $this->searchMultipleInOpenLibrary($query);
+                $results = array_merge($results, $bookResults);
+            }
         } catch (\Exception $e) {
             // Return whatever we found so far
         }
@@ -199,6 +205,42 @@ class AnimeSearchService
                     'source' => 'RAWG',
                     'is_stored' => false,
                     'media_type' => 'game'
+                ];
+            }, array_slice($results, 0, 4));
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Busca múltiples resultados en Open Library (Libros/Novelas)
+     */
+    private function searchMultipleInOpenLibrary(string $query): array
+    {
+        try {
+            $response = Http::get("https://openlibrary.org/search.json", [
+                'q' => $query,
+                'limit' => 4,
+                'fields' => 'key,title,author_name,cover_i,first_publish_year,subject'
+            ]);
+
+            $results = $response->json()['docs'] ?? [];
+
+            return array_map(function ($item) {
+                $coverUrl = null;
+                if (isset($item['cover_i'])) {
+                    $coverUrl = "https://covers.openlibrary.org/b/id/{$item['cover_i']}-M.jpg";
+                }
+
+                return [
+                    'id' => null,
+                    'external_id' => $item['key'],
+                    'title' => $item['title'],
+                    'cover_url' => $coverUrl,
+                    'synopsis' => 'Publicado: ' . ($item['first_publish_year'] ?? 'N/A'),
+                    'source' => 'OpenLibrary',
+                    'is_stored' => false,
+                    'media_type' => 'book'
                 ];
             }, array_slice($results, 0, 4));
         } catch (\Exception $e) {

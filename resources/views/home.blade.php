@@ -46,18 +46,25 @@
             </div>
 
             <!-- Search Bar -->
-            <form action="{{ url('/search') }}" method="GET" class="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-800 mb-12">
+            <form action="{{ url('/search/unified') }}" method="GET" class="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-800 mb-12">
                 <div class="flex flex-col lg:flex-row gap-4 items-stretch">
                     <input type="text" name="q" placeholder="¿Qué quieres descubrir hoy?" required
                         class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-lg">
                     
                     <select name="type" class="bg-gray-800 border border-gray-700 rounded-lg px-6 py-4 text-white outline-none cursor-pointer focus:ring-2 focus:ring-blue-500 transition">
+                        <option value="all">🔍 Todo</option>
                         <option value="anime">🍙 Anime</option>
                         <option value="manga">📖 Manga</option>
                         <option value="movie">🎬 Película</option>
                         <option value="series">📺 Serie TV</option>
                         <option value="game">🎮 Videojuego</option>
+                        <option value="book">📚 Libro</option>
                     </select>
+
+                    <label class="flex items-center gap-2 text-gray-400 text-sm cursor-pointer">
+                        <input type="checkbox" name="safe" value="1" checked class="w-4 h-4 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500">
+                        🔞 Sin NSFW
+                    </label>
 
                     <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-lg transition-all shadow-lg">
                         <i class="fas fa-search mr-2"></i>Buscar
