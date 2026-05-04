@@ -48,7 +48,7 @@
             <!-- Search Bar -->
             <form action="{{ url('/search/unified') }}" method="GET" class="bg-gray-900/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-gray-800 mb-12">
                 <div class="flex flex-col lg:flex-row gap-4 items-stretch">
-                    <input type="text" name="q" placeholder="¿Qué quieres descubrir hoy?" required
+                    <input type="text" name="query" placeholder="¿Qué quieres descubrir hoy?" required
                         class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-lg">
                     
                     <select name="type" class="bg-gray-800 border border-gray-700 rounded-lg px-6 py-4 text-white outline-none cursor-pointer focus:ring-2 focus:ring-blue-500 transition">
@@ -77,10 +77,10 @@
                 O explora por categoría:
             </div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-16">
-                <a href="{{ url('/search?q=trending&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">🔥 Trending</a>
-                <a href="{{ url('/search?q=popular&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">⭐ Popular</a>
-                <a href="{{ url('/search?q=new&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">✨ Nuevo</a>
-                <a href="{{ url('/search?q=top&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">👑 Top</a>
+                <a href="{{ url('/search?query=trending&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">🔥 Trending</a>
+                <a href="{{ url('/search?query=popular&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">⭐ Popular</a>
+                <a href="{{ url('/search?query=new&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">✨ Nuevo</a>
+                <a href="{{ url('/search?query=top&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">👑 Top</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-4 transition text-sm font-medium">📋 Mi Lista</a>
                 @endauth

@@ -17,6 +17,9 @@
                     <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
                         <i class="fas fa-search mr-2"></i>Buscar
                     </a>
+                    <a href="{{ route('forum.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('forum.index') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition">
+                        <i class="fas fa-comments mr-2"></i>Foro
+                    </a>
                 </div>
             </div>
 
@@ -25,7 +28,7 @@
                 <!-- Quick Search -->
                 <form action="{{ url('/search') }}" method="GET" class="hidden md:flex items-center">
                     <div class="relative">
-                        <input type="text" name="q" placeholder="Buscar anime, películas..." 
+                        <input type="text" name="query" placeholder="Buscar anime, películas..." 
                             class="bg-gray-800 text-white placeholder-gray-500 rounded-lg py-2 pl-10 pr-4 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                         <i class="fas fa-search absolute left-3 top-2.5 text-gray-500"></i>
                     </div>
@@ -42,7 +45,7 @@
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-t-lg transition">
                                 <i class="fas fa-user mr-2"></i>Mi Perfil
                             </a>
-                            <a href="{{ route('profile.edit') }}#collection" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+                            <a href="{{ route('user-list.index') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
                                 <i class="fas fa-list mr-2"></i>Mi Lista
                             </a>
                             <form method="POST" action="{{ route('logout') }}" class="block">

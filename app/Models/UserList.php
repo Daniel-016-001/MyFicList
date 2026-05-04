@@ -12,6 +12,7 @@ class UserList extends Model
     protected $fillable = [
         'user_id',
         'media_id',
+        'media_list_id',
         'status',
         'progress',
         'score'
@@ -27,5 +28,10 @@ class UserList extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function mediaList()
+    {
+        return $this->belongsTo(MediaList::class, 'media_list_id');
     }
 }

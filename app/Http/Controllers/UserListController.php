@@ -4,28 +4,103 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserList;
+use App\Models\Media;
+use App\Models\MediaList;
+use App\Services\MediaIntegrationService;
 use Illuminate\Support\Facades\Auth;
 
 class UserListController extends Controller
 {
+    protected $mediaService;
+
+    public function __construct(MediaIntegrationService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
+
     /**
      * Guardar un elemento en la lista del usuario
      */
+    public function index()
+    {
+        $mediaLists = MediaList::with(['items.media'])
+            ->where('user_id', Auth::id())
+            ->get()
+            ->sortBy([fn($list) => $list->category, fn($list) => $list->name]);
+
+        return view('user_list.index', compact('mediaLists'));
+    }
+
     public function store(Request $request)
     {
         // Validar datos
         $request->validate([
-            'media_id' => 'required|exists:media,id',
             'status' => 'required|in:watching,completed,on_hold,dropped,plan_to_watch',
-            'score' => 'nullable|integer|min:1|max:10'
+            'score' => 'nullable|integer|min:1|max:10',
+            'progress' => 'nullable|integer|min:0',
+            'media_list_id' => 'nullable|exists:media_lists,id',
         ]);
 
-        // Obtener el usuario autenticado
         $userId = Auth::id();
+        $mediaId = null;
+        $mediaListId = null;
+        $mediaType = null;
+
+        // Si se proporciona external_id, importar el media si no existe
+        if ($request->has('external_id') && $request->has('source') && $request->has('media_type')) {
+            $media = Media::where('external_id', $request->external_id)
+                         ->where('source', $request->source)
+                         ->first();
+
+            if (!$media) {
+                // Importar el media
+                $media = $this->mediaService->importToDatabase(
+                    $request->external_id,
+                    $request->source,
+                    $request->media_type
+                );
+
+                if (!$media) {
+                    return back()->with('error', 'Error al importar el contenido. Inténtalo de nuevo.');
+                }
+            }
+
+            $mediaId = $media->id;
+            $mediaType = $media->media_type;
+        } elseif ($request->has('media_id')) {
+            // Validar que el media existe
+            $request->validate([
+                'media_id' => 'required|exists:media,id'
+            ]);
+            $media = Media::find($request->media_id);
+            $mediaId = $media->id;
+            $mediaType = $media->media_type;
+        } else {
+            return back()->with('error', 'Datos insuficientes para agregar a la lista.');
+        }
+
+        if ($request->filled('media_list_id')) {
+            $mediaList = MediaList::where('id', $request->media_list_id)
+                ->where('user_id', $userId)
+                ->where('category', $mediaType ?? 'general')
+                ->first();
+
+            if ($mediaList) {
+                $mediaListId = $mediaList->id;
+            }
+        }
+
+        if (!$mediaListId) {
+            $defaultList = MediaList::firstOrCreate(
+                ['user_id' => $userId, 'category' => $mediaType ?? 'general'],
+                ['name' => $this->getCategoryListName($mediaType), 'is_public' => false]
+            );
+            $mediaListId = $defaultList->id;
+        }
 
         // Crear o actualizar entrada en la lista
         UserList::updateOrCreate(
-            ['user_id' => $userId, 'media_id' => $request->media_id],
+            ['user_id' => $userId, 'media_id' => $mediaId, 'media_list_id' => $mediaListId],
             [
                 'status' => $request->status,
                 'score' => $request->score ?? null,
@@ -34,6 +109,19 @@ class UserListController extends Controller
         );
 
         return back()->with('success', '¡Elemento agregado a tu lista!');
+    }
+
+    private function getCategoryListName(?string $mediaType): string
+    {
+        return match ($mediaType) {
+            'anime' => 'Anime',
+            'manga' => 'Manga',
+            'movie' => 'Películas',
+            'series' => 'Series',
+            'game' => 'Videojuegos',
+            'book' => 'Libros',
+            default => 'General',
+        };
     }
 
     /**

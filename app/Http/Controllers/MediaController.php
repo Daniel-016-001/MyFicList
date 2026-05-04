@@ -2,345 +2,110 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MediaIntegrationService;
+use App\Services\AnimeSearchService; // Importamos el servicio de búsqueda
 use Illuminate\Http\Request;
 use App\Models\Media;
-use App\Services\AnimeSearchService;
-use Illuminate\Support\Facades\Http;
 
 class MediaController extends Controller
 {
-    protected AnimeSearchService $animeSearchService;
+    protected $mediaService;
+    protected $searchService;
 
-    // Términos NSFW a filtrar
-    private const NSFW_TERMS = [
-        'hentai', 'ecchi', 'ero', 'adult', '18+', 'xxx', 'porn',
-        'yaoi', 'yuri' // Opcional: dependiendo de preferencias
-    ];
-
-    public function __construct(AnimeSearchService $animeSearchService)
+    public function __construct(MediaIntegrationService $mediaService, AnimeSearchService $searchService)
     {
-        $this->animeSearchService = $animeSearchService;
+        $this->mediaService = $mediaService;
+        $this->searchService = $searchService;
     }
 
     /**
-     * Búsqueda unificada sin tipo obligatorio
+     * Muestra la ficha técnica de un media ya guardado en la BD
      */
-    public function searchUnified(Request $request)
+    public function show($id)
     {
-        $query = $request->input('q');
-        $excludeNsfw = $request->boolean('safe', true);
+        $media = Media::findOrFail($id);
+        return view('media_show', compact('media'));
+    }
 
-        if (!$query) {
-            return view('media_results', [
-                'results' => [],
-                'type' => 'all',
-                'query' => $query
-            ]);
-        }
+    /**
+     * Método para la búsqueda simple (por tipo)
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $type = $request->input('type', 'anime');
 
-        // Buscar en todas las categorías
-        $allResults = [];
-        $types = ['anime', 'manga', 'movie', 'series', 'game', 'book'];
-        
-        foreach ($types as $type) {
-            $results = $this->animeSearchService->searchMultiple($query, $type);
-            foreach ($results as $result) {
-                $result['search_type'] = $type;
-                $allResults[] = $result;
-            }
-        }
+        $results = $this->searchService->searchMultiple($query, $type);
 
-        // Filtrar NSFW si está habilitado
-        if ($excludeNsfw) {
-            $allResults = $this->filterNsfw($allResults);
-        }
-
-        // Eliminar duplicados
-        $uniqueResults = $this->removeDuplicates($allResults);
-
-        return view('media_results', [
-            'results' => $uniqueResults,
-            'type' => 'all',
-            'query' => $query
+        return view('search', [
+            'results' => $results,
+            'query' => $query,
+            'type' => $type
         ]);
     }
 
-    /**
-     * Filtra contenido NSFW de los resultados
-     */
-    private function filterNsfw(array $results): array
+    public function searchUnified(Request $request)
     {
-        return array_filter($results, function ($item) {
-            $title = strtolower($item['title'] ?? '');
-            foreach (self::NSFW_TERMS as $term) {
-                if (stripos($title, $term) !== false) {
-                    return false;
-                }
-            }
-            return true;
-        });
-    }
+        // 1. Validamos que el campo 'query' esté presente y sea un texto
+        $query = $request->input('query');
 
-    /**
-     * Elimina resultados duplicados basándose en título similar
-     */
-    private function removeDuplicates(array $results): array
-    {
-        $seen = [];
-        $unique = [];
-
-        foreach ($results as $result) {
-            $normalizedTitle = strtolower(trim($result['title'] ?? ''));
-            $key = substr($normalizedTitle, 0, 30); // Usar primeros 30 chars como clave
-
-            if (!isset($seen[$key])) {
-                $seen[$key] = true;
-                $unique[] = $result;
-            }
+        // Si el usuario no escribió nada, lo mandamos de vuelta con un mensaje
+        if (empty($query)) {
+            return redirect()->back()->with('error', 'Por favor, introduce un término de búsqueda.');
         }
 
-        return array_slice($unique, 0, 20); // Máximo 20 resultados
+        // Ahora estamos seguros de que $query es un string
+        $results = $this->mediaService->getUnifiedResults((string) $query);
+
+        return view('search', [
+            'results' => $results,
+            'query' => $query,
+            'is_unified' => true
+        ]);
     }
 
-    public function search(Request $request)
+    public function suggestions(Request $request)
     {
-        $query = $request->input('q');
-        $type = $request->input('type');
+        $query = trim((string) $request->query('query', ''));
 
-        if (!$query || !$type) {
-            return response()->json(['error' => 'Missing parameters'], 400);
+        if ($query === '') {
+            return response()->json([]);
         }
 
-        // Buscar múltiples resultados
-        $results = $this->animeSearchService->searchMultiple($query, $type);
-        
-        // Si no hay resultados
-        if (empty($results)) {
-            return response()->json(['error' => 'No results found'], 404);
-        }
+        $suggestions = Media::where('title', 'like', "%{$query}%")
+            ->orderBy('title')
+            ->limit(10)
+            ->get(['id', 'title']);
 
-        // Si hay solo 1 resultado y está en BD local, ir directamente
-        if (count($results) === 1 && $results[0]['is_stored'] === true) {
-            return redirect()->route('media.show', $results[0]['id']);
-        }
-
-        // Mostrar página de resultados
-        return view('media_results', compact('results', 'type', 'query'));
+        return response()->json($suggestions);
     }
 
-    public function show($id)
-    {
-        $item = Media::findOrFail($id);
-        return view('media_show', compact('item'));
-    }
-
-    /**
-     * Agregar media desde búsqueda de resultados
-     */
     public function addFromSearch(Request $request)
     {
-        $type = $request->input('type');
-        $source = $request->input('source');
-        $externalId = $request->input('external_id');
-        $title = $request->input('title');
+        $media = $this->mediaService->importToDatabase(
+            $request->input('external_id'),
+            $request->input('source'),
+            $request->input('media_type') // Asegúrate que en el form se llame media_type o cámbialo aquí
+        );
 
-        // Si ya existe en BD, sino integrarlo
-        $existing = Media::where('external_id', $externalId)
-            ->where('source', $source)
-            ->first();
-
-        if ($existing) {
-            return redirect()->route('media.show', $existing->id);
+        if (!$media) {
+            return back()->with('error', 'Error al importar');
         }
 
-        // Buscar los datos completos según la fuente
-        if ($source === 'Local') {
-            return redirect()->route('media.show', $externalId);
-        }
-
-        $dataToSave = null;
-
-        if (in_array($type, ['anime', 'manga'])) {
-            // Obtener datos completos de Jikan o TMDB
-            if ($source === 'Jikan') {
-                $dataToSave = $this->getJikanDetails($externalId, $type);
-            } elseif ($source === 'TMDB') {
-                $dataToSave = $this->getTmdbDetails($externalId, $type);
-            }
-        } elseif (in_array($type, ['movie', 'series']) && $source === 'TMDB') {
-            $dataToSave = $this->getTmdbDetails($externalId, $type);
-        } elseif ($type === 'game' && $source === 'RAWG') {
-            $dataToSave = $this->getRawgDetails($externalId);
-        }
-
-        if ($dataToSave) {
-            $dataToSave['media_type'] = $type;
-            $dataToSave['source'] = $source;
-            $newMedia = Media::create($dataToSave);
-            return redirect()->route('media.show', $newMedia->id);
-        }
-
-        return back()->with('error', 'No se pudo agregar el contenido');
-    }
-
-    private function fetchFromExternalApi($query, $type)
-    {
-        $dataToSave = null;
-
-        switch ($type) {
-            case 'movie':
-            case 'series':
-                $tmdbType = ($type == 'movie') ? 'movie' : 'tv';
-                $response = Http::withToken(config('services.tmdb.token'))
-                    ->get("https://api.themoviedb.org/3/search/{$tmdbType}", ['query' => $query]);
-
-                $basic = $response->json()['results'][0] ?? null;
-
-                if ($basic) {
-                    $details = Http::withToken(config('services.tmdb.token'))
-                        ->get("https://api.themoviedb.org/3/{$tmdbType}/{$basic['id']}", [
-                            'append_to_response' => 'videos'
-                        ])->json();
-
-                    $trailer = collect($details['videos']['results'] ?? [])->where('type', 'Trailer')->first();
-
-                    $dataToSave = [
-                        'external_id' => $basic['id'],
-                        'title' => $basic['title'] ?? $basic['name'],
-                        'cover_url' => 'https://image.tmdb.org/t/p/w500' . $basic['poster_path'],
-                        'synopsis' => $basic['overview'],
-                        'source' => 'TMDB',
-                        'extra_data' => [
-                            'backdrop' => 'https://image.tmdb.org/t/p/original' . ($basic['backdrop_path'] ?? ''),
-                            'trailer_url' => $trailer ? 'https://www.youtube.com/embed/' . $trailer['key'] : null,
-                            'rating' => $basic['vote_average'] ?? 'N/A',
-                            'release_date' => $basic['release_date'] ?? $basic['first_air_date'] ?? 'N/A'
-                        ]
-                    ];
-                }
-                break;
-
-            case 'game':
-                $search = Http::get("https://api.rawg.io/api/games", [
-                    'key' => config('services.rawg.key'),
-                    'search' => $query,
-                    'page_size' => 1
-                ])->json()['results'][0] ?? null;
-
-                if ($search) {
-                    $details = Http::get("https://api.rawg.io/api/games/{$search['id']}", [
-                        'key' => config('services.rawg.key')
-                    ])->json();
-
-                    $dataToSave = [
-                        'external_id' => $search['id'],
-                        'title' => $search['name'],
-                        'cover_url' => $search['background_image'],
-                        'synopsis' => $details['description_raw'] ?? $details['description'] ?? 'No description available.',
-                        'source' => 'RAWG',
-                        'extra_data' => [
-                            'backdrop' => $search['background_image'],
-                            'screenshots' => collect($search['short_screenshots'] ?? [])->pluck('image')->toArray(),
-                            'metacritic' => $search['metacritic'] ?? 'N/A',
-                            'platforms' => collect($search['platforms'] ?? [])->pluck('platform.name')->toArray()
-                        ]
-                    ];
-                }
-                break;
-        }
-
-        return $dataToSave;
+        return redirect()->route('media.show', $media->id);
     }
 
     /**
-     * Obtiene detalles completos de Jikan
+     * Muestra detalles de un contenido desde APIs externas (sin importar)
      */
-    private function getJikanDetails($malId, $type): ?array
+    public function details($externalId, $source, $type)
     {
-        try {
-            $endpoint = ($type === 'manga') ? 'manga' : 'anime';
-            $response = Http::get("https://api.jikan.moe/v4/{$endpoint}/{$malId}");
-            $item = $response->json()['data'];
+        $details = $this->mediaService->getExternalDetails($externalId, $source, $type);
 
-            $translator = new \Stichoza\GoogleTranslate\GoogleTranslate();
-            $translator->setSource('auto');
-            $translator->setTarget('es');
-
-            return [
-                'external_id' => $item['mal_id'],
-                'title' => $translator->translate($item['title']),
-                'source' => 'Jikan',
-                'cover_url' => $item['images']['jpg']['large_image_url'],
-                'synopsis' => $translator->translate($item['synopsis'] ?? ''),
-                'extra_data' => [
-                    'score' => $item['score'] ?? 'N/A',
-                    'status' => $item['status'] ?? 'N/A',
-                    'episodes' => $item['episodes'] ?? null,
-                ]
-            ];
-        } catch (\Exception $e) {
-            return null;
+        if (!$details) {
+            return redirect()->back()->with('error', 'No se pudieron obtener los detalles del contenido.');
         }
-    }
 
-    /**
-     * Obtiene detalles completos de TMDB
-     */
-    private function getTmdbDetails($tmdbId, $type): ?array
-    {
-        try {
-            $tmdbType = ($type === 'movie') ? 'movie' : 'tv';
-            $details = Http::withToken(config('services.tmdb.token'))
-                ->get("https://api.themoviedb.org/3/{$tmdbType}/{$tmdbId}", [
-                    'append_to_response' => 'videos',
-                    'language' => 'es-ES'
-                ])->json();
-
-            $trailer = collect($details['videos']['results'] ?? [])
-                ->where('type', 'Trailer')
-                ->first();
-
-            return [
-                'external_id' => $tmdbId,
-                'title' => $details['title'] ?? $details['name'],
-                'source' => 'TMDB',
-                'cover_url' => 'https://image.tmdb.org/t/p/w500' . ($details['poster_path'] ?? ''),
-                'synopsis' => $details['overview'] ?? '',
-                'extra_data' => [
-                    'backdrop' => 'https://image.tmdb.org/t/p/original' . ($details['backdrop_path'] ?? ''),
-                    'trailer_url' => $trailer ? 'https://www.youtube.com/embed/' . $trailer['key'] : null,
-                    'rating' => $details['vote_average'] ?? 'N/A',
-                    'release_date' => $details['release_date'] ?? $details['first_air_date'] ?? 'N/A',
-                ]
-            ];
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Obtiene detalles completos de RAWG
-     */
-    private function getRawgDetails($rawgId): ?array
-    {
-        try {
-            $details = Http::get("https://api.rawg.io/api/games/{$rawgId}", [
-                'key' => config('services.rawg.key')
-            ])->json();
-
-            return [
-                'external_id' => $rawgId,
-                'title' => $details['name'],
-                'source' => 'RAWG',
-                'cover_url' => $details['background_image'],
-                'synopsis' => $details['description_raw'] ?? $details['description'] ?? 'Sin descripción',
-                'extra_data' => [
-                    'backdrop' => $details['background_image'],
-                    'metacritic' => $details['metacritic'] ?? 'N/A',
-                ]
-            ];
-        } catch (\Exception $e) {
-            return null;
-        }
+        return view('media_details', compact('details'));
     }
 }

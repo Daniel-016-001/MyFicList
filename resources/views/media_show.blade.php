@@ -122,6 +122,27 @@
                             @csrf
                             <input type="hidden" name="media_id" value="{{ $m->id }}">
 
+                            @auth
+                                @php
+                                    $mediaLists = Auth::user()->mediaLists()->where('category', $m->media_type)->get();
+                                @endphp
+                                @if($mediaLists->isNotEmpty())
+                                    <div>
+                                        <label class="block text-sm font-bold mb-2">Lista de {{ ucfirst($m->media_type) }}</label>
+                                        <select name="media_list_id" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
+                                            @foreach($mediaLists as $list)
+                                                <option value="{{ $list->id }}">{{ $list->name }} - {{ $list->is_public ? 'Pública' : 'Privada' }}</option>
+                                            @endforeach
+                                        </select>
+                                        <p class="mt-2 text-xs text-gray-400">Solo se muestran listas dedicadas a este tipo de contenido. Si no hay ninguna, se creará una nueva automáticamente.</p>
+                                    </div>
+                                @else
+                                    <div class="rounded-2xl border border-gray-800 bg-gray-900 p-4 text-sm text-gray-400">
+                                        No tienes listas de {{ ucfirst($m->media_type) }} todavía. Se creará una automáticamente cuando guardes este contenido.
+                                    </div>
+                                @endif
+                            @endauth
+
                             <!-- Status Select -->
                             <div>
                                 <label class="block text-sm font-bold mb-2">Estado</label>

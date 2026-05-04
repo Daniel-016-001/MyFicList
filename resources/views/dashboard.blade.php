@@ -40,14 +40,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Anime</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['anime'] as $index => $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
-                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-80 object-cover">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -63,14 +63,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Manga</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['manga'] as $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -86,14 +86,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Películas</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['movie'] as $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -109,14 +109,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Series</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['series'] as $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -132,14 +132,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Videojuegos</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['game'] as $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -155,14 +155,14 @@
                     <h3 class="text-xl font-bold mb-4 border-b border-gray-800 pb-2">Libros</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($popularByCategory['book'] as $media)
-                            <a href="{{ route('media.show', $media->id) }}" class="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition">
+                            <a href="{{ route('media.show', $media->id) }}" class="block rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-56 object-cover">
-                                <div class="p-2">
+                                <div class="p-2 bg-gray-900">
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
-                                        <span class="text-xs text-gray-500">{{ $media->user_ratings_count }}</span>
-                                        @if($media->average_score)
-                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->average_score, 1) }}</span>
+                                        <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
+                                        @if($media->avg_score)
+                                            <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
                                 </div>
