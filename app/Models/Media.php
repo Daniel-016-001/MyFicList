@@ -37,4 +37,12 @@ class Media extends Model
         $average = $this->userRatings()->avg('score');
         return $average ? number_format($average, 1) : 'N/A';
     }
+
+    // app/Models/Media.php
+
+    public function userLists()
+    {
+        // Una obra (Media) aparece en muchas listas de usuarios
+        return $this->hasMany(UserList::class);
+    }
 }

@@ -13,19 +13,6 @@
 <body class="font-sans antialiased bg-gray-950 text-gray-100">
     @include('layouts.navigation')
 
-    <header class="bg-gradient-to-r from-gray-900 to-gray-950 border-b border-gray-800 shadow-lg">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <h2 class="font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                    Explorar
-                </h2>
-                <a href="/" class="text-blue-400 hover:text-blue-300 font-bold transition">
-                    <i class="fas fa-search mr-2"></i>Buscar
-                </a>
-            </div>
-        </div>
-    </header>
-
     <main class="bg-gray-950 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Welcome Card -->

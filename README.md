@@ -66,32 +66,38 @@ npm install
 copy .env.example .env
 ```
 
-5. Genera la clave de aplicación:
+5. Copia las claves en el archivo .env:
+
+TMDB_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlOTQ5ZDY4NTY2YjRiODYyNmZlMjU1Mjc0MzlmMzFhMyIsIm5iZiI6MTc3MjcxNjY0OS44NSwic3ViIjoiNjlhOTgyNjlkNWQwNzc1YWRmZWM2MDRiIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ypXrUf9HXOzpW8rTRmtKdWI4g1zpc-I_uGu0iJRjXVQ
+RAWG_KEY=86d2496fd8814790b8068b3056774276
+
+
+6. Genera la clave de aplicación:
 
 ```bash
 php artisan key:generate
 ```
 
-6. Si usas SQLite, crea el archivo de base de datos:
+7. Si usas SQLite, crea el archivo de base de datos:
 
 ```bash
 php artisan storage:link
 if not exist database\database.sqlite type nul > database\database.sqlite
 ```
 
-7. Ejecuta las migraciones:
+8. Ejecuta las migraciones:
 
 ```bash
 php artisan migrate --force
 ```
 
-8. Compila los assets:
+9. Compila los assets:
 
 ```bash
 npm run build
 ```
 
-9. Inicia el servidor local:
+10. Inicia el servidor local:
 
 ```bash
 php artisan serve

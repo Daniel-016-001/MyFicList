@@ -13,22 +13,29 @@ class CommentController extends Controller
     /**
      * Guardar un nuevo comentario
      */
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'media_id' => 'required|exists:media,id',
             'content' => 'required|string|max:1000',
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
         $comment = Comment::create([
-            'user_id' => Auth::id(),
-            'media_id' => $request->media_id,
-            'content' => $request->content,
-            'parent_id' => $request->parent_id,
+            'user_id' => auth()->id(),
+            'media_id' => $validated['media_id'],
+            'content' => $validated['content'],
+            'parent_id' => $validated['parent_id'],
         ]);
 
-        return redirect()->back()->with('success', 'Comentario publicado');
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Comentario publicado con éxito',
+                'comment' => $comment->load('user') // Carga el usuario para mostrar su nombre en el frontend
+            ]);
+        }
+
+        return back()->with('success', 'Comentario publicado');
     }
 
     /**

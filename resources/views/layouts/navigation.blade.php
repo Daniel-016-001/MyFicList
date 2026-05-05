@@ -11,11 +11,11 @@
 
                 <!-- Main Navigation Links -->
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition">
+                   <a href="/" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('/') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition">
                         <i class="fas fa-home mr-2"></i>Inicio
                     </a>
-                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
-                        <i class="fas fa-search mr-2"></i>Buscar
+                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
+                        <i class="fas fa-search mr-2"></i>Explorar
                     </a>
                     <a href="{{ route('forum.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('forum.index') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} transition">
                         <i class="fas fa-comments mr-2"></i>Foro

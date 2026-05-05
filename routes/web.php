@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PopularMediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\UserListController;
@@ -34,32 +35,7 @@ Route::get('/media/{id}/comments', [CommentController::class, 'index'])->name('m
 // --- 2. RUTAS PRIVADAS (Requieren estar logueado) ---
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // DASHBOARD: La lógica que tienes en el closure está bien, 
-    // pero si crece, muévela a un DashboardController.
-    Route::get('/dashboard', function () {
-        // Calcular popularidad basada en media de puntuaciones propias
-        $avgScores = DB::table('user_lists')
-            ->select('media_id', DB::raw('AVG(score) as avg_score'), DB::raw('COUNT(*) as ratings_count'))
-            ->whereNotNull('score')
-            ->groupBy('media_id')
-            ->get()
-            ->keyBy('media_id');
-
-        $popularByCategory = \App\Models\Media::all()
-            ->filter(function($media) use ($avgScores) {
-                return isset($avgScores[$media->id]);
-            })
-            ->groupBy('media_type')
-            ->map(function($medias) use ($avgScores) {
-                return $medias->map(function($media) use ($avgScores) {
-                    $media->avg_score = $avgScores[$media->id]->avg_score;
-                    $media->ratings_count = $avgScores[$media->id]->ratings_count;
-                    return $media;
-                })->sortByDesc('avg_score')->take(5);
-            });
-
-        return view('dashboard', compact('popularByCategory'));
-    })->name('dashboard');
+    Route::get('/explorar', [PopularMediaController::class, 'index'])->name('dashboard');
 
     // LISTA DEL USUARIO
     Route::get('/mi-lista', [UserListController::class, 'index'])->name('user-list.index');
