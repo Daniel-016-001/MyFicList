@@ -35,7 +35,12 @@ class Media extends Model
     public function getAverageScoreAttribute()
     {
         $average = $this->userRatings()->avg('score');
-        return $average ? number_format($average, 1) : 'N/A';
+        return $average === null ? 'N/A' : number_format($average, 1);
+    }
+
+    public function getAvgScoreAttribute()
+    {
+        return $this->average_score;
     }
 
     // app/Models/Media.php

@@ -70,23 +70,83 @@ class MediaIntegrationService
             return null;
         }
 
-        $dataToSave = [
-            'external_id' => $details['external_id'],
-            'title'       => $details['title'],
-            'cover_url'   => $details['cover_url'] ?? null,
-            'synopsis'    => $details['synopsis'] ?? '',
-            'media_type'  => $type,
-            'source'      => $source,
-            'extra_data'  => [
-                'score'       => $details['score'] ?? null,
-                'trailer_url' => $details['trailer_url'] ?? null,
-                'images'      => $details['images'] ?? [],
-                'year'        => $details['year'] ?? null,
-                'genres'      => $details['genres'] ?? [],
-            ],
-        ];
+        $details['media_type'] = $type;
 
-        return Media::create($dataToSave);
+        return $this->importSearchResult($details);
+    }
+
+    public function importSearchResult(array $result): ?Media
+    {
+        if (empty($result['external_id']) || empty($result['source'])) {
+            return null;
+        }
+
+        $mediaType = $result['media_type'] ?? strtolower($result['type'] ?? '');
+        $mediaType = match (strtolower($mediaType)) {
+            'libro' => 'book',
+            'juego' => 'game',
+            'pelicula', 'películas' => 'movie',
+            'serie' => 'series',
+            default => strtolower($mediaType),
+        };
+
+        if ($result['source'] === 'TMDB' && $this->hasAnimationCategory($result['categories'] ?? $result['genres'] ?? [])) {
+            $mediaType = 'anime';
+        }
+
+        if (empty($mediaType)) {
+            return null;
+        }
+
+        $title = trim($result['title'] ?? '');
+        if ($title !== '') {
+            $existingByTitle = Media::where('media_type', $mediaType)
+                ->whereRaw('LOWER(title) = ?', [mb_strtolower($title, 'UTF-8')])
+                ->first();
+
+            if ($existingByTitle) {
+                return $existingByTitle;
+            }
+        }
+
+        $needsDetails = empty($result['genres']) || empty($result['categories']) || (!array_key_exists('episodes', $result) && !array_key_exists('chapters', $result));
+        if ($result['source'] !== 'Local' && $needsDetails) {
+            $details = $this->getExternalDetails($result['external_id'], $result['source'], $mediaType);
+            if (!empty($details)) {
+                $result = array_merge($result, $details);
+            }
+        }
+
+        $media = Media::firstOrNew([
+            'external_id' => $result['external_id'],
+            'source' => $result['source'],
+        ]);
+
+        $media->title = $result['title'] ?? $media->title;
+        $media->media_type = $mediaType;
+        $media->cover_url = $result['cover_url'] ?? $media->cover_url;
+        $media->synopsis = $result['synopsis'] ?? $media->synopsis;
+
+        $extraData = $media->extra_data ?? [];
+        unset($extraData['score']);
+
+        $media->extra_data = array_merge(
+            $extraData,
+            [
+                'trailer_url' => $result['trailer_url'] ?? data_get($result, 'trailer_url'),
+                'images'      => $result['images'] ?? data_get($result, 'images', []),
+                'year'        => $result['year'] ?? data_get($result, 'year'),
+                'genres'      => $result['genres'] ?? data_get($result, 'genres', []),
+                'categories'  => $result['categories'] ?? data_get($result, 'categories', []),
+                'episodes'    => $result['episodes'] ?? data_get($result, 'episodes'),
+                'chapters'    => $result['chapters'] ?? data_get($result, 'chapters'),
+                // No guardamos la puntuación de la plataforma
+            ]
+        );
+
+        $media->save();
+
+        return $media;
     }
 
     /**
@@ -108,6 +168,14 @@ class MediaIntegrationService
         }
     }
 
+    private function hasAnimationCategory(array $categories): bool
+    {
+        return collect($categories)
+            ->filter()
+            ->map(fn($category) => mb_strtolower($category, 'UTF-8'))
+            ->contains(fn($category) => str_contains($category, 'animación') || str_contains($category, 'animation'));
+    }
+
     private function getJikanDetails($id, $type): array
     {
         $endpoint = ($type === 'manga') ? 'manga' : 'anime';
@@ -121,6 +189,8 @@ class MediaIntegrationService
             }
         }
 
+        $genres = collect($item['genres'] ?? [])->pluck('name')->toArray();
+
         return [
             'external_id'    => $item['mal_id'],
             'title'          => $item['title'],
@@ -129,11 +199,15 @@ class MediaIntegrationService
             'synopsis'       => $this->translateText($item['synopsis'] ?? ''),
             'type'           => ucfirst($type),
             'source'         => 'Jikan',
-            'score'          => $item['score'] ?? null,
-            'genres'         => collect($item['genres'] ?? [])->pluck('name')->toArray(),
+            'genres'         => $genres,
+            'categories'     => $genres,
             'year'           => $item['year'] ?? null,
             'trailer_url'    => $item['trailer']['url'] ?? null,
             'images'         => array_values(array_unique(array_filter($images))),
+            'episodes'       => $item['episodes'] ?? null,
+            'chapters'       => $item['chapters'] ?? null,
+            'studios'        => collect($item['studios'] ?? [])->pluck('name')->toArray(),
+            'authors'        => collect($item['authors'] ?? [])->pluck('name')->toArray(),
         ];
     }
 
@@ -154,6 +228,8 @@ class MediaIntegrationService
             $images[] = 'https://image.tmdb.org/t/p/w780' . $img['file_path'];
         }
 
+        $genres = collect($details['genres'] ?? [])->pluck('name')->toArray();
+
         return [
             'external_id'    => $details['id'],
             'title'          => $details['title'] ?? $details['name'],
@@ -162,11 +238,15 @@ class MediaIntegrationService
             'synopsis'       => $details['overview'] ?: $this->translateText($details['overview'] ?? ''),
             'type'           => ucfirst($type),
             'source'         => 'TMDB',
-            'score'          => $details['vote_average'] ?? null,
-            'genres'         => collect($details['genres'] ?? [])->pluck('name')->toArray(),
+            'genres'         => $genres,
+            'categories'     => $genres,
             'year'           => substr($details['release_date'] ?? $details['first_air_date'] ?? '', 0, 4),
             'trailer_url'    => $video ? "https://www.youtube.com/watch?v={$video['key']}" : null,
             'images'         => array_values(array_unique(array_filter($images))),
+            'episodes'       => $details['number_of_episodes'] ?? null,
+            'chapters'       => null,
+            'studios'        => collect($details['production_companies'] ?? [])->pluck('name')->toArray(),
+            'authors'        => [],
         ];
     }
 
@@ -176,6 +256,8 @@ class MediaIntegrationService
             'key' => config('services.rawg.key'),
         ])->json();
 
+        $genres = collect($details['genres'] ?? [])->pluck('name')->toArray();
+
         return [
             'external_id' => $details['id'],
             'title'       => $details['name'],
@@ -183,10 +265,14 @@ class MediaIntegrationService
             'synopsis'    => $this->translateText($details['description_raw'] ?? ''),
             'type'        => 'Juego',
             'source'      => 'RAWG',
-            'score'       => $details['rating'] ?? null,
-            'genres'      => collect($details['genres'] ?? [])->pluck('name')->toArray(),
+            'genres'      => $genres,
+            'categories'  => $genres,
             'year'        => substr($details['released'] ?? '', 0, 4),
             'images'      => [],
+            'episodes'    => null,
+            'chapters'    => null,
+            'studios'     => collect($details['developers'] ?? [])->pluck('name')->toArray(),
+            'authors'     => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
         ];
     }
 
@@ -197,6 +283,8 @@ class MediaIntegrationService
             ? ($details['description']['value'] ?? '') 
             : ($details['description'] ?? '');
 
+        $subjects = is_array($details['subjects'] ?? null) ? $details['subjects'] : [];
+
         return [
             'external_id' => $id,
             'title'       => $details['title'] ?? 'Título desconocido',
@@ -204,8 +292,14 @@ class MediaIntegrationService
             'synopsis'    => $this->translateText($description),
             'type'        => 'Libro',
             'source'      => 'OpenLibrary',
-            'genres'      => $details['subjects'] ?? [],
+            'genres'      => $subjects,
+            'categories'  => $subjects,
             'year'        => substr($details['first_publish_date'] ?? '', 0, 4),
+            'images'      => [],
+            'episodes'    => null,
+            'chapters'    => $details['number_of_pages'] ?? null,
+            'studios'     => [],
+            'authors'     => collect($details['authors'] ?? [])->pluck('name')->toArray(),
         ];
     }
 

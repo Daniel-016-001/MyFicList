@@ -117,8 +117,15 @@
                                             </a>
 
                                             @auth
+                                                @php
+                                                    $total = match($result['media_type']) {
+                                                        'anime', 'series' => $result['episodes'] ?? 0,
+                                                        'manga', 'book' => $result['chapters'] ?? 0,
+                                                        default => null,
+                                                    };
+                                                @endphp
                                                 <button type="button"
-                                                    onclick="openAddModal('{{ $result['external_id'] }}', '{{ $result['source'] }}', '{{ $result['media_type'] }}', '{{ addslashes($result['title']) }}')"
+                                                    onclick="openAddModal('{{ $result['external_id'] }}', '{{ $result['source'] }}', '{{ $result['media_type'] }}', '{{ addslashes($result['title']) }}', {{ $total ?? 'null' }})"
                                                     class="w-full bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded text-xs transition-colors font-medium">
                                                     <i class="fas fa-plus mr-1"></i>Agregar
                                                 </button>
@@ -173,6 +180,7 @@
                                 class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500"
                                 style="background-color:#1f2937;color:#f8fafc;">
                                 <option value="">Sin puntuación</option>
+                                <option value="0">0 - No me gusta</option>
                                 <option value="10">10 - Excelente</option>
                                 <option value="9">9 - Muy bueno</option>
                                 <option value="8">8 - Bueno</option>
@@ -184,6 +192,13 @@
                                 <option value="2">2 - Muy malo</option>
                                 <option value="1">1 - Terrible</option>
                             </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Progreso (capítulos/páginas vistos)</label>
+                            <input type="number" id="modalProgress" name="progress" min="0" value="0"
+                                class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500"
+                                style="background-color:#1f2937;color:#f8fafc;" placeholder="0">
                         </div>
 
                         <div class="flex space-x-3">
@@ -203,6 +218,7 @@
             </div>
         </div>
     </div>
+    @include('layouts.footer')
 
     <script>
         let currentFilter = 'all';
@@ -235,11 +251,17 @@
             });
         }
 
-        function openAddModal(externalId, source, mediaType, title) {
+        function openAddModal(externalId, source, mediaType, title, maxProgress) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalExternalId').value = externalId;
             document.getElementById('modalSource').value = source;
             document.getElementById('modalMediaType').value = mediaType;
+            const progressInput = document.getElementById('modalProgress');
+            if (maxProgress !== null && maxProgress > 0) {
+                progressInput.setAttribute('max', maxProgress);
+            } else {
+                progressInput.removeAttribute('max');
+            }
             document.getElementById('addModal').classList.remove('hidden');
         }
 

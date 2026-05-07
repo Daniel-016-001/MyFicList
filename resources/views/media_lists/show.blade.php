@@ -35,6 +35,10 @@
                                 <h2 class="text-lg font-semibold text-gray-100 line-clamp-2">{{ $entry->media->title }}</h2>
                                 <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
                                 <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
+                                <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
+                                @if(!empty(data_get($entry->media->extra_data, 'categories')))
+                                    <p class="text-sm text-gray-400">Categorías: {{ implode(', ', data_get($entry->media->extra_data, 'categories')) }}</p>
+                                @endif
                                 <div class="mt-4">
                                     <a href="{{ route('media.show', $entry->media->id) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition">
                                         Ver contenido

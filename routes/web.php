@@ -19,6 +19,7 @@ Route::get('/', function () {
 Route::get('/search', [MediaController::class, 'search'])->name('media.search');
 Route::get('/search/unified', [MediaController::class, 'searchUnified'])->name('media.search.unified');
 Route::get('/media/suggestions', [MediaController::class, 'suggestions'])->name('media.suggestions');
+Route::get('/explorar', [PopularMediaController::class, 'index'])->name('dashboard');
 Route::get('/catalogo/{id}', [MediaController::class, 'show'])->name('media.show');
 Route::get('/details/{external_id}/{source}/{type}', [MediaController::class, 'details'])->name('media.details');
 
@@ -34,8 +35,6 @@ Route::get('/media/{id}/comments', [CommentController::class, 'index'])->name('m
 
 // --- 2. RUTAS PRIVADAS (Requieren estar logueado) ---
 Route::middleware(['auth', 'verified'])->group(function () {
-    
-    Route::get('/explorar', [PopularMediaController::class, 'index'])->name('dashboard');
 
     // LISTA DEL USUARIO
     Route::get('/mi-lista', [UserListController::class, 'index'])->name('user-list.index');

@@ -41,11 +41,23 @@
                                 <div class="space-y-4 text-gray-300">
                                     <p><strong>Tipo:</strong> {{ ucfirst($m->media_type) }}</p>
                                     <p><strong>Fuente:</strong> {{ $m->source }}</p>
+                                    @if($m->avg_score !== 'N/A')
+                                        <p><strong>Puntuación media:</strong> {{ number_format($m->avg_score, 1) }} / 10</p>
+                                    @endif
                                     @if(isset($extra['rating']))
                                         <p><strong>Calificación:</strong> {{ $extra['rating'] }}/10</p>
                                     @endif
                                     @if(isset($extra['year']))
                                         <p><strong>Año:</strong> {{ $extra['year'] }}</p>
+                                    @endif
+                                    @if(isset($extra['episodes']))
+                                        <p><strong>Total Episodios:</strong> {{ $extra['episodes'] }}</p>
+                                    @endif
+                                    @if(isset($extra['chapters']))
+                                        <p><strong>Total Capítulos/Páginas:</strong> {{ $extra['chapters'] }}</p>
+                                    @endif
+                                    @if(!empty($extra['categories']))
+                                        <p><strong>Categorías:</strong> {{ implode(', ', $extra['categories']) }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -63,8 +75,11 @@
                         <div class="bg-gray-900 rounded-xl border border-gray-800 p-6">
                             <h3 class="text-2xl font-bold mb-4">Detalles</h3>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                @php
+                                    $excludedFields = ['rating', 'year', 'episodes', 'chapters', 'categories'];
+                                @endphp
                                 @foreach($extra as $key => $value)
-                                    @if(is_scalar($value))
+                                    @if(is_scalar($value) && !in_array($key, $excludedFields))
                                         <div class="bg-gray-800 p-4 rounded-lg">
                                             <p class="text-gray-500 text-sm capitalize">{{ str_replace('_', ' ', $key) }}</p>
                                             <p class="text-lg font-bold">{{ $value }}</p>
@@ -74,42 +89,6 @@
                             </div>
                         </div>
                     @endif
-                </div>
-
-                <!-- Comentarios -->
-                <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 mt-8">
-                    <h3 class="text-2xl font-bold mb-4">Comentarios</h3>
-                    @auth
-                    <form action="{{ route('media.comments.store', $m->id) }}" method="POST" class="mb-6">
-                        @csrf
-                        <textarea name="content" rows="3" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none mb-2" placeholder="Escribe tu comentario..."></textarea>
-                        <input type="hidden" name="media_id" value="{{ $m->id }}">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg">Publicar</button>
-                    </form>
-                    @else
-                        <p class="mb-4 text-gray-400">Inicia sesión para comentar.</p>
-                    @endauth
-
-                    <!-- Listado de comentarios -->
-                    <div id="comments-list">
-                        @foreach(App\Models\Comment::where('media_id', $m->id)->whereNull('parent_id')->with('user', 'replies.user')->latest()->get() as $comment)
-                            <div class="mb-6 border-b border-gray-800 pb-4">
-                                <div class="flex items-center mb-2">
-                                    <span class="font-bold text-blue-400 mr-2">{{ $comment->user->name }}</span>
-                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
-                                </div>
-                                <div class="text-gray-200 mb-2">{{ $comment->content }}</div>
-                                <!-- Respuestas -->
-                                @foreach($comment->replies as $reply)
-                                    <div class="ml-6 mt-2 border-l-2 border-blue-800 pl-4">
-                                        <span class="font-bold text-purple-400 mr-2">{{ $reply->user->name }}</span>
-                                        <span class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</span>
-                                        <div class="text-gray-300">{{ $reply->content }}</div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </div>
                 </div>
 
                 <!-- Sidebar -->
@@ -147,18 +126,29 @@
                             <div>
                                 <label class="block text-sm font-bold mb-2">Estado</label>
                                 <select name="status" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
-                                    <option value="watching">👀 Viendo</option>
-                                    <option value="completed">✅ Completado</option>
-                                    <option value="plan_to_watch">📌 Plan a Ver</option>
-                                    <option value="dropped">❌ Descartado</option>
-                                    <option value="on_hold">⏸️ En espera</option>
+                                    <option value="watching">En progreso</option>
+                                    <option value="completed">Completado</option>
+                                    <option value="plan_to_watch">A futuro</option>
+                                    <option value="dropped">Descartado</option>
                                 </select>
                             </div>
 
                             <!-- Score Input -->
                             <div>
                                 <label class="block text-sm font-bold mb-2">Tu Calificación (1-10)</label>
-                                <input type="number" name="score" min="1" max="10" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
+                                <input type="number" name="score" min="0" max="10" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold mb-2">Progreso (capítulos/páginas vistos)</label>
+                                @php
+                                    $total = match($media->media_type) {
+                                        'anime', 'series' => data_get($media->extra_data, 'episodes', 0),
+                                        'manga', 'book' => data_get($media->extra_data, 'chapters', 0),
+                                        default => null,
+                                    };
+                                @endphp
+                                <input type="number" name="progress" min="0" {{ $total ? 'max="' . $total . '"' : '' }} value="0" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none" placeholder="0">
                             </div>
 
                             <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition">
@@ -173,8 +163,44 @@
                         </div>
                     </div>
                 </div>
+                <!-- Comentarios -->
+                <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 mt-8">
+                    <h3 class="text-2xl font-bold mb-4">Comentarios</h3>
+                    @auth
+                    <form action="{{ route('media.comments.store', $m->id) }}" method="POST" class="mb-6">
+                        @csrf
+                        <textarea name="content" rows="3" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none mb-2" placeholder="Escribe tu comentario..."></textarea>
+                        <input type="hidden" name="media_id" value="{{ $m->id }}">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg">Publicar</button>
+                    </form>
+                    @else
+                        <p class="mb-4 text-gray-400">Inicia sesión para comentar.</p>
+                    @endauth
+
+                    <!-- Listado de comentarios -->
+                    <div id="comments-list">
+                        @foreach(App\Models\Comment::where('media_id', $m->id)->whereNull('parent_id')->with('user', 'replies.user')->latest()->get() as $comment)
+                            <div class="mb-6 border-b border-gray-800 pb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="font-bold text-blue-400 mr-2">{{ $comment->user->name }}</span>
+                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                </div>
+                                <div class="text-gray-200 mb-2">{{ $comment->content }}</div>
+                                <!-- Respuestas -->
+                                @foreach($comment->replies as $reply)
+                                    <div class="ml-6 mt-2 border-l-2 border-blue-800 pl-4">
+                                        <span class="font-bold text-purple-400 mr-2">{{ $reply->user->name }}</span>
+                                        <span class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</span>
+                                        <div class="text-gray-300">{{ $reply->content }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
+        @include('layouts.footer')
     </main>
 </body>
 </html>

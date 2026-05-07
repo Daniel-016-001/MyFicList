@@ -25,7 +25,7 @@ class CommentController extends Controller
             'user_id' => auth()->id(),
             'media_id' => $validated['media_id'],
             'content' => $validated['content'],
-            'parent_id' => $validated['parent_id'],
+            'parent_id' => $validated['parent_id'] ?? null,
         ]);
 
         if ($request->ajax()) {

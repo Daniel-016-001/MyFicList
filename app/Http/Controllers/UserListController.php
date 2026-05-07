@@ -36,7 +36,7 @@ class UserListController extends Controller
         // Validar datos
         $request->validate([
             'status' => 'required|in:watching,completed,on_hold,dropped,plan_to_watch',
-            'score' => 'nullable|integer|min:1|max:10',
+            'score' => 'nullable|integer|min:0|max:10',
             'progress' => 'nullable|integer|min:0',
             'media_list_id' => 'nullable|exists:media_lists,id',
         ]);
@@ -79,6 +79,16 @@ class UserListController extends Controller
             return back()->with('error', 'Datos insuficientes para agregar a la lista.');
         }
 
+        // Validar que el progreso no exceda el contenido total
+        $total = match ($media->media_type) {
+            'anime', 'series' => data_get($media->extra_data, 'episodes', 0),
+            'manga', 'book' => data_get($media->extra_data, 'chapters', 0),
+            default => null,
+        };
+        if ($total !== null && $request->progress > $total) {
+            return back()->withErrors(['progress' => 'El progreso no puede ser mayor al contenido total.']);
+        }
+
         if ($request->filled('media_list_id')) {
             $mediaList = MediaList::where('id', $request->media_list_id)
                 ->where('user_id', $userId)
@@ -103,7 +113,7 @@ class UserListController extends Controller
             ['user_id' => $userId, 'media_id' => $mediaId, 'media_list_id' => $mediaListId],
             [
                 'status' => $request->status,
-                'score' => $request->score ?? null,
+                'score' => $request->filled('score') ? intval($request->score) : null,
                 'progress' => $request->progress ?? 0
             ]
         );
@@ -154,9 +164,21 @@ class UserListController extends Controller
 
         $request->validate([
             'status' => 'sometimes|in:watching,completed,on_hold,dropped,plan_to_watch',
-            'score' => 'sometimes|integer|min:1|max:10',
+            'score' => 'sometimes|integer|min:0|max:10',
             'progress' => 'sometimes|integer|min:0'
         ]);
+
+        // Validar que el progreso no exceda el contenido total
+        if ($request->has('progress')) {
+            $total = match ($userList->media->media_type) {
+                'anime', 'series' => data_get($userList->media->extra_data, 'episodes', 0),
+                'manga', 'book' => data_get($userList->media->extra_data, 'chapters', 0),
+                default => null,
+            };
+            if ($total !== null && $request->progress > $total) {
+                return back()->withErrors(['progress' => 'El progreso no puede ser mayor al contenido total.']);
+            }
+        }
 
         $userList->update($request->only(['status', 'score', 'progress']));
 

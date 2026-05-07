@@ -20,25 +20,43 @@ class AnimeSearchService
         return Cache::remember($cacheKey, 1800, function() use ($query, $type) {
             $results = [];
 
-            // 1. Prioridad: Base de Datos Local (Lo que ya importaste en AWS RDS)
-            $results = array_merge($results, $this->searchInDatabase($query, $type));
+            $localResults = $this->searchInDatabase($query, $type);
+            $exactLocalResults = $this->searchInDatabase($query, $type, true);
 
-            // 2. APIs Externas según tipo
+            if (!empty($exactLocalResults)) {
+                return $exactLocalResults;
+            }
+
+            $results = array_merge($results, $localResults);
+
+            $existingKeys = collect($localResults)
+                ->map(fn($item) => trim(($item['source'] ?? '') . '_' . ($item['external_id'] ?? '')))
+                ->filter()
+                ->toArray();
+
+            $existingTitles = collect($localResults)
+                ->map(fn($item) => $this->normalizeString($item['title'] ?? ''))
+                ->filter()
+                ->toArray();
+
             try {
                 if (in_array($type, ['anime', 'manga'])) {
-                    // Si buscas anime/manga, TMDB suele ser mejor para series famosas y Jikan para el nicho.
-                    $tmdbResults = $this->searchMultipleInTmdb($query, $type);
+                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
 
                     if ($type === 'manga' || count($tmdbResults) === 0 || !$this->isExactTmdbMatch($query, $tmdbResults)) {
-                        $results = array_merge($results, $this->searchMultipleInJikan($query, $type));
+                        $jikanResults = array_filter($this->searchMultipleInJikan($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                        $results = array_merge($results, $jikanResults);
                     }
                 } elseif (in_array($type, ['movie', 'series'])) {
-                    $results = array_merge($results, $this->searchMultipleInTmdb($query, $type));
+                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $tmdbResults);
                 } elseif ($type === 'game') {
-                    $results = array_merge($results, $this->searchMultipleInRawg($query));
+                    $rawgResults = array_filter($this->searchMultipleInRawg($query), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $rawgResults);
                 } elseif ($type === 'book') {
-                    $results = array_merge($results, $this->searchMultipleInOpenLibrary($query));
+                    $openLibraryResults = array_filter($this->searchMultipleInOpenLibrary($query), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $openLibraryResults);
                 }
             } catch (\Exception $e) {
                 // Si falla una API (ej. Jikan tiene rate limit), no rompemos la app
@@ -89,13 +107,34 @@ class AnimeSearchService
         return $unique->take(12)->toArray();
     }
 
+    private function isExistingSearchResult(array $item, array $existingKeys, array $existingTitles): bool
+    {
+        $key = trim(($item['source'] ?? '') . '_' . ($item['external_id'] ?? ''));
+
+        if ($key !== '' && in_array($key, $existingKeys, true)) {
+            return true;
+        }
+
+        if (!empty($item['title']) && in_array($this->normalizeString($item['title']), $existingTitles, true)) {
+            return true;
+        }
+
+        return false;
+    }
+
     // --- MÉTODOS DE BÚSQUEDA ESPECÍFICOS ---
 
-    private function searchInDatabase(string $query, string $type): array
+    private function searchInDatabase(string $query, string $type, bool $exact = false): array
     {
-        return Media::where('title', 'LIKE', "%{$query}%")
-            ->where('media_type', $type)
-            ->limit(4)
+        $builder = Media::where('media_type', $type);
+
+        if ($exact) {
+            $builder->whereRaw('LOWER(title) = ?', [mb_strtolower(trim($query), 'UTF-8')]);
+        } else {
+            $builder->where('title', 'LIKE', "%{$query}%");
+        }
+
+        return $builder->limit(4)
             ->get()
             ->map(fn($m) => [
                 'id' => $m->id,
@@ -120,6 +159,11 @@ class AnimeSearchService
                 ]);
 
             $results = $response->json()['results'] ?? [];
+            
+            // Filtrar animaciones si estamos buscando series
+            if ($type === 'series') {
+                $results = array_filter($results, fn($item) => !in_array(16, $item['genre_ids'] ?? []));
+            }
             
             return array_map(function ($item) use ($type) {
                 return [

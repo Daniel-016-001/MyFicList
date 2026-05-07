@@ -32,10 +32,14 @@ class MediaController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('query');
+        $query = $request->input('query', $request->input('q', ''));
         $type = $request->input('type', 'anime');
 
         $results = $this->searchService->searchMultiple($query, $type);
+
+        foreach ($results as $result) {
+            $this->mediaService->importSearchResult($result);
+        }
 
         return view('search', [
             'results' => $results,
@@ -56,6 +60,10 @@ class MediaController extends Controller
 
         // Ahora estamos seguros de que $query es un string
         $results = $this->mediaService->getUnifiedResults((string) $query);
+
+        foreach ($results as $result) {
+            $this->mediaService->importSearchResult($result);
+        }
 
         return view('search', [
             'results' => $results,

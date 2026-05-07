@@ -258,3 +258,4 @@
     }
 </script>
 @endsection
+@include('layouts.footer')

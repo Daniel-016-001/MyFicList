@@ -17,7 +17,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Welcome Card -->
             <div class="mb-12 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-800/30 rounded-xl p-8">
-                <h3 class="text-2xl font-bold mb-2">Bienvenido, {{ Auth::user()->name }}</h3>
                 <p class="text-gray-400">Contenido mejor valorado por la comunidad</p>
             </div>
 
@@ -33,7 +32,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -56,7 +55,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -79,7 +78,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -102,7 +101,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -125,7 +124,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -148,7 +147,7 @@
                                     <h4 class="font-bold text-sm line-clamp-2">{{ $media->title }}</h4>
                                     <div class="flex justify-between items-center mt-1">
                                         <span class="text-xs text-gray-500">{{ $media->ratings_count }}</span>
-                                        @if($media->avg_score)
+                                        @if($media->avg_score !== 'N/A')
                                             <span class="text-xs font-bold text-yellow-500">{{ number_format($media->avg_score, 1) }}</span>
                                         @endif
                                     </div>
@@ -167,6 +166,7 @@
                 </div>
             @endif
         </div>
+        @include('layouts.footer')
     </main>
 </body>
 </html>

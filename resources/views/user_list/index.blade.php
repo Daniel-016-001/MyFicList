@@ -77,9 +77,13 @@
                                                 <img src="{{ $entry->media->cover_url }}" alt="{{ $entry->media->title }}" class="w-full h-40 object-cover">
                                                 <div class="p-3 bg-gray-900">
                                                     <h3 class="text-lg font-semibold text-gray-100 line-clamp-2">{{ $entry->media->title }}</h3>
-                                                <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
-                                                <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
-                                                <div class="mt-4 flex gap-2">
+                                                    <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
+                                                    <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
+                                                    <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
+                                                    @if(!empty(data_get($entry->media->extra_data, 'categories')))
+                                                        <p class="text-sm text-gray-400">Categorías: {{ implode(', ', data_get($entry->media->extra_data, 'categories')) }}</p>
+                                                    @endif
+                                                    <div class="mt-4 flex gap-2">
                                                     <a href="{{ route('media.show', $entry->media->id) }}" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg transition">
                                                         Ver
                                                     </a>

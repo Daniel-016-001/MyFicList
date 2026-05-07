@@ -120,7 +120,7 @@
         <h2 class="text-4xl font-bold mb-12 text-center">Explora por Tipo</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             <!-- Anime -->
-            <a href="{{ url('/search?q=&type=anime') }}" class="category-card group">
+            <a href="{{ url('/search?query=&type=anime') }}" class="category-card group">
                 <div class="bg-gradient-to-br from-purple-900/30 to-purple-900/10 border border-purple-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-purple-500 transition">
                     <div class="text-center">
                         <div class="text-5xl mb-2">🍙</div>
@@ -130,7 +130,7 @@
             </a>
 
             <!-- Manga -->
-            <a href="{{ url('/search?q=&type=manga') }}" class="category-card group">
+            <a href="{{ url('/search?query=&type=manga') }}" class="category-card group">
                 <div class="bg-gradient-to-br from-blue-900/30 to-blue-900/10 border border-blue-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-blue-500 transition">
                     <div class="text-center">
                         <div class="text-5xl mb-2">📖</div>
@@ -140,7 +140,7 @@
             </a>
 
             <!-- Movies -->
-            <a href="{{ url('/search?q=&type=movie') }}" class="category-card group">
+            <a href="{{ url('/search?query=&type=movie') }}" class="category-card group">
                 <div class="bg-gradient-to-br from-red-900/30 to-red-900/10 border border-red-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-red-500 transition">
                     <div class="text-center">
                         <div class="text-5xl mb-2">🎬</div>
@@ -150,7 +150,7 @@
             </a>
 
             <!-- Series -->
-            <a href="{{ url('/search?q=&type=series') }}" class="category-card group">
+            <a href="{{ url('/search?query=&type=series') }}" class="category-card group">
                 <div class="bg-gradient-to-br from-green-900/30 to-green-900/10 border border-green-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-green-500 transition">
                     <div class="text-center">
                         <div class="text-5xl mb-2">📺</div>
@@ -160,7 +160,7 @@
             </a>
 
             <!-- Games -->
-            <a href="{{ url('/search?q=&type=game') }}" class="category-card group">
+            <a href="{{ url('/search?query=&type=game') }}" class="category-card group">
                 <div class="bg-gradient-to-br from-yellow-900/30 to-yellow-900/10 border border-yellow-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-yellow-500 transition">
                     <div class="text-center">
                         <div class="text-5xl mb-2">🎮</div>
@@ -190,10 +190,6 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-black border-t border-gray-800 py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>&copy; 2024 MyFicList. Todos los derechos reservados. | Datos de: Jikan, TMDB, RAWG</p>
-        </div>
-    </footer>
+    @include('layouts.footer')
 </body>
 </html>
