@@ -13,233 +13,104 @@
                     </h1>
                     <p class="text-gray-400 text-lg">
                         <span class="text-yellow-400 font-semibold">{{ count($results) }}</span> resultado{{ count($results) !== 1 ? 's' : '' }} encontrado{{ count($results) !== 1 ? 's' : '' }}
-                        @if($query)
+                        @if(isset($query))
                             para <span class="text-blue-400 font-semibold">"{{ $query }}"</span>
                         @endif
-                        en <span class="text-purple-400 font-semibold">{{ ucfirst($type) }}</span>
                     </p>
                 </div>
-                <a href="/" class="flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition">
-                    <i class="fas fa-plus"></i><span>Nueva Búsqueda</span>
+                <a href="/" class="flex items-center space-x-2 bg-gray-900/50 hover:bg-gray-800 border border-gray-800 text-gray-300 hover:text-white px-6 py-3 rounded-xl transition-all shadow-lg backdrop-blur-md">
+                    <i class="fas fa-search"></i><span>Nueva Búsqueda</span>
                 </a>
             </div>
         </div>
 
-        <!-- Empty State -->
         @if(empty($results))
-            <div class="text-center py-20">
-                <div class="text-6xl mb-4">🔍</div>
+            <div class="text-center py-20 bg-gray-900/30 rounded-3xl border border-gray-800 backdrop-blur-sm">
+                <div class="text-7xl mb-6">🔍</div>
                 <h2 class="text-2xl font-bold text-gray-300 mb-2">No se encontraron resultados</h2>
-                <p class="text-gray-500 mb-8">
-                    No pudimos encontrar resultados para "<span class="font-semibold">{{ $query }}</span>"
+                <p class="text-gray-500 mb-8 max-w-md mx-auto">
+                    No pudimos encontrar nada para tu búsqueda. Prueba con otros términos o revisa la ortografía.
                 </p>
-                <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <a href="/" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-6 py-3 rounded-lg transition">
-                        <i class="fas fa-search mr-2"></i>Intentar otra búsqueda
-                    </a>
-                    <a href="/" class="inline-block bg-gray-900 hover:bg-gray-800 border border-gray-800 text-white font-bold px-6 py-3 rounded-lg transition">
-                        <i class="fas fa-home mr-2"></i>Ir al inicio
-                    </a>
-                </div>
+                <a href="/" class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver a intentarlo
+                </a>
             </div>
         @else
             <!-- Results Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                 @foreach($results as $result)
-                    <div class="group relative bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-blue-500 transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105">
+                    <div class="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-500 shadow-xl hover:shadow-blue-900/20 transform hover:-translate-y-2">
                         
-                        <!-- Cover Image Container -->
-                        <div class="relative overflow-hidden h-80 bg-gray-800">
+                        <!-- Image Container -->
+                        <div class="relative aspect-[2/3] overflow-hidden">
                             @if($result['cover_url'])
                                 <img src="{{ $result['cover_url'] }}" 
                                      alt="{{ $result['title'] }}" 
-                                     class="w-full h-full object-cover group-hover:brightness-50 transition duration-300">
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 brightness-90 group-hover:brightness-110"
+                                     onerror="this.onerror=null; this.src='https://placehold.co/400x600/1f2937/9ca3af?text=Sin+Imagen';">
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-                                    <i class="fas fa-image text-gray-600 text-4xl"></i>
+                                <div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-700 text-5xl"></i>
                                 </div>
                             @endif
 
-                            <!-- Overlay Info - Only on hover -->
-                            <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-                                <div class="text-right">
-                                    <span class="inline-block bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-200">
-                                        {{ ucfirst($result['media_type'] ?? $type) }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <p class="text-white text-sm leading-relaxed line-clamp-3">
-                                        {{ substr($result['synopsis'] ?? 'Sin descripción', 0, 100) }}...
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Badge's -->
-                            <div class="absolute top-2 left-2 flex gap-2">
-                                <span class="inline-block px-2 py-1 text-xs font-bold rounded backdrop-blur-sm
-                                    @if($result['source'] === 'TMDB') bg-blue-600/80 text-blue-100
-                                    @elseif($result['source'] === 'Jikan') bg-purple-600/80 text-purple-100
-                                    @elseif($result['source'] === 'RAWG') bg-green-600/80 text-green-100
-                                    @else bg-gray-700/80 text-gray-100 @endif">
+                            <!-- Source Badge -->
+                            <div class="absolute top-3 left-3 flex flex-col gap-2">
+                                <span class="px-2 py-1 text-[10px] font-black uppercase tracking-wider rounded-md backdrop-blur-md shadow-lg
+                                    @if($result['source'] === 'TMDB') bg-blue-600/90 text-white
+                                    @elseif($result['source'] === 'Jikan') bg-purple-600/90 text-white
+                                    @elseif($result['source'] === 'RAWG') bg-green-600/90 text-white
+                                    @else bg-gray-700/90 text-white @endif">
                                     {{ $result['source'] }}
                                 </span>
-                                @if($result['is_stored'])
-                                    <span class="inline-block px-2 py-1 text-xs font-bold bg-green-600/80 text-green-100 rounded backdrop-blur-sm">
-                                        ✓ Guardado
+                                @if(isset($result['is_stored']) && $result['is_stored'])
+                                    <span class="px-2 py-1 text-[10px] font-black uppercase tracking-wider bg-yellow-500/90 text-gray-950 rounded-md backdrop-blur-md shadow-lg">
+                                        <i class="fas fa-check mr-1"></i>En Lista
                                     </span>
                                 @endif
+                            </div>
+
+                            <!-- Overlay on Hover -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
+                                <p class="text-gray-300 text-xs leading-relaxed line-clamp-4 mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                    {{ $result['synopsis'] ?? 'Sin descripción disponible.' }}
+                                </p>
+                                <a href="{{ route('media.details', ['external_id' => $result['external_id'] ?? $result['id'], 'source' => $result['source'], 'type' => $result['media_type'] ?? ($type ?? 'anime')]) }}" 
+                                   class="w-full py-3 bg-white text-gray-950 text-center rounded-xl font-bold text-sm hover:bg-blue-400 transition-colors duration-300">
+                                    Ver Detalles
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Content -->
-                        <div class="p-4 flex flex-col h-32">
-                            <!-- Title -->
-                            <h3 class="text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition">
+                        <!-- Info -->
+                        <div class="p-5">
+                            <h3 class="text-white font-bold text-sm line-clamp-2 min-h-[40px] group-hover:text-blue-400 transition-colors">
                                 {{ $result['title'] }}
                             </h3>
-
-                            <!-- Action Buttons -->
-                            <div class="flex gap-2 mt-auto">
-                                @if($result['is_stored'])
-                                    <!-- If already in DB, show details link -->
-                                    <a href="{{ route('media.show', $result['id']) }}" 
-                                       class="flex-1 text-center bg-blue-600/80 hover:bg-blue-600 text-white text-xs font-bold py-2 rounded transition">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @else
-                                    <!-- If new result, show add button -->
-                                    <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
-                                        @csrf
-                                        <input type="hidden" name="external_id" value="{{ $result['external_id'] ?? $result['id'] }}">
-                                        <input type="hidden" name="title" value="{{ $result['title'] }}">
-                                        <input type="hidden" name="type" value="{{ $type }}">
-                                        <input type="hidden" name="source" value="{{ $result['source'] }}">
-                                        <input type="hidden" name="cover_url" value="{{ $result['cover_url'] ?? '' }}">
-                                        <input type="hidden" name="synopsis" value="{{ $result['synopsis'] ?? '' }}">
-                                        <button type="submit" 
-                                                class="w-full bg-green-600/80 hover:bg-green-600 text-white text-xs font-bold py-2 rounded transition">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </form>
+                            <div class="mt-3 flex items-center justify-between">
+                                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                                    {{ ucfirst($result['media_type'] ?? ($type ?? 'Media')) }}
+                                </span>
+                                @if(isset($result['year']))
+                                    <span class="text-[10px] text-gray-400 font-bold bg-gray-800 px-2 py-0.5 rounded">
+                                        {{ $result['year'] }}
+                                    </span>
                                 @endif
-                                
-                                <!-- View Details -->
-                                <a href="{{ $result['is_stored'] ? route('media.show', $result['id']) : '#' }}" 
-                                   class="flex-1 text-center bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-bold py-2 rounded transition">
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            <!-- Pagination Info -->
-            <div class="mt-12 text-center text-gray-500">
-                <p>Mostrando {{ count($results) }} de {{ count($results) }} resultados</p>
-            </div>
-        @endif
-    </div>
-</div>
-@endsection
-
-
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="py-12">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">
-                Resultados de búsqueda
-            </h1>
-            <p class="mt-2 text-lg text-gray-600">
-                {{ count($results) }} resultado(s) encontrado(s) para <strong>"{{ $query }}"</strong>
-            </p>
-        </div>
-
-        <!-- Results Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($results as $result)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
-                <!-- Cover Image -->
-                @if($result['cover_url'])
-                    <div class="aspect-video bg-gray-200 overflow-hidden">
-                        <img src="{{ $result['cover_url'] }}" 
-                             alt="{{ $result['title'] }}" 
-                             class="w-full h-full object-cover">
-                    </div>
-                @else
-                    <div class="aspect-video bg-gray-300 flex items-center justify-center">
-                        <span class="text-gray-500">Sin imagen</span>
-                    </div>
-                @endif
-
-                <!-- Content -->
-                <div class="p-4">
-                    <!-- Title -->
-                    <h2 class="text-lg font-semibold text-gray-900 line-clamp-2">
-                        {{ $result['title'] }}
-                    </h2>
-
-                    <!-- Source Badge -->
-                    <div class="mt-2 flex gap-2 items-center">
-                        @if($result['source'] === 'Local')
-                            <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                En tu biblioteca
-                            </span>
-                        @else
-                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                                {{ $result['source'] }}
-                            </span>
-                        @endif
-                    </div>
-
-                    <!-- Synopsis -->
-                    <p class="mt-3 text-sm text-gray-600 line-clamp-3">
-                        {{ $result['synopsis'] }}
+            <!-- Footer Info -->
+            <div class="mt-16 text-center">
+                <div class="inline-block p-1 rounded-full bg-gray-900/50 border border-gray-800 backdrop-blur-sm">
+                    <p class="px-6 py-2 text-gray-500 text-sm font-medium">
+                        Mostrando todos los resultados encontrados
                     </p>
-
-                    <!-- Action Button -->
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        @if($result['is_stored'])
-                            <!-- Already in database - View button -->
-                            <a href="{{ route('media.show', $result['id']) }}" 
-                               class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition">
-                                Ver detalles
-                            </a>
-                        @else
-                            <!-- Not in database - Add button -->
-                            <form action="{{ route('media.add-from-search') }}" method="POST" class="w-full">
-                                @csrf
-                                <input type="hidden" name="type" value="{{ $type }}">
-                                <input type="hidden" name="source" value="{{ $result['source'] }}">
-                                <input type="hidden" name="external_id" value="{{ $result['external_id'] }}">
-                                <input type="hidden" name="title" value="{{ $result['title'] }}">
-                                
-                                <button type="submit" 
-                                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition">
-                                    + Agregar y ver
-                                </button>
-                            </form>
-                        @endif
-                    </div>
                 </div>
             </div>
-            @endforeach
-        </div>
-
-        <!-- No Results -->
-        @if(empty($results))
-        <div class="text-center py-12">
-            <p class="text-gray-500 text-lg">
-                No se encontraron resultados para "<strong>{{ $query }}</strong>"
-            </p>
-            <a href="{{ route('dashboard') }}" class="mt-4 inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded">
-                Volver al inicio
-            </a>
-        </div>
         @endif
     </div>
 </div>
 @endsection
-@include('layouts.footer')

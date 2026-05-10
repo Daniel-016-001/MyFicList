@@ -21,12 +21,6 @@ class AnimeSearchService
             $results = [];
 
             $localResults = $this->searchInDatabase($query, $type);
-            $exactLocalResults = $this->searchInDatabase($query, $type, true);
-
-            if (!empty($exactLocalResults)) {
-                return $exactLocalResults;
-            }
-
             $results = array_merge($results, $localResults);
 
             $existingKeys = collect($localResults)
@@ -44,10 +38,8 @@ class AnimeSearchService
                     $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
 
-                    if ($type === 'manga' || count($tmdbResults) === 0 || !$this->isExactTmdbMatch($query, $tmdbResults)) {
-                        $jikanResults = array_filter($this->searchMultipleInJikan($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
-                        $results = array_merge($results, $jikanResults);
-                    }
+                    $jikanResults = array_filter($this->searchMultipleInJikan($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $jikanResults);
                 } elseif (in_array($type, ['movie', 'series'])) {
                     $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
@@ -104,7 +96,7 @@ class AnimeSearchService
             return $group->first();
         })->values();
 
-        return $unique->take(12)->toArray();
+        return $unique->take(20)->toArray();
     }
 
     private function isExistingSearchResult(array $item, array $existingKeys, array $existingTitles): bool
@@ -155,7 +147,8 @@ class AnimeSearchService
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("https://api.themoviedb.org/3/search/{$tmdbType}", [
                     'query' => $query,
-                    'language' => 'es-ES'
+                    'language' => 'es-ES',
+                    'include_adult' => false
                 ]);
 
             $results = $response->json()['results'] ?? [];
@@ -176,7 +169,7 @@ class AnimeSearchService
                     'is_stored' => false,
                     'media_type' => $type 
                 ];
-            }, array_slice($results, 0, 4));
+            }, array_slice($results, 0, 8));
         } catch (\Exception $e) { return []; }
     }
 
@@ -205,7 +198,8 @@ class AnimeSearchService
             $endpoint = ($type == 'manga') ? 'manga' : 'anime';
             $response = Http::get("https://api.jikan.moe/v4/{$endpoint}", [
                 'q' => $query,
-                'limit' => 5
+                'limit' => 10,
+                'sfw' => true
             ]);
 
             $results = $response->json()['data'] ?? [];
@@ -221,7 +215,7 @@ class AnimeSearchService
                     'is_stored' => false,
                     'media_type' => $type
                 ];
-            }, array_slice($results, 0, 4));
+            }, array_slice($results, 0, 8));
         } catch (\Exception $e) { return []; }
     }
 
@@ -242,7 +236,7 @@ class AnimeSearchService
             $response = Http::get("https://api.rawg.io/api/games", [
                 'key' => config('services.rawg.key'),
                 'search' => $query,
-                'page_size' => 4
+                'page_size' => 10
             ]);
 
             $results = $response->json()['results'] ?? [];
@@ -267,7 +261,7 @@ class AnimeSearchService
         try {
             $response = Http::get("https://openlibrary.org/search.json", [
                 'q' => $query,
-                'limit' => 4
+                'limit' => 10
             ]);
 
             $results = $response->json()['docs'] ?? [];

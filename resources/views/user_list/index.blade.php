@@ -79,7 +79,9 @@
                                                     <h3 class="text-lg font-semibold text-gray-100 line-clamp-2">{{ $entry->media->title }}</h3>
                                                     <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
                                                     <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
-                                                    <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
+                                                    @if($entry->media->media_type !== 'game')
+                                                        <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
+                                                    @endif
                                                     @if(!empty(data_get($entry->media->extra_data, 'categories')))
                                                         <p class="text-sm text-gray-400">Categorías: {{ implode(', ', data_get($entry->media->extra_data, 'categories')) }}</p>
                                                     @endif

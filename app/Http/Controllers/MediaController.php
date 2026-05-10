@@ -108,12 +108,14 @@ class MediaController extends Controller
      */
     public function details($externalId, $source, $type)
     {
-        $details = $this->mediaService->getExternalDetails($externalId, $source, $type);
+        // Importamos (o actualizamos) con detalles completos
+        $media = $this->mediaService->importToDatabase($externalId, $source, $type);
 
-        if (!$details) {
+        if (!$media) {
             return redirect()->back()->with('error', 'No se pudieron obtener los detalles del contenido.');
         }
 
-        return view('media_details', compact('details'));
+        // Redirigimos a la vista permanente que ya tiene toda la lógica de listas y comentarios
+        return redirect()->route('media.show', $media->id);
     }
 }

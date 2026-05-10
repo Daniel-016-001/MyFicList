@@ -10,10 +10,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gray-950 text-gray-100">
+<body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col">
     @include('layouts.navigation')
 
-    <main class="bg-gray-950 py-12">
+    <main class="flex-grow bg-gray-950 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Welcome Card -->
             <div class="mb-12 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-800/30 rounded-xl p-8">
@@ -166,7 +166,7 @@
                 </div>
             @endif
         </div>
-        @include('layouts.footer')
     </main>
+    @include('layouts.footer')
 </body>
 </html>

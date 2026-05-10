@@ -50,4 +50,9 @@ class Media extends Model
         // Una obra (Media) aparece en muchas listas de usuarios
         return $this->hasMany(UserList::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

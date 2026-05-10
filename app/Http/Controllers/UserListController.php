@@ -85,7 +85,7 @@ class UserListController extends Controller
             'manga', 'book' => data_get($media->extra_data, 'chapters', 0),
             default => null,
         };
-        if ($total !== null && $request->progress > $total) {
+        if ($media->media_type !== 'game' && $total !== null && $request->progress > $total) {
             return back()->withErrors(['progress' => 'El progreso no puede ser mayor al contenido total.']);
         }
 
@@ -108,13 +108,14 @@ class UserListController extends Controller
             $mediaListId = $defaultList->id;
         }
 
-        // Crear o actualizar entrada en la lista
+        // Crear o actualizar entrada en la lista (Buscamos solo por usuario y medio para permitir "mover" de lista)
         UserList::updateOrCreate(
-            ['user_id' => $userId, 'media_id' => $mediaId, 'media_list_id' => $mediaListId],
+            ['user_id' => $userId, 'media_id' => $mediaId],
             [
+                'media_list_id' => $mediaListId,
                 'status' => $request->status,
                 'score' => $request->filled('score') ? intval($request->score) : null,
-                'progress' => $request->progress ?? 0
+                'progress' => ($mediaType === 'game') ? 0 : ($request->progress ?? 0)
             ]
         );
 

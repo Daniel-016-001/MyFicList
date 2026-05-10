@@ -14,7 +14,7 @@
                     <p class="text-sm text-gray-600 mb-4">Tu lista de entretenimiento</p>
                     
                     @php
-                        $userLists = Auth::user()->userLists()->with('media')->get();
+                        $userLists = \App\Models\UserList::where('user_id', Auth::id())->with('media')->get();
                     @endphp
                     
                     @if($userLists->count() > 0)
@@ -54,7 +54,7 @@
                     <p class="text-sm text-gray-600 mb-4">Crea y controla qué listas son públicas o privadas.</p>
 
                     @php
-                        $mediaLists = Auth::user()->mediaLists()->withCount('items')->get();
+                        $mediaLists = \App\Models\MediaList::where('user_id', Auth::id())->withCount('items')->get();
                     @endphp
 
                     <form action="{{ route('media-lists.store') }}" method="POST" class="space-y-4 mb-6">

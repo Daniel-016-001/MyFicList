@@ -20,10 +20,11 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-950 text-gray-100">
+<body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col">
     @include('layouts.navigation')
 
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold mb-8">Resultados de Búsqueda</h1>
 
         @if(session('success'))
@@ -89,9 +90,18 @@
                             @foreach($grouped[$typeKey] as $result)
                                 <div
                                     class="bg-gray-900 rounded-lg overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full">
-                                    <div class="bg-gray-700 overflow-hidden h-80">
-                                        <img src="{{ $result['cover_url'] }}" class="w-full h-full object-cover"
-                                            alt="{{ $result['title'] }}">
+                                    <div class="bg-gray-800 overflow-hidden h-80 flex items-center justify-center">
+                                        @if($result['cover_url'])
+                                            <img src="{{ $result['cover_url'] }}" 
+                                                class="w-full h-full object-cover"
+                                                alt="{{ $result['title'] }}"
+                                                onerror="this.onerror=null; this.src='https://placehold.co/400x600/1f2937/9ca3af?text=Sin+Imagen';">
+                                        @else
+                                            <div class="flex flex-col items-center justify-center text-gray-500 p-4 text-center">
+                                                <i class="fas fa-image text-4xl mb-2"></i>
+                                                <span class="text-xs font-medium">Imagen no disponible</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="p-3 flex-1 flex flex-col justify-between">
                                         <div>
@@ -218,6 +228,7 @@
             </div>
         </div>
     </div>
+    </main>
     @include('layouts.footer')
 
     <script>
