@@ -152,7 +152,19 @@
                             <span class="text-lg font-semibold text-gray-400">Anónimo</span>
                         @endif
                     </div>
-                    <div class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</div>
+                        
+                        @if(auth()->check() && (auth()->id() === $post->user_id || auth()->user()->role === 'admin'))
+                            <form action="{{ route('forum.destroy', $post) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta publicación?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-400 hover:text-red-300 transition p-2" title="Eliminar publicación">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="mt-5">
@@ -172,7 +184,13 @@
 
                 @if($post->attachment_path)
                     @php
-                        $attachmentUrl = asset('storage/' . $post->attachment_path);
+                        // Intentar obtener URL de S3, si falla o no es S3, usar storage local
+                        if (str_starts_with($post->attachment_path, 'foro/')) {
+                            $attachmentUrl = Storage::disk('s3')->url($post->attachment_path);
+                        } else {
+                            $attachmentUrl = asset('storage/' . $post->attachment_path);
+                        }
+                        
                         $extension = strtolower(pathinfo($post->attachment_path, PATHINFO_EXTENSION));
                         $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
                     @endphp

@@ -58,8 +58,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/media-lists/{mediaList}', [MediaListController::class, 'update'])->name('media-lists.update');
     Route::delete('/media-lists/{mediaList}', [MediaListController::class, 'destroy'])->name('media-lists.destroy');
 
-    // FORO: Crear nueva publicación
+    // FORO: Crear y eliminar publicaciones
     Route::post('/foro', [ForumController::class, 'store'])->name('forum.store');
+    Route::delete('/foro/{post}', [ForumController::class, 'destroy'])->name('forum.destroy');
 
     // PERFIL (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

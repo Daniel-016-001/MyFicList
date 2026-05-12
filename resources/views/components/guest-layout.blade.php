@@ -15,9 +15,9 @@
             background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.12) 50%, rgba(236,72,153,0.06) 100%);
         }
         .glass {
-            background: rgba(17, 24, 39, 0.8);
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .input-field {
             background: rgba(31, 41, 55, 0.8);

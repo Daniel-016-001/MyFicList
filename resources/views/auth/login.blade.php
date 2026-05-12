@@ -60,7 +60,7 @@
 
                 <!-- Submit -->
                 <button type="submit"
-                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg transition-all hover:scale-[1.01] mt-2">
+                    class="w-full py-4 bg-blue-600 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg transition-all hover:scale-[1.01] mt-2">
                     <i class="fas fa-sign-in-alt mr-2"></i> Iniciar Sesión
                 </button>
 
@@ -72,7 +72,7 @@
                 </div>
 
                 <a href="{{ route('register') }}"
-                    class="block w-full py-3 text-center border border-gray-700 hover:border-purple-500/50 text-gray-300 hover:text-white font-bold rounded-xl transition-all hover:bg-purple-500/5">
+                    class="block w-full py-3 text-center bg-gray-800/50 border border-gray-700 hover:border-purple-500/50 text-gray-200 hover:text-white font-bold rounded-xl transition-all hover:bg-purple-500/10">
                     Crear una cuenta nueva
                 </a>
             </form>
