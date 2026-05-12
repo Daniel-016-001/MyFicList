@@ -16,9 +16,11 @@
                     <span class="rounded-full px-3 py-1 text-xs uppercase tracking-wide font-semibold {{ $mediaList->is_public ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-200' }}">
                         {{ $mediaList->is_public ? 'Pública' : 'Privada' }}
                     </span>
-                    <a href="{{ route('users.show', $mediaList->user) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                        <i class="fas fa-user"></i> Ver perfil
-                    </a>
+                    @if($mediaList->user->username)
+                        <a href="{{ route('users.show', $mediaList->user->username) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-user"></i> Ver perfil
+                        </a>
+                    @endif
                 </div>
             </div>
 

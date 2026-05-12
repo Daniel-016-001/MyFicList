@@ -264,7 +264,11 @@
                                             <img src="{{ $comment->user->avatar_url }}" alt="" class="w-12 h-12 rounded-xl object-cover border border-white/10 shadow-sm">
                                             <div>
                                                 @if($comment->user)
-                                                    <a href="{{ route('users.show', $comment->user) }}" class="text-sm font-black text-white hover:text-purple-400 transition-colors uppercase tracking-tight">{{ $comment->user->username ?: $comment->user->name }}</a>
+                                                    @if($comment->user->username)
+                                                        <a href="{{ route('users.show', $comment->user->username) }}" class="text-sm font-black text-white hover:text-purple-400 transition-colors uppercase tracking-tight">{{ $comment->user->username }}</a>
+                                                    @else
+                                                        <span class="text-sm font-black text-white uppercase tracking-tight">{{ $comment->user->name }}</span>
+                                                    @endif
                                                 @else
                                                     <span class="font-black text-gray-500 text-sm">Usuario eliminado</span>
                                                 @endif

@@ -99,7 +99,11 @@
                                 <img src="{{ $post->user->avatar_url }}" class="w-10 h-10 rounded-xl object-cover border border-white/5" alt="">
                                 <div>
                                     <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Publicado por</p>
-                                    <a href="{{ route('users.show', $post->user) }}" class="text-white font-bold hover:text-blue-400 transition-colors">{{ $post->user->username ?: $post->user->name }}</a>
+                                    @if($post->user->username)
+                                        <a href="{{ route('users.show', $post->user->username) }}" class="text-white font-bold hover:text-blue-400 transition-colors">{{ $post->user->username }}</a>
+                                    @else
+                                        <span class="text-white font-bold">{{ $post->user->name }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <span class="text-[10px] font-bold text-gray-600 uppercase">{{ $post->created_at->diffForHumans() }}</span>
