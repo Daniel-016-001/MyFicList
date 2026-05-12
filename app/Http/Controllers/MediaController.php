@@ -24,6 +24,16 @@ class MediaController extends Controller
     public function show($id)
     {
         $media = Media::findOrFail($id);
+        
+        // Lazy load de detalles completos si no se han cargado antes
+        $extra = $media->extra_data ?? [];
+        if (!isset($extra['full_details_loaded']) || $extra['full_details_loaded'] !== true) {
+            $updatedMedia = $this->mediaService->importToDatabase($media->external_id, $media->source, $media->media_type);
+            if ($updatedMedia) {
+                $media = $updatedMedia;
+            }
+        }
+
         return view('media_show', compact('media'));
     }
 
@@ -36,6 +46,11 @@ class MediaController extends Controller
         $type = $request->input('type', 'anime');
 
         $results = $this->searchService->searchMultiple($query, $type);
+
+        // Filtrar resultados que no tienen imagen de portada
+        $results = array_filter($results, function($result) {
+            return !empty($result['cover_url']);
+        });
 
         foreach ($results as $result) {
             $this->mediaService->importSearchResult($result);
@@ -60,6 +75,11 @@ class MediaController extends Controller
 
         // Ahora estamos seguros de que $query es un string
         $results = $this->mediaService->getUnifiedResults((string) $query);
+
+        // Filtrar resultados que no tienen imagen de portada
+        $results = array_filter($results, function($result) {
+            return !empty($result['cover_url']);
+        });
 
         foreach ($results as $result) {
             $this->mediaService->importSearchResult($result);

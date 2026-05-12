@@ -98,6 +98,36 @@
         </div>
     @endauth
 
+    @if($publicLists->isNotEmpty())
+        <div class="mb-10">
+            <div class="flex items-center gap-2 mb-4">
+                <i class="fas fa-star text-yellow-500"></i>
+                <h2 class="text-xl font-semibold text-white">Listas Públicas Recientes</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                @foreach($publicLists as $list)
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500 transition shadow-sm flex flex-col group cursor-pointer" onclick="window.location='{{ route('media-lists.show', $list) }}'">
+                        <div class="p-4 border-b border-gray-800 flex items-center justify-between bg-gray-800/20">
+                            <div class="flex flex-col truncate pr-2">
+                                <span class="font-bold text-sm text-white group-hover:text-blue-400 truncate transition-colors">{{ $list->name }}</span>
+                                <span class="text-[10px] text-gray-500 uppercase tracking-wider truncate">Por {{ $list->user->username ?? 'Usuario' }}</span>
+                            </div>
+                            <span class="text-xs font-semibold bg-gray-800 text-gray-300 px-2 py-1 rounded-lg flex-shrink-0">{{ $list->items->count() }} items</span>
+                        </div>
+                        <div class="p-4 flex gap-2 overflow-hidden flex-grow bg-gray-950">
+                            @foreach($list->items->take(4) as $item)
+                                <img src="{{ $item->media->cover_url }}" alt="" class="w-12 h-16 object-cover rounded shadow-sm opacity-90 group-hover:opacity-100 transition">
+                            @endforeach
+                            @if($list->items->isEmpty())
+                                <div class="text-xs text-gray-600 italic w-full text-center py-4">Lista vacía</div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="mb-6 flex flex-wrap gap-3">
         @foreach($categories as $key => $label)
             <a href="{{ route('forum.index', ['category' => $key]) }}" class="rounded-full border px-4 py-2 text-sm font-medium transition {{ $selectedCategory === $key ? 'border-blue-500 bg-blue-600 text-white' : 'border-gray-700 bg-gray-900 text-gray-300 hover:border-blue-500 hover:text-white' }}">

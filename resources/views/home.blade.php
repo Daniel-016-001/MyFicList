@@ -35,7 +35,7 @@
             <div class="max-w-4xl w-full text-center">
                 <!-- Main Title -->
                 <div class="mb-8">
-                    <h1 class="text-6xl md:text-8xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                    <h1 class="text-6xl md:text-8xl font-black mb-6 pb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                         MyFicList
                     </h1>
                     <p class="text-xl md:text-2xl text-gray-400 mb-4">
@@ -78,12 +78,10 @@
                     O explora por categoría:
                 </div>
                 <div class="flex flex-wrap justify-center gap-3 mb-16">
-                    <a href="{{ url('/search?query=trending&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-6 transition text-sm font-medium">🔥 Trending</a>
-                    <a href="{{ url('/search?query=popular&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-6 transition text-sm font-medium">⭐ Popular</a>
-                    <a href="{{ url('/search?query=new&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-6 transition text-sm font-medium">✨ Nuevo</a>
-                    <a href="{{ url('/search?query=top&type=anime') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-6 transition text-sm font-medium">👑 Top</a>
+                    <a href="{{ route('media.explore') }}" class="bg-gray-900/80 hover:bg-gray-800 text-blue-400 border border-blue-500/30 rounded-lg py-3 px-6 transition text-sm font-black uppercase tracking-widest"><i class="fas fa-search mr-2"></i>Explorar Todo</a>
+                    <a href="{{ route('dashboard') }}" class="bg-gray-900/80 hover:bg-gray-800 text-purple-400 border border-purple-500/30 rounded-lg py-3 px-6 transition text-sm font-black uppercase tracking-widest"><i class="fas fa-award mr-2"></i>Fiction Top</a>
                     @auth
-                        <a href="{{ route('dashboard') }}" class="bg-gray-800/50 hover:bg-gray-700 rounded-lg py-3 px-6 transition text-sm font-medium">📋 Mi Lista</a>
+                        <a href="{{ route('user-list.index') }}" class="bg-gray-900/80 hover:bg-gray-800 text-green-400 border border-green-500/30 rounded-lg py-3 px-6 transition text-sm font-black uppercase tracking-widest"><i class="fas fa-list mr-2"></i>Mi Lista</a>
                     @endauth
                 </div>
             </div>
@@ -121,7 +119,7 @@
             <h2 class="text-4xl font-bold mb-12 text-center">Explora por Tipo</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <!-- Anime -->
-                <a href="{{ url('/search?query=&type=anime') }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'anime']) }}" class="category-card group">
                     <div class="bg-gradient-to-br from-purple-900/30 to-purple-900/10 border border-purple-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-purple-500 transition">
                         <div class="text-center">
                             <div class="text-5xl mb-2">🍙</div>
@@ -131,7 +129,7 @@
                 </a>
 
                 <!-- Manga -->
-                <a href="{{ url('/search?query=&type=manga') }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'manga']) }}" class="category-card group">
                     <div class="bg-gradient-to-br from-blue-900/30 to-blue-900/10 border border-blue-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-blue-500 transition">
                         <div class="text-center">
                             <div class="text-5xl mb-2">📖</div>
@@ -141,7 +139,7 @@
                 </a>
 
                 <!-- Movies -->
-                <a href="{{ url('/search?query=&type=movie') }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'movie']) }}" class="category-card group">
                     <div class="bg-gradient-to-br from-red-900/30 to-red-900/10 border border-red-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-red-500 transition">
                         <div class="text-center">
                             <div class="text-5xl mb-2">🎬</div>
@@ -151,7 +149,7 @@
                 </a>
 
                 <!-- Series -->
-                <a href="{{ url('/search?query=&type=series') }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'series']) }}" class="category-card group">
                     <div class="bg-gradient-to-br from-green-900/30 to-green-900/10 border border-green-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-green-500 transition">
                         <div class="text-center">
                             <div class="text-5xl mb-2">📺</div>
@@ -161,7 +159,7 @@
                 </a>
 
                 <!-- Games -->
-                <a href="{{ url('/search?query=&type=game') }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'game']) }}" class="category-card group">
                     <div class="bg-gradient-to-br from-yellow-900/30 to-yellow-900/10 border border-yellow-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-yellow-500 transition">
                         <div class="text-center">
                             <div class="text-5xl mb-2">🎮</div>

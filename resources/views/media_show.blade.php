@@ -121,11 +121,11 @@
                             @if(!empty($extra['genres']))
                                 <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
                                     <div class="mb-4">
-                                        <h4 class="text-[10px] font-black text-blue-500/60 uppercase tracking-[0.4em] group-hover:text-blue-400 transition-colors duration-500">Géneros</h4>
+                                        <h4 class="text-sm font-black text-blue-400 uppercase tracking-[0.25em] group-hover:text-blue-300 transition-colors duration-500">Géneros</h4>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['genres'] as $genre)
-                                            <span class="px-3 py-1.5 bg-blue-500/5 text-gray-400 rounded-xl text-[11px] font-medium border border-white/5 group-hover:border-blue-500/30 transition-all duration-500">
+                                            <span style="background:rgba(37,99,235,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.45); border-radius:12px; padding:6px 14px; font-size:0.875rem; font-weight:600;">
                                                 {{ $genre }}
                                             </span>
                                         @endforeach
@@ -136,11 +136,11 @@
                             @if(!empty($extra['platforms']))
                                 <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
                                     <div class="mb-4">
-                                        <h4 class="text-[10px] font-black text-purple-500/60 uppercase tracking-[0.4em] group-hover:text-purple-400 transition-colors duration-500">Plataformas</h4>
+                                        <h4 class="text-sm font-black text-purple-400 uppercase tracking-[0.25em] group-hover:text-purple-300 transition-colors duration-500">Plataformas</h4>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['platforms'] as $platform)
-                                            <span class="px-3 py-1.5 bg-purple-500/10 text-purple-300 rounded-xl text-[11px] font-medium border border-purple-500/20 group-hover:bg-purple-500/20 transition-all duration-500">
+                                            <span style="background:rgba(20,0,50,0.5); color:#d8b4fe; border:1px solid rgba(139,92,246,0.65); border-radius:10px; padding:6px 14px; font-size:0.875rem; font-weight:600;">
                                                 {{ $platform }}
                                             </span>
                                         @endforeach
@@ -151,9 +151,9 @@
                             @if(!empty($extra['studios']))
                                 <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
                                     <div class="mb-3">
-                                        <h4 class="text-[10px] font-black text-green-500/60 uppercase tracking-[0.4em] group-hover:text-green-400 transition-colors duration-500">Estudios</h4>
+                                        <h4 class="text-sm font-black text-green-400 uppercase tracking-[0.25em] group-hover:text-green-300 transition-colors duration-500">Estudios</h4>
                                     </div>
-                                    <div class="text-sm text-gray-400 font-medium leading-relaxed">
+                                    <div class="text-base text-gray-200 font-medium leading-relaxed">
                                         {{ is_array($extra['studios']) ? implode(', ', $extra['studios']) : $extra['studios'] }}
                                     </div>
                                 </div>
@@ -162,9 +162,9 @@
                             @if(!empty($extra['authors']))
                                 <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
                                     <div class="mb-3">
-                                        <h4 class="text-[10px] font-black text-yellow-500/60 uppercase tracking-[0.4em] group-hover:text-yellow-400 transition-colors duration-500">Creadores</h4>
+                                        <h4 class="text-sm font-black text-yellow-400 uppercase tracking-[0.25em] group-hover:text-yellow-300 transition-colors duration-500">Creadores</h4>
                                     </div>
-                                    <div class="text-sm text-gray-400 font-medium leading-relaxed">
+                                    <div class="text-base text-gray-200 font-medium leading-relaxed">
                                         {{ is_array($extra['authors']) ? implode(', ', $extra['authors']) : $extra['authors'] }}
                                     </div>
                                 </div>
@@ -215,7 +215,10 @@
                         <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Sinopsis</h3>
                         <div class="glass p-8 rounded-3xl text-xl text-gray-300 leading-relaxed synopsis-content">
                             @php
-                                $synopsis = $media->synopsis ?: 'No hay descripción disponible.';
+                                $synopsis = $media->synopsis;
+                                if (empty($synopsis) || $synopsis === '...') {
+                                    $synopsis = 'No hay descripción disponible para este título.';
+                                }
                                 // Escapamos por seguridad pero permitimos nuestros cambios
                                 $synopsis = e($synopsis);
                                 // Convertimos los ### en encabezados estilizados
@@ -246,13 +249,32 @@
                         </div>
                     @endif
 
-                    <!-- Comments Section -->
+                        <!-- Comments Section -->
                     <div class="mt-32">
                         <h3 class="text-4xl font-black mb-12">Comunidad</h3>
+
+                        @if(session('success'))
+                            <div class="mb-8 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-2xl flex items-center gap-3">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="font-bold">{{ session('success') }}</span>
+                            </div>
+                        @endif
+
+                        @if($errors->any())
+                            <div class="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl">
+                                <ul class="list-disc list-inside">
+                                    @foreach($errors->all() as $error)
+                                        <li class="font-bold">{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         @auth
                             <div class="glass p-8 rounded-3xl mb-12">
                                 <form action="{{ route('media.comments.store', $media->id) }}" method="POST">
                                     @csrf
+                                    <input type="hidden" name="media_id" value="{{ $media->id }}">
                                     <textarea name="content" required placeholder="¿Qué opinas de este título?"
                                         class="w-full bg-gray-800 border-none rounded-2xl p-5 text-white mb-6"
                                         rows="4"></textarea>
@@ -301,6 +323,33 @@
             <form action="{{ route('user-list.store') }}" method="POST" class="space-y-6">
                 @csrf
                 <input type="hidden" name="media_id" value="{{ $media->id }}">
+                
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Lista</label>
+                    <select name="media_list_id" onchange="toggleNewListForm(this.value)" class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
+                        @auth
+                            @php
+                                $userLists = \App\Models\MediaList::where('user_id', auth()->id())->get();
+                            @endphp
+                            @foreach($userLists as $list)
+                                <option value="{{ $list->id }}">{{ $list->name }}</option>
+                            @endforeach
+                        @endauth
+                        <option value="new">+ Crear nueva lista</option>
+                    </select>
+                    
+                    <div id="new-list-fields" class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 space-y-3">
+                        <input type="text" name="new_list_name" placeholder="Nombre de la nueva lista..." class="w-full bg-gray-800 border-none rounded-lg p-3 text-white font-bold focus:ring-2 focus:ring-purple-600 text-sm">
+                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                            <div class="relative">
+                                <input type="checkbox" name="is_public" value="1" class="sr-only peer">
+                                <div class="w-9 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
+                            </div>
+                            <span class="text-xs font-black text-gray-400 uppercase tracking-wider group-hover:text-white transition-colors">Hacer Pública</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Estado</label>
                     <select name="status" class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
@@ -329,6 +378,17 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function toggleNewListForm(value) {
+            const fields = document.getElementById('new-list-fields');
+            if (value === 'new') {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 
 </html>

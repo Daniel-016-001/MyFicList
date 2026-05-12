@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PopularMediaController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\UserListController;
@@ -19,7 +20,8 @@ Route::get('/', function () {
 Route::get('/search', [MediaController::class, 'search'])->name('media.search');
 Route::get('/search/unified', [MediaController::class, 'searchUnified'])->name('media.search.unified');
 Route::get('/media/suggestions', [MediaController::class, 'suggestions'])->name('media.suggestions');
-Route::get('/explorar', [PopularMediaController::class, 'index'])->name('dashboard');
+Route::get('/top', [PopularMediaController::class, 'index'])->name('dashboard');
+Route::get('/explorar', [ExploreController::class, 'index'])->name('media.explore');
 Route::get('/catalogo/{id}', [MediaController::class, 'show'])->name('media.show');
 Route::get('/details/{external_id}/{source}/{type}', [MediaController::class, 'details'])->name('media.details');
 

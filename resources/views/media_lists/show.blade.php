@@ -27,22 +27,40 @@
                     Esta lista está vacía.
                 </div>
             @else
-                <div class="grid gap-4 lg:grid-cols-3">
+                <div class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
                     @foreach($mediaList->items as $entry)
-                        <div class="rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                            <img src="{{ $entry->media->cover_url }}" alt="{{ $entry->media->title }}" class="w-full h-40 object-cover">
-                            <div class="p-3 bg-gray-900">
-                                <h2 class="text-lg font-semibold text-gray-100 line-clamp-2">{{ $entry->media->title }}</h2>
-                                <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
-                                <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
-                                <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
-                                @if(!empty(data_get($entry->media->extra_data, 'categories')))
-                                    <p class="text-sm text-gray-400">Categorías: {{ implode(', ', data_get($entry->media->extra_data, 'categories')) }}</p>
-                                @endif
-                                <div class="mt-4">
-                                    <a href="{{ route('media.show', $entry->media->id) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition">
-                                        Ver contenido
-                                    </a>
+                        @php
+                            $media = $entry->media;
+                        @endphp
+                        <div class="break-inside-avoid mb-6">
+                            <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                <a href="{{ route('media.show', $media->id) }}" class="block group cursor-pointer">
+                                    <div class="relative">
+                                        <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                        @if($entry->score)
+                                            <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;" class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
+                                                <i class="fas fa-star text-[9px]"></i> {{ $entry->score }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </a>
+                                
+                                <div class="p-5 flex-grow flex flex-col">
+                                    <h3 class="font-bold text-lg text-white leading-tight mb-4">{{ $media->title }}</h3>
+                                    
+                                    <div class="flex flex-col gap-1.5 mb-4 text-[11px] font-bold uppercase tracking-wider">
+                                        <div class="text-gray-500">Estado: <span class="text-blue-400">{{ ucfirst(str_replace('_', ' ', $entry->status)) }}</span></div>
+
+                                        @if($media->media_type !== 'game')
+                                            <div class="text-gray-500">Progreso: <span class="text-purple-400">{{ $entry->progress }}{{ data_get($media->extra_data, 'episodes') ? ' / ' . data_get($media->extra_data, 'episodes') : '' }}{{ !data_get($media->extra_data, 'episodes') && data_get($media->extra_data, 'chapters') ? ' / ' . data_get($media->extra_data, 'chapters') : '' }}</span></div>
+                                        @endif
+                                    </div>
+
+                                    <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-800/50">
+                                        <a href="{{ route('media.show', $media->id) }}" class="text-gray-400 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-colors ml-auto">
+                                            Detalles <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

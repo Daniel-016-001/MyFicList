@@ -25,6 +25,8 @@ class PopularMediaController extends Controller
                 return $items->sortByDesc('avg_score')->take(5);
             });
 
-        return view('dashboard', compact('popularByCategory'));
+        $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
+
+        return view('dashboard', compact('popularByCategory', 'mediaLists'));
     }
 }

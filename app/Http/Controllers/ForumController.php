@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreForumPostRequest;
 use App\Models\ForumPost;
+use App\Models\MediaList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,8 +29,15 @@ class ForumController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $publicLists = MediaList::with(['user', 'items.media'])
+            ->where('is_public', true)
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
+
         return view('forum', [
             'posts' => $posts,
+            'publicLists' => $publicLists,
             'categories' => self::CATEGORIES,
             'selectedCategory' => $selectedCategory,
         ]);

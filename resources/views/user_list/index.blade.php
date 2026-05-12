@@ -8,8 +8,8 @@
                 <h1 class="text-3xl font-bold">Mis Listas</h1>
                 <p class="text-gray-400">Administra tus colecciones y controla qué listas puedes compartir.</p>
             </div>
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
-                <i class="fas fa-home"></i> Volver al inicio
+            <a href="{{ route('media.explore') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
+                <i class="fas fa-compass"></i> Explorar Catálogo
             </a>
         </div>
 
@@ -26,86 +26,105 @@
         @endif
 
         @if($mediaLists->isEmpty())
-            <div class="rounded-3xl border border-gray-800 bg-gray-900 p-10 text-center">
-                <p class="text-gray-400 text-lg">Aún no tienes listas creadas.</p>
-                <a href="{{ url('/') }}" class="mt-6 inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white py-3 px-5 rounded-lg transition">
-                    <i class="fas fa-search"></i> Encuentra contenido para comenzar
+            <div class="rounded-3xl border border-gray-800 bg-gray-900 p-16 text-center">
+                <div class="text-6xl mb-6">📋</div>
+                <p class="text-gray-400 text-xl mb-6">Aún no tienes listas creadas.</p>
+                <p class="text-gray-500 text-sm mb-8">Explora el catálogo y agrega contenido para comenzar a crear tus colecciones.</p>
+                <a href="{{ route('media.explore') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white py-3 px-8 rounded-xl transition font-bold shadow-lg">
+                    <i class="fas fa-search"></i> Explorar Catálogo
                 </a>
             </div>
         @else
-            @php
-                $groupedLists = $mediaLists->groupBy('category');
-            @endphp
-
-            @foreach($groupedLists as $category => $lists)
-                <section class="mb-10">
-                    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h2 class="text-2xl font-semibold text-white">{{ ucfirst(str_replace('_', ' ', $category)) }}</h2>
-                            <p class="text-sm text-gray-400">Listas dedicadas a {{ ucfirst(str_replace('_', ' ', $category)) }}.</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6">
-                        @foreach($lists as $list)
-                            <div class="rounded-3xl border border-gray-800 bg-gray-900 p-6">
-                                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-                                    <div>
-                                        <div class="flex items-center gap-3 flex-wrap">
-                                            <h3 class="text-2xl font-semibold">{{ $list->name }}</h3>
-                                            <span class="rounded-full px-3 py-1 text-xs uppercase tracking-wide font-semibold {{ $list->is_public ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-200' }}">
+            <div class="space-y-8">
+                @foreach($mediaLists as $list)
+                    <section class="rounded-3xl border border-gray-800 bg-gray-900/60 p-6">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <h2 class="text-2xl font-bold text-white">{{ $list->name }}</h2>
+                                
+                                <form action="{{ route('media-lists.update', $list) }}" method="POST" class="inline-block mt-1">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="name" value="{{ $list->name }}">
+                                    <input type="hidden" name="is_public" value="{{ $list->is_public ? '0' : '1' }}">
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <button type="submit" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $list->is_public ? 'bg-blue-600' : 'bg-gray-700' }}" role="switch">
+                                            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center {{ $list->is_public ? 'translate-x-5' : 'translate-x-0' }}">
+                                                @if($list->is_public)
+                                                    <i class="fas fa-globe-americas text-blue-600" style="font-size: 10px;"></i>
+                                                @else
+                                                    <i class="fas fa-lock text-gray-500" style="font-size: 10px;"></i>
+                                                @endif
+                                            </span>
+                                        </button>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold {{ $list->is_public ? 'text-blue-400' : 'text-gray-400' }} uppercase tracking-wider">
                                                 {{ $list->is_public ? 'Pública' : 'Privada' }}
                                             </span>
+                                            <span class="text-[10px] text-gray-500 leading-tight">
+                                                {{ $list->is_public ? 'Visible en el foro para todos' : 'Solo tú puedes ver esta lista' }}
+                                            </span>
                                         </div>
-                                        <p class="mt-2 text-sm text-gray-400">{{ $list->items->count() }} elemento{{ $list->items->count() !== 1 ? 's' : '' }}</p>
                                     </div>
-                                    <div class="flex flex-wrap gap-3 items-center">
-                                        <a href="{{ route('media-lists.show', $list) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                                            <i class="fas fa-eye"></i> Ver lista
-                                        </a>
-                                    </div>
-                                </div>
+                                </form>
 
-                                @if($list->items->isEmpty())
-                                    <div class="rounded-2xl border border-gray-800 bg-gray-900 p-6 text-center text-gray-400">
-                                        Esta lista está vacía.
-                                    </div>
-                                @else
-                                    <div class="grid gap-4 lg:grid-cols-3">
-                                        @foreach($list->items as $entry)
-                                            <div class="rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                                                <img src="{{ $entry->media->cover_url }}" alt="{{ $entry->media->title }}" class="w-full h-40 object-cover">
-                                                <div class="p-3 bg-gray-900">
-                                                    <h3 class="text-lg font-semibold text-gray-100 line-clamp-2">{{ $entry->media->title }}</h3>
-                                                    <p class="text-sm text-gray-400">Estado: {{ $entry->status }}</p>
-                                                    <p class="text-sm text-gray-400">Puntaje: {{ $entry->score ?? 'N/A' }}</p>
-                                                    @if($entry->media->media_type !== 'game')
-                                                        <p class="text-sm text-gray-400">Progreso: {{ $entry->progress }}{{ data_get($entry->media->extra_data, 'episodes') ? ' / ' . data_get($entry->media->extra_data, 'episodes') : '' }}{{ !data_get($entry->media->extra_data, 'episodes') && data_get($entry->media->extra_data, 'chapters') ? ' / ' . data_get($entry->media->extra_data, 'chapters') : '' }}</p>
+                                <span class="text-sm text-gray-500">{{ $list->items->count() }} elemento{{ $list->items->count() !== 1 ? 's' : '' }}</span>
+                            </div>
+                            <a href="{{ route('media-lists.show', $list) }}" class="inline-flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-400 hover:text-white px-4 py-2 rounded-xl transition font-bold text-sm">
+                                <i class="fas fa-eye"></i> Ver lista completa
+                            </a>
+                        </div>
+
+                        @if($list->items->isEmpty())
+                            <div class="rounded-2xl border border-gray-800 bg-gray-900 p-8 text-center text-gray-500 italic">
+                                Esta lista está vacía. Agrega contenido desde <a href="{{ route('media.explore') }}" class="text-blue-400 hover:underline">Explorar</a>.
+                            </div>
+                        @else
+                            <div class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4">
+                                @foreach($list->items as $entry)
+                                    @php $media = $entry->media; @endphp
+                                    <div class="break-inside-avoid mb-4">
+                                        <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                            <a href="{{ route('media.show', $media->id) }}" class="block group">
+                                                 <div class="relative">
+                                                     <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                     @if($entry->score)
+                                                         <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;" class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
+                                                             <i class="fas fa-star text-[9px]"></i> {{ $entry->score }}
+                                                         </div>
+                                                     @endif
+                                                 </div>
+                                             </a>
+                                            <div class="p-4 flex-grow flex flex-col">
+                                                <h3 class="font-bold text-sm text-white leading-tight mb-2">{{ $media->title }}</h3>
+                                                <div class="flex flex-col gap-1 mb-3 text-[10px] font-bold uppercase tracking-wider">
+                                                    <span class="text-blue-400">{{ ucfirst(str_replace('_', ' ', $entry->status)) }}</span>
+                                                    @if($media->media_type !== 'game' && $entry->progress)
+                                                        <span class="text-gray-500">EP {{ $entry->progress }}{{ data_get($media->extra_data, 'episodes') ? ' / ' . data_get($media->extra_data, 'episodes') : '' }}</span>
                                                     @endif
-                                                    @if(!empty(data_get($entry->media->extra_data, 'categories')))
-                                                        <p class="text-sm text-gray-400">Categorías: {{ implode(', ', data_get($entry->media->extra_data, 'categories')) }}</p>
-                                                    @endif
-                                                    <div class="mt-4 flex gap-2">
-                                                    <a href="{{ route('media.show', $entry->media->id) }}" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg transition">
-                                                        Ver
-                                                    </a>
+                                                </div>
+                                                <div class="mt-auto flex items-center justify-between pt-3 border-t border-slate-800/50">
                                                     <form action="{{ route('user-list.destroy', $entry->id) }}" method="POST" class="inline-block">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition">
-                                                            Eliminar
+                                                        <button type="submit" class="text-red-400 hover:text-red-300 flex items-center gap-1 text-[10px] font-bold transition-colors">
+                                                            <i class="fas fa-trash-alt"></i> Quitar
                                                         </button>
                                                     </form>
+                                                    <a href="{{ route('media.show', $media->id) }}" class="text-gray-400 hover:text-white flex items-center gap-1 text-[10px] font-bold transition-colors">
+                                                        Detalles <i class="fas fa-arrow-right"></i>
+                                                    </a>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        </div>
                                     </div>
-                                @endif
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endforeach
+                        @endif
+                    </section>
+                @endforeach
+            </div>
         @endif
     </main>
 </div>

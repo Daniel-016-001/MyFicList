@@ -75,7 +75,9 @@ class MediaIntegrationService
 
         if ($isFullDetail) {
             // En carga completa, los nuevos datos mandan (pero no borramos lo que no venga en la API)
-            $media->extra_data = array_merge($existingExtra, array_filter($newExtra, fn($v) => !is_null($v) && $v !== '' && $v !== []));
+            $merged = array_merge($existingExtra, array_filter($newExtra, fn($v) => !is_null($v) && $v !== '' && $v !== []));
+            $merged['full_details_loaded'] = true;
+            $media->extra_data = $merged;
         } else {
             // En búsqueda, solo añadimos lo que falte
             foreach ($newExtra as $key => $value) {
@@ -149,57 +151,80 @@ class MediaIntegrationService
         return null;
     }
 
-    private function getRawgDetails($id): array
+    private function getRawgDetails($id): ?array
     {
-        // 1. Obtener detalles básicos
-        $details = Http::get("https://api.rawg.io/api/games/{$id}", [
-            'key' => config('services.rawg.key')
-        ])->json();
-
-        if (empty($details) || isset($details['detail'])) {
-            return [];
-        }
-
-        // 2. Obtener trailers/videos
-        $movies = Http::get("https://api.rawg.io/api/games/{$id}/movies", [
-            'key' => config('services.rawg.key')
-        ])->json();
-
-        // Extraemos el primer video disponible
-        $trailerUrl = $movies['results'][0]['data']['max'] ?? $movies['results'][0]['data']['480'] ?? null;
-
-        // Si no hay movie, intentar fallback YouTube
-        if (!$trailerUrl) {
-            $youtube = Http::get("https://api.rawg.io/api/games/{$id}/youtube", [
+        try {
+            // 1. Obtener detalles básicos
+            $response = Http::get("https://api.rawg.io/api/games/{$id}", [
                 'key' => config('services.rawg.key')
-            ])->json();
-            $trailerUrl = isset($youtube['results'][0]['external_id']) 
-                ? "https://www.youtube.com/watch?v=" . $youtube['results'][0]['external_id'] 
-                : null;
+            ]);
+
+            if ($response->failed()) {
+                Log::warning("RAWG API request failed for ID {$id}: " . $response->status());
+                return null;
+            }
+
+            $details = $response->json();
+
+            if (empty($details) || isset($details['detail'])) {
+                Log::warning("RAWG Game details not found for ID {$id}: " . ($details['detail'] ?? 'Empty response'));
+                return null;
+            }
+
+            // 2. Obtener trailers/videos (Opcional, no debe romper si falla)
+            $trailerUrl = null;
+            try {
+                $moviesResponse = Http::get("https://api.rawg.io/api/games/{$id}/movies", [
+                    'key' => config('services.rawg.key')
+                ]);
+
+                if ($moviesResponse->successful()) {
+                    $movies = $moviesResponse->json();
+                    $trailerUrl = $movies['results'][0]['data']['max'] ?? $movies['results'][0]['data']['480'] ?? null;
+                }
+
+                // Si no hay movie, intentar fallback YouTube (Solo si el anterior falló o no existe)
+                if (!$trailerUrl) {
+                    $youtubeResponse = Http::get("https://api.rawg.io/api/games/{$id}/youtube", [
+                        'key' => config('services.rawg.key')
+                    ]);
+                    
+                    if ($youtubeResponse->successful()) {
+                        $youtube = $youtubeResponse->json();
+                        if (isset($youtube['results'][0]['external_id'])) {
+                            $trailerUrl = "https://www.youtube.com/watch?v=" . $youtube['results'][0]['external_id'];
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning("Error fetching RAWG media for ID {$id}: " . $e->getMessage());
+            }
+
+            $genres = collect($details['genres'] ?? [])->map(fn($g) => $this->translateText($g['name']))->toArray();
+            $platforms = collect($details['platforms'] ?? [])->pluck('platform.name')->toArray();
+
+            return [
+                'external_id' => $id,
+                'title'       => $details['name'] ?? 'Sin título',
+                'cover_url'   => $details['background_image'] ?? null,
+                'synopsis'    => $this->translateText($details['description_raw'] ?? strip_tags($details['description'] ?? '')),
+                'media_type'  => 'game',
+                'source'      => 'RAWG',
+                'genres'      => $genres,
+                'categories'  => $genres,
+                'year'        => isset($details['released']) ? substr($details['released'], 0, 4) : null,
+                'trailer_url' => $trailerUrl,
+                'platforms'   => $platforms,
+                'images'      => [],
+                'episodes'    => null,
+                'chapters'    => null,
+                'studios'     => collect($details['developers'] ?? [])->pluck('name')->toArray(),
+                'authors'     => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
+            ];
+        } catch (\Exception $e) {
+            Log::error("Critical error in getRawgDetails for ID {$id}: " . $e->getMessage());
+            return null;
         }
-
-        $genres = collect($details['genres'] ?? [])->map(fn($g) => $this->translateText($g['name']))->toArray();
-        $platforms = collect($details['platforms'] ?? [])->pluck('platform.name')->toArray();
-
-        return [
-            'external_id' => $id,
-            'title'       => $details['name'],
-            'cover_url'   => $details['background_image'],
-            'synopsis'    => $this->translateText($details['description_raw'] ?? strip_tags($details['description'] ?? '')),
-            'media_type'  => 'game',
-            'source'      => 'RAWG',
-            'genres'      => $genres,
-            'categories'  => $genres,
-            'year'        => substr($details['released'] ?? '', 0, 4),
-            'trailer_url' => $trailerUrl,
-            'platforms'   => $platforms,
-            'images'      => [],
-            'episodes'    => null,
-            'chapters'    => null,
-            'studios'     => collect($details['developers'] ?? [])->pluck('name')->toArray(),
-            'authors'     => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
-            'media_type'  => 'game'
-        ];
     }
 
     private function getTmdbDetails($id, $type): array

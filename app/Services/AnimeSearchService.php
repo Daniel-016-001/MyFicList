@@ -101,10 +101,21 @@ class AnimeSearchService
 
     private function isExistingSearchResult(array $item, array $existingKeys, array $existingTitles): bool
     {
+        // Comprobar coincidencia exacta por (source + external_id)
         $key = trim(($item['source'] ?? '') . '_' . ($item['external_id'] ?? ''));
-
         if ($key !== '' && in_array($key, $existingKeys, true)) {
             return true;
+        }
+
+        // También comprobar solo por external_id para evitar duplicados entre fuentes distintas
+        // (ej. un registro guardado como RAWG_9767 vs resultado de búsqueda RAWG_9767)
+        if (!empty($item['external_id'])) {
+            $externalIdOnly = (string) $item['external_id'];
+            foreach ($existingKeys as $existingKey) {
+                if (str_ends_with($existingKey, '_' . $externalIdOnly)) {
+                    return true;
+                }
+            }
         }
 
         if (!empty($item['title']) && in_array($this->normalizeString($item['title']), $existingTitles, true)) {
@@ -134,7 +145,7 @@ class AnimeSearchService
                 'title' => $m->title,
                 'cover_url' => $m->cover_url,
                 'synopsis' => substr($m->synopsis, 0, 120) . '...',
-                'source' => 'Local',
+                'source' => $m->source, // Usar la fuente real del registro, no sobreescribir con 'Local'
                 'is_stored' => true,
                 'media_type' => $type
             ])->toArray();

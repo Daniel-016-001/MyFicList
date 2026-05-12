@@ -13,8 +13,13 @@ class CommentController extends Controller
     /**
      * Guardar un nuevo comentario
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
+        // Aseguramos que el media_id esté presente en el request incluso si no viene en el form
+        if (!$request->has('media_id')) {
+            $request->merge(['media_id' => $id]);
+        }
+
         $validated = $request->validate([
             'media_id' => 'required|exists:media,id',
             'content' => 'required|string|max:1000',
@@ -31,11 +36,11 @@ class CommentController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'message' => 'Comentario publicado con éxito',
-                'comment' => $comment->load('user') // Carga el usuario para mostrar su nombre en el frontend
+                'comment' => $comment->load('user')
             ]);
         }
 
-        return back()->with('success', 'Comentario publicado');
+        return redirect()->route('media.show', $id)->with('success', '¡Comentario publicado con éxito!');
     }
 
     /**

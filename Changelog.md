@@ -5,7 +5,9 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 ## [En Progreso / Futuro Roadmap]
 - Agregar página para que la comunidad pueda conversar libremente, publicar contenido y debatir
 - Agregar mostrador para cada categoría con los contenidos más populares
-
+- Fix: Titulo cortado
+- Fix: Detalles de los videojuegos
+- Fix: Comentarios
 ---
 
 ## [1.1.0] - 2026-04-26

@@ -26,7 +26,7 @@ class UserListController extends Controller
         $mediaLists = MediaList::with(['items.media'])
             ->where('user_id', Auth::id())
             ->get()
-            ->sortBy([fn($list) => $list->category, fn($list) => $list->name]);
+            ->sortBy(fn($list) => $list->name);
 
         return view('user_list.index', compact('mediaLists'));
     }
@@ -38,7 +38,9 @@ class UserListController extends Controller
             'status' => 'required|in:watching,completed,on_hold,dropped,plan_to_watch',
             'score' => 'nullable|integer|min:0|max:10',
             'progress' => 'nullable|integer|min:0',
-            'media_list_id' => 'nullable|exists:media_lists,id',
+            // media_list_id can be a numeric ID or the string 'new'
+            'media_list_id' => 'nullable',
+            'new_list_name' => 'required_if:media_list_id,new|nullable|string|max:100',
         ]);
 
         $userId = Auth::id();
@@ -89,21 +91,27 @@ class UserListController extends Controller
             return back()->withErrors(['progress' => 'El progreso no puede ser mayor al contenido total.']);
         }
 
-        if ($request->filled('media_list_id')) {
+        if ($request->filled('media_list_id') && $request->media_list_id !== 'new') {
             $mediaList = MediaList::where('id', $request->media_list_id)
                 ->where('user_id', $userId)
-                ->where('category', $mediaType ?? 'general')
                 ->first();
 
             if ($mediaList) {
                 $mediaListId = $mediaList->id;
             }
+        } elseif ($request->filled('new_list_name')) {
+            $newList = MediaList::create([
+                'user_id' => $userId,
+                'name' => $request->new_list_name,
+                'is_public' => $request->has('is_public')
+            ]);
+            $mediaListId = $newList->id;
         }
 
         if (!$mediaListId) {
             $defaultList = MediaList::firstOrCreate(
-                ['user_id' => $userId, 'category' => $mediaType ?? 'general'],
-                ['name' => $this->getCategoryListName($mediaType), 'is_public' => false]
+                ['user_id' => $userId, 'name' => 'Mi Lista'],
+                ['is_public' => false]
             );
             $mediaListId = $defaultList->id;
         }
@@ -120,19 +128,6 @@ class UserListController extends Controller
         );
 
         return back()->with('success', '¡Elemento agregado a tu lista!');
-    }
-
-    private function getCategoryListName(?string $mediaType): string
-    {
-        return match ($mediaType) {
-            'anime' => 'Anime',
-            'manga' => 'Manga',
-            'movie' => 'Películas',
-            'series' => 'Series',
-            'game' => 'Videojuegos',
-            'book' => 'Libros',
-            default => 'General',
-        };
     }
 
     /**
