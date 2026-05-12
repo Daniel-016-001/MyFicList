@@ -122,7 +122,7 @@
                                 class="text-xs font-bold uppercase text-blue-400 bg-blue-900/30 px-3 py-1 rounded-lg mb-3 inline-block">{{ data_get($details, 'source') }}</span>
                             <h1 class="text-4xl font-extrabold text-white mb-2">{{ data_get($details, 'title') }}</h1>
                             @if(data_get($details, 'original_title') && data_get($details, 'original_title') !== data_get($details, 'title'))
-                                <p class="text-gray-400 text-xl italic">{{ data_get($details, 'original_title') }}</p>
+                                <p class="text-gray-400 text-xl">{{ data_get($details, 'original_title') }}</p>
                             @endif
                         </div>
 

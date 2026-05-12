@@ -1,136 +1,113 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Mi Lista -->
-            <div id="collection" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Mi Colección</h3>
-                    <p class="text-sm text-gray-600 mb-4">Tu lista de entretenimiento</p>
-                    
-                    @php
-                        $userLists = \App\Models\UserList::where('user_id', Auth::id())->with('media')->get();
-                    @endphp
-                    
-                    @if($userLists->count() > 0)
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                            @foreach($userLists as $item)
-                                <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-                                    <img src="{{ $item->media->cover_url }}" alt="{{ $item->media->title }}" class="w-full h-32 object-cover">
-                                    <div class="p-2">
-                                        <h4 class="font-bold text-xs line-clamp-2">{{ $item->media->title }}</h4>
-                                        <div class="flex items-center justify-between mt-2">
-                                            <span class="text-xs px-2 py-1 rounded 
-                                                @if($item->status === 'completed') bg-green-100 text-green-800
-                                                @elseif($item->status === 'watching') bg-blue-100 text-blue-800
-                                                @elseif($item->status === 'plan_to_watch') bg-yellow-100 text-yellow-800
-                                                @else bg-gray-100 text-gray-800 @endif">
-                                                @if($item->status === 'completed') Completado
-                                                @elseif($item->status === 'watching') Viendo
-                                                @elseif($item->status === 'plan_to_watch') Plan
-                                                @else Descartado @endif
-                                            </span>
-                                            <a href="{{ route('media.show', $item->media->id) }}" class="text-xs text-blue-600 hover:underline">Ver</a>
+@section('content')
+    <div class="bg-gray-950 min-h-screen text-gray-100 selection:bg-blue-500/30 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                <!-- Columna Derecha: Formularios (8 cols) -->
+                <div class="lg:col-span-8 space-y-12">
+                    <!-- Sección: Información Pública -->
+                    <section id="info" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                        @include('profile.partials.update-profile-information-form')
+                    </section>
+
+                    <!-- Sección: Mi Colección -->
+                    <section id="collection" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                        <div class="space-y-10">
+                            <div class="space-y-1">
+                                <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Mi Colección</h2>
+                                <p class="text-gray-500 text-sm font-medium">Gestiona los elementos que has guardado.</p>
+                            </div>
+
+                            @php
+                                $userLists = \App\Models\UserList::where('user_id', Auth::id())->with('media')->get();
+                            @endphp
+
+                            @if($userLists->count() > 0)
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                                    @foreach($userLists as $item)
+                                        <div
+                                            class="group relative aspect-[3/4] rounded-2xl overflow-hidden glass-premium border-white/5 hover:neon-border transition-all duration-500">
+                                            <img src="{{ $item->media->cover_url }}" alt="{{ $item->media->title }}"
+                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                            <div
+                                                class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent opacity-80">
+                                            </div>
+                                            <div class="absolute bottom-0 left-0 w-full p-4">
+                                                <h4 class="font-bold text-[10px] text-white line-clamp-1 mb-2">
+                                                    {{ $item->media->title }}</h4>
+                                                <span
+                                                    class="text-[8px] px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md text-white font-black uppercase tracking-tighter border border-white/10">
+                                                    {{ $item->status }}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @else
+                                <div class="p-10 rounded-3xl border-2 border-dashed border-white/5 text-center">
+                                    <p class="text-gray-500 text-sm">Tu colección está vacía.</p>
+                                </div>
+                            @endif
                         </div>
-                    @else
-                        <p class="text-gray-500 text-sm">Tu lista está vacía.</p>
-                        <a href="/" class="inline-block mt-2 text-blue-600 hover:underline text-sm">Explorar contenido</a>
-                    @endif
-                </div>
-            </div>
+                    </section>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Listas personalizadas</h3>
-                    <p class="text-sm text-gray-600 mb-4">Crea y controla qué listas son públicas o privadas.</p>
+                    <!-- Sección: Listas Personalizadas -->
+                    <section id="lists" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                        <div class="space-y-10">
+                            <div class="space-y-1">
+                                <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Listas Personalizadas
+                                </h2>
+                                <p class="text-gray-500 text-sm font-medium">Gestiona tus colecciones y su visibilidad.</p>
+                            </div>
 
-                    @php
-                        $mediaLists = \App\Models\MediaList::where('user_id', Auth::id())->withCount('items')->get();
-                    @endphp
-
-                    <form action="{{ route('media-lists.store') }}" method="POST" class="space-y-4 mb-6">
-                        @csrf
-                        <div>
-                            <label class="block text-sm font-bold mb-2" for="name">Nombre de la lista</label>
-                            <input id="name" name="name" type="text" required maxlength="120" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 text-gray-900" />
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <label class="inline-flex items-center text-sm text-gray-700">
-                                <input type="checkbox" name="is_public" value="1" class="mr-2 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" />
-                                Hacer pública esta lista
-                            </label>
-                        </div>
-                        <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                            Crear lista
-                        </button>
-                    </form>
-
-                    @if($mediaLists->isEmpty())
-                        <p class="text-sm text-gray-500">Aún no has creado listas personalizadas.</p>
-                    @else
-                        <div class="space-y-4">
-                            @foreach($mediaLists as $list)
-                                <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                                    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            @php $mediaLists = \App\Models\MediaList::where('user_id', Auth::id())->withCount('items')->get(); @endphp
+                            <div class="grid grid-cols-1 gap-4">
+                                @foreach($mediaLists as $list)
+                                    <div
+                                        class="p-6 rounded-3xl bg-blue-800/20 border border-white/5 flex items-center justify-between group hover:bg-blue-700/30 transition-all">
                                         <div>
-                                            <p class="font-semibold text-gray-900">{{ $list->name }}</p>
-                                            <p class="text-xs text-gray-500">{{ $list->items_count }} elemento{{ $list->items_count !== 1 ? 's' : '' }}</p>
+                                            <h4 class="text-white font-bold">{{ $list->name }}</h4>
+                                            <p class="text-[10px] font-black text-gray-600 uppercase tracking-tighter">
+                                                {{ $list->items_count }} ELEMENTOS</p>
                                         </div>
-                                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                                            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $list->is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center gap-2 text-red-500/60 font-bold text-xs">
+                                                <i class="fas fa-heart"></i>
+                                                <span>{{ $list->likes->count() }}</span>
+                                            </div>
+                                            <span
+                                                class="text-[8px] font-black uppercase px-2 py-1 rounded-lg {{ $list->is_public ? 'bg-green-500/10 text-green-400' : 'bg-gray-600/10 text-gray-400' }}">
                                                 {{ $list->is_public ? 'Pública' : 'Privada' }}
                                             </span>
-                                            <form action="{{ route('media-lists.update', $list) }}" method="POST" class="inline-flex items-center gap-2">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="name" value="{{ $list->name }}">
-                                                <input type="hidden" name="is_public" value="{{ $list->is_public ? 0 : 1 }}">
-                                                <button type="submit" class="rounded-lg bg-gray-200 px-3 py-1 text-xs text-gray-700 hover:bg-gray-300">
-                                                    {{ $list->is_public ? 'Hacer privada' : 'Hacer pública' }}
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('media-lists.destroy', $list) }}" method="POST" class="inline-flex items-center">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="rounded-lg bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600">
-                                                    Eliminar
+                                            <form action="{{ route('media-lists.destroy', $list) }}" method="POST"
+                                                onsubmit="return confirm('¿Eliminar lista?')">
+                                                @csrf @method('DELETE')
+                                                <button
+                                                    class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-red-500 transition-colors">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    @endif
-                </div>
-            </div>
+                    </section>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+                    <!-- Sección: Seguridad -->
+                    <section id="security" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                        @include('profile.partials.update-password-form')
+                    </section>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
+                    <!-- Sección: Zona de Peligro -->
+                    <section id="danger" class="glass-premium rounded-[2.5rem] p-10 border-red-900/20 bg-red-950/10">
+                        @include('profile.partials.delete-user-form')
+                    </section>
                 </div>
-            </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

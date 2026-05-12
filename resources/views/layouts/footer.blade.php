@@ -1,5 +1,67 @@
-<footer class="bg-black border-t border-gray-800 py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>&copy; 2026 MyFicList. Todos los derechos reservados. | Datos de: Jikan, TMDB, RAWG</p>
+<footer
+    style="background-color: rgb(17, 24, 39) !important; padding-top: 30px !important; padding-bottom: 30px !important; margin-top: 100px !important;"
+    class="border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 items-start">
+            <!-- Branding -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-3">
+                    <span
+                        class="text-2xl font-black text-white tracking-tighter uppercase leading-none">MyFicList</span>
+                </div>
+                <p class="text-sm text-gray-400 leading-relaxed max-w-xs">
+                    Tu santuario digital para catalogar historias. Diseñado con precisión para los amantes de la ficción
+                    en todas sus formas.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="space-y-6 flex flex-col items-center md:items-start md:pl-10">
+                <h4 class="text-[10px] font-black text-white uppercase tracking-[0.4em] opacity-40">Navegación</h4>
+                <div class="flex flex-col space-y-4">
+                    <a href="/" class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Inicio</a>
+                    <a href="{{ route('media.explore') }}"
+                        class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Explorar
+                        Contenido</a>
+                    <a href="{{ route('forum.index') }}"
+                        class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Comunidad y
+                        Foro</a>
+                </div>
+            </div>
+
+            <!-- Social/External -->
+            <div class="space-y-6 flex flex-col items-center md:items-end">
+                <h4 class="text-[10px] font-black text-white uppercase tracking-[0.4em] opacity-40">Conecta</h4>
+                <div class="flex space-x-4">
+                    <a href="#"
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-blue-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-400 transition-all border border-white/5">
+                        <i class="fab fa-twitter text-base"></i>
+                    </a>
+                    <a href="#"
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-purple-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-purple-400 transition-all border border-white/5">
+                        <i class="fab fa-github text-base"></i>
+                    </a>
+                    <a href="#"
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-indigo-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-indigo-400 transition-all border border-white/5">
+                        <i class="fab fa-discord text-base"></i>
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <div class="border-t border-white/5 pt-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[9px] font-bold text-gray-600 uppercase tracking-[0.4em]">
+                    &copy; 2026 MyFicList &bull; Experiencia Premium
+                </p>
+                <div class="text-[9px] font-black text-gray-700 uppercase tracking-widest flex items-center gap-4">
+                    <span>JIKAN</span>
+                    <span class="w-1 h-1 bg-gray-800 rounded-full"></span>
+                    <span>TMDB</span>
+                    <span class="w-1 h-1 bg-gray-800 rounded-full"></span>
+                    <span>RAWG</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </footer>

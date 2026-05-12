@@ -1,10 +1,8 @@
 <x-guest-layout>
     <div class="w-full max-w-md mx-auto">
         <!-- Logo & Header -->
-        <div class="text-center mb-10">
-            <h1 class="text-5xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent pb-2">
-                MyFicList
-            </h1>
+        <div class="text-center mb-10 flex flex-col items-center">
+            <x-application-logo />
             <p class="text-gray-400 mt-2">Inicia sesión para continuar</p>
         </div>
 
@@ -16,7 +14,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+            <form method="POST" action="{{ route('login') }}" class="space-y-8">
                 @csrf
 
                 <!-- Email -->
@@ -25,6 +23,7 @@
                         Correo Electrónico
                     </label>
                     <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                        style="color: white !important; background-color: #030712 !important;"
                         class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium"
                         placeholder="tu@correo.com">
                     @error('email')
@@ -33,20 +32,26 @@
                 </div>
 
                 <!-- Password -->
-                <div>
+                <div x-data="{ show: false }">
                     <label for="password" class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
                         Contraseña
                     </label>
-                    <input id="password" name="password" type="password" required autocomplete="current-password"
-                        class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium"
-                        placeholder="••••••••">
+                    <div class="relative w-full" style="position: relative;">
+                        <input id="password" name="password" :type="show ? 'text' : 'password'" required autocomplete="current-password"
+                            style="color: white !important; background-color: #030712 !important;"
+                            class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium pr-12"
+                            placeholder="••••••••">
+                        <button type="button" @click="show = !show" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;" class="text-gray-500 hover:text-white transition-colors flex items-center justify-center">
+                            <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                     @error('password')
                         <p class="mt-2 text-xs text-red-400 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Remember me & Forgot password -->
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between pt-2">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input name="remember" type="checkbox" class="w-4 h-4 rounded bg-gray-800 border-gray-600 text-purple-600 focus:ring-purple-500">
                         <span class="text-sm text-gray-400">Recordarme</span>
@@ -60,7 +65,7 @@
 
                 <!-- Submit -->
                 <button type="submit"
-                    class="w-full py-4 bg-blue-600 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg transition-all hover:scale-[1.01] mt-2">
+                    class="w-full py-4 bg-blue-600 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg transition-all hover:scale-[1.01] mt-10">
                     <i class="fas fa-sign-in-alt mr-2"></i> Iniciar Sesión
                 </button>
 

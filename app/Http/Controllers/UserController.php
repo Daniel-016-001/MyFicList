@@ -10,7 +10,7 @@ class UserController extends Controller
     /**
      * Ver el perfil público de un usuario
      */
-    public function show(User $user) // Laravel ya lo busca por 'username' si lo configuraste en el modelo
+    public function show(User $user)
     {
         $user->load(['mediaLists.items.media']);
 
@@ -18,13 +18,27 @@ class UserController extends Controller
 
         $mediaLists = $user->mediaLists()
             ->when(auth()->id() !== $user->id, fn($query) => $query->where('is_public', true))
-            ->with('items.media')
+            ->with(['items.media', 'likes'])
             ->get();
+
+        $likesOnComments = $user->comments()->withCount('likes')->get()->sum('likes_count');
+        $likesOnPosts = $user->forumPosts()->withCount('likes')->get()->sum('likes_count');
+        $likesOnLists = $user->mediaLists()->withCount('likes')->get()->sum('likes_count');
+        $totalLikes = $likesOnComments + $likesOnPosts + $likesOnLists;
+
+        // Registro de actividad (logros)
+        $recentComments = $user->comments()->with(['media', 'likes'])->latest()->take(5)->get();
+        $recentListItems = $user->userLists()->with('media')->latest()->take(5)->get();
+        $recentPosts = $user->forumPosts()->latest()->take(5)->get();
 
         return view('users.profile', [
             'user' => $user,
             'totalCompleted' => $totalCompleted,
+            'totalLikes' => $totalLikes,
             'mediaLists' => $mediaLists,
+            'recentComments' => $recentComments,
+            'recentListItems' => $recentListItems,
+            'recentPosts' => $recentPosts,
         ]);
     }
 

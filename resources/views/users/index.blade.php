@@ -14,7 +14,7 @@
                         <img src="{{ $user->avatar_url ?? 'https://via.placeholder.com/50' }}" alt="{{ $user->username }}" class="w-12 h-12 rounded-full">
                         <div>
                             <h3 class="text-lg font-semibold">
-                                <a href="{{ route('users.show', $user->username) }}" class="text-blue-400 hover:text-blue-300">{{ $user->username }}</a>
+                                <a href="{{ route('users.show', $user) }}" class="text-blue-400 hover:text-blue-300">{{ $user->username ?: $user->name }}</a>
                             </h3>
                             <p class="text-gray-400">{{ $user->bio ?? 'Sin bio' }}</p>
                         </div>

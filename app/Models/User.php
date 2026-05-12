@@ -12,6 +12,16 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($user) {
+            if (empty($user->username)) {
+                $user->username = strtolower(str_replace(' ', '', $user->name)) . rand(100, 999);
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -93,5 +103,27 @@ class User extends Authenticatable
         return $this->belongsToMany(Media::class, 'user_lists')
             ->withPivot('status', 'score', 'progress')
             ->withTimestamps();
+    }
+
+    /**
+     * Accesor para obtener la URL del avatar
+     */
+    public function getAvatarUrlAttribute($value)
+    {
+        if ($value) {
+            // Si ya es una URL completa, devolverla
+            if (filter_var($value, FILTER_VALIDATE_URL)) return $value;
+            
+            // Si empieza por storage/, quitarlo para que asset('storage/...') no lo duplique
+            $path = ltrim($value, '/');
+            if (str_starts_with($path, 'storage/')) {
+                $path = substr($path, 8);
+            }
+            
+            return asset('storage/' . $path);
+        }
+
+        $name = urlencode($this->username ?: $this->name ?: 'User');
+        return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=EBF4FF";
     }
 }

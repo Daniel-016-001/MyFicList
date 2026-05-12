@@ -1,224 +1,245 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-16">
-    <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pb-20">
+    <div class="flex justify-between items-end mb-10">
         <div>
-            <h1 class="text-3xl font-bold text-white">Foro de la comunidad</h1>
+            <h1 class="text-4xl font-bold text-white tracking-tight">Foro de la comunidad</h1>
             <p class="mt-2 text-gray-400 max-w-2xl">Lee y comparte lo que estás viendo, tu lista de favoritos y tus recomendaciones con el resto de la comunidad.</p>
         </div>
-        <div class="text-sm text-gray-500">
-            Publicaciones recientes de usuarios registrados.
-        </div>
+        <p class="text-xs text-gray-600 hidden md:block">Publicaciones recientes de usuarios registrados.</p>
     </div>
 
     @if(session('success'))
-        <div class="mb-6 rounded-3xl border border-green-500 bg-green-900/70 p-4 text-green-200">
+        <div class="mb-10 rounded-2xl bg-green-500/10 border border-green-500/20 p-4 text-green-400 text-sm">
             {{ session('success') }}
         </div>
     @endif
 
-    @auth
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-            <div>
-                <h2 class="text-xl font-semibold text-white">Publicaciones</h2>
-                <p class="text-gray-400">Desliza sin distracciones. Abre el formulario solo cuando quieras publicar.</p>
-            </div>
-            <button id="toggle-forum-form" class="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 transition">
-                <i class="fas fa-plus"></i> Nueva publicación
-            </button>
-        </div>
-
-        <div id="forum-form-panel" class="mb-8 rounded-3xl border border-gray-800 bg-gray-900 p-6 shadow-sm {{ old('title') || old('body') || old('media_title') || old('media_id') ? '' : 'hidden' }}">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="text-xl font-semibold text-white">Crear nueva publicación</h2>
-                    <p class="text-gray-400 mt-1">Comparte tu lista, recomendaciones o lo que quieras con la comunidad.</p>
-                </div>
-                <button id="close-forum-form" type="button" class="inline-flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form action="{{ route('forum.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                @csrf
-
-                <div>
-                    <label for="category" class="block text-sm font-medium text-gray-200">Categoría</label>
-                    <select id="category" name="category" class="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        @foreach($categories as $key => $label)
-                            <option value="{{ $key }}" {{ old('category', 'general') === $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-8 space-y-10">
+            
+            @auth
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-white uppercase tracking-wider">Publicaciones</h2>
+                    <button id="toggle-forum-form" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-xl transition shadow-lg shadow-blue-900/20">
+                        NUEVA PUBLICACIÓN
+                    </button>
                 </div>
 
-                <div>
-                    <label for="title" class="block text-sm font-medium text-gray-200">Título</label>
-                    <input id="title" name="title" type="text" value="{{ old('title') }}" class="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="¿Sobre qué quieres hablar?">
-                    @error('title')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="body" class="block text-sm font-medium text-gray-200">Contenido</label>
-                    <textarea id="body" name="body" rows="5" class="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe lo que quieras compartir...">{{ old('body') }}</textarea>
-                    @error('body')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="relative">
-                    <label for="media_title" class="block text-sm font-medium text-gray-200">Vincular a contenido</label>
-                    <input id="media_title" name="media_title" type="text" value="{{ old('media_title') }}" autocomplete="off" class="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Busca por nombre de anime, película o juego">
-                    <input id="media_id" name="media_id" type="hidden" value="{{ old('media_id') }}">
-                    <div id="media-suggestions" class="absolute z-50 mt-1 w-full rounded-2xl border border-gray-700 bg-gray-950 shadow-xl hidden max-h-64 overflow-y-auto"></div>
-                    <p class="mt-2 text-sm text-gray-500">Selecciona un resultado sugerido para vincularlo a tu publicación.</p>
-                    @error('media_id')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="attachment" class="block text-sm font-medium text-gray-200">Archivo adjunto</label>
-                    <input id="attachment" name="attachment" type="file" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.zip" class="mt-2 w-full text-sm text-gray-200 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500" />
-                    @error('attachment')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-500 transition">
-                    Publicar en el foro
-                </button>
-            </form>
-        </div>
-    @else
-        <div class="rounded-3xl border border-gray-800 bg-gray-900 p-6 text-center text-gray-300 mb-8">
-            Inicia sesión para compartir publicaciones con la comunidad.
-        </div>
-    @endauth
-
-    @if($publicLists->isNotEmpty())
-        <div class="mb-10">
-            <div class="flex items-center gap-2 mb-4">
-                <i class="fas fa-star text-yellow-500"></i>
-                <h2 class="text-xl font-semibold text-white">Listas Públicas Recientes</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                @foreach($publicLists as $list)
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500 transition shadow-sm flex flex-col group cursor-pointer" onclick="window.location='{{ route('media-lists.show', $list) }}'">
-                        <div class="p-4 border-b border-gray-800 flex items-center justify-between bg-gray-800/20">
-                            <div class="flex flex-col truncate pr-2">
-                                <span class="font-bold text-sm text-white group-hover:text-blue-400 truncate transition-colors">{{ $list->name }}</span>
-                                <span class="text-[10px] text-gray-500 uppercase tracking-wider truncate">Por {{ $list->user->username ?? 'Usuario' }}</span>
-                            </div>
-                            <span class="text-xs font-semibold bg-gray-800 text-gray-300 px-2 py-1 rounded-lg flex-shrink-0">{{ $list->items->count() }} items</span>
-                        </div>
-                        <div class="p-4 flex gap-2 overflow-hidden flex-grow bg-gray-950">
-                            @foreach($list->items->take(4) as $item)
-                                <img src="{{ $item->media->cover_url }}" alt="" class="w-12 h-16 object-cover rounded shadow-sm opacity-90 group-hover:opacity-100 transition">
-                            @endforeach
-                            @if($list->items->isEmpty())
-                                <div class="text-xs text-gray-600 italic w-full text-center py-4">Lista vacía</div>
-                            @endif
-                        </div>
+                <div id="forum-form-panel" class="bg-gray-900/50 rounded-3xl p-8 border border-white/5 mb-10 {{ old('title') || old('body') || old('media_title') || old('media_id') ? '' : 'hidden' }}">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-bold text-white">¿Qué quieres compartir?</h2>
+                        <button id="close-forum-form" class="text-gray-500 hover:text-white transition">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
+
+                    <form action="{{ route('forum.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categoría</label>
+                                <select name="category" class="w-full bg-gray-950 border border-white/10 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-600">
+                                    @foreach($categories as $key => $label)
+                                        <option value="{{ $key }}" {{ old('category', 'general') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Título</label>
+                                <input name="title" type="text" value="{{ old('title') }}" class="w-full bg-gray-950 border border-white/10 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-600" placeholder="Título de tu post">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Contenido</label>
+                            <textarea name="body" rows="4" class="w-full bg-gray-950 border border-white/10 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-600" placeholder="Escribe aquí..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="relative space-y-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Vincular Contenido</label>
+                                <input id="media_title" name="media_title" type="text" value="{{ old('media_title') }}" autocomplete="off" class="w-full bg-gray-950 border border-white/10 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-600" placeholder="Busca algo...">
+                                <input id="media_id" name="media_id" type="hidden" value="{{ old('media_id') }}">
+                                <div id="media-suggestions" class="absolute z-50 mt-1 w-full rounded-xl border border-white/10 bg-gray-950 shadow-2xl hidden max-h-64 overflow-y-auto"></div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Adjuntar Imagen</label>
+                                <input name="attachment" type="file" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-white/5 file:text-white" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-xl transition">
+                            PUBLICAR
+                        </button>
+                    </form>
+                </div>
+            @else
+                <div class="bg-blue-900/10 border border-blue-500/10 rounded-2xl p-8 text-center mb-10">
+                    <p class="text-gray-300 font-medium text-sm">Inicia sesión para compartir publicaciones con la comunidad.</p>
+                </div>
+            @endauth
+
+            <!-- Filtros -->
+            <div class="flex flex-wrap gap-3 mb-10">
+                @foreach($categories as $key => $label)
+                    <a href="{{ route('forum.index', ['category' => $key]) }}" 
+                       class="px-5 py-2 rounded-full text-sm font-medium transition-all {{ $selectedCategory === $key ? 'bg-blue-600 text-white' : 'bg-gray-900 text-gray-400 hover:text-white border border-white/5' }}">
+                        {{ $label }}
+                    </a>
                 @endforeach
             </div>
+
+            <div class="space-y-6">
+                @forelse($posts as $post)
+                    <article class="bg-gray-900/40 border border-white/5 rounded-3xl p-8 hover:bg-gray-900/60 transition-all group">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex gap-4 items-center">
+                                <img src="{{ $post->user->avatar_url }}" class="w-10 h-10 rounded-xl object-cover border border-white/5" alt="">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Publicado por</p>
+                                    <a href="{{ route('users.show', $post->user) }}" class="text-white font-bold hover:text-blue-400 transition-colors">{{ $post->user->username ?: $post->user->name }}</a>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold text-gray-600 uppercase">{{ $post->created_at->diffForHumans() }}</span>
+                        </div>
+
+                        <div class="space-y-4 mb-6">
+                            <span class="inline-block bg-white/5 text-gray-400 text-[9px] font-black uppercase px-2 py-1 rounded-md tracking-wider">
+                                {{ $post->category ? str_replace('_', ' ', $post->category) : 'GENERAL' }}
+                            </span>
+                            <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">{{ $post->title }}</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed">{{ $post->body }}</p>
+                        </div>
+
+                        @if($post->media)
+                            <a href="{{ route('media.show', $post->media) }}" class="inline-flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all mb-6">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400">
+                                    <i class="fas fa-link text-xs"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">{{ $post->media->title }}</span>
+                            </a>
+                        @endif
+
+                        @if($post->attachment_path)
+                            @php
+                                $attachmentUrl = asset('storage/' . $post->attachment_path);
+                            @endphp
+                            <div class="pt-2 border-t border-white/5 mt-6">
+                                <p class="text-[10px] font-bold text-gray-600 uppercase mb-3">Archivo adjunto</p>
+                                <div class="rounded-xl overflow-hidden border border-white/5 bg-black/20">
+                                    <img src="{{ $attachmentUrl }}" class="w-full object-cover max-h-48" alt="">
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="flex items-center justify-between mt-8 pt-6 border-t border-white/5">
+                            <button onclick="toggleLike({{ $post->id }}, 'post', this)" 
+                                    class="flex items-center gap-2 text-gray-500 hover:text-white transition-colors">
+                                <i class="{{ auth()->user() && $post->isLikedBy(auth()->user()) ? 'fas text-red-500' : 'far' }} fa-heart text-sm"></i>
+                                <span class="like-count font-bold text-sm">{{ $post->likes()->count() }}</span>
+                            </button>
+                            
+                            @if(auth()->check() && (auth()->id() === $post->user_id || auth()->user()->role === 'admin'))
+                                <form action="{{ route('forum.destroy', $post) }}" method="POST">
+                                    @csrf @method('DELETE')
+                                    <button class="text-gray-600 hover:text-red-500 transition-colors text-sm">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </article>
+                @empty
+                    <div class="p-12 text-center bg-gray-900/20 rounded-3xl border border-white/5">
+                        <p class="text-gray-500 font-medium">No hay publicaciones todavía.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="mt-12">
+                {{ $posts->links() }}
+            </div>
         </div>
-    @endif
 
-    <div class="mb-6 flex flex-wrap gap-3">
-        @foreach($categories as $key => $label)
-            <a href="{{ route('forum.index', ['category' => $key]) }}" class="rounded-full border px-4 py-2 text-sm font-medium transition {{ $selectedCategory === $key ? 'border-blue-500 bg-blue-600 text-white' : 'border-gray-700 bg-gray-900 text-gray-300 hover:border-blue-500 hover:text-white' }}">
-                {{ $label }}
-            </a>
-        @endforeach
-    </div>
-
-    <div class="space-y-6">
-        @forelse($posts as $post)
-            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm hover:border-blue-500 transition">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <div class="text-sm text-gray-400">Publicado por</div>
-                        @if($post->user && !empty($post->user->username))
-                            <a href="{{ route('users.show', $post->user->username) }}" class="text-lg font-semibold text-white hover:text-blue-400">
-                                {{ $post->user->username }}
+        <!-- Columna Derecha: Sidebar (4 cols) -->
+        <aside class="lg:col-span-4 space-y-12">
+            
+            <!-- Listas Públicas Destacadas -->
+            @if($publicLists->isNotEmpty())
+                <section class="glass-premium rounded-[2.5rem] p-10 border-white/10 space-y-10">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Tendencias</h2>
+                        <div class="h-1 w-12 bg-purple-600 rounded-full"></div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        @foreach($publicLists as $list)
+                            <a href="{{ route('media-lists.show', $list) }}" class="block group">
+                                <div class="flex gap-4 items-center">
+                                    <div class="relative w-16 h-16 shrink-0">
+                                        @if($list->items->first())
+                                            <img src="{{ $list->items->first()->media->cover_url }}" class="w-full h-full object-cover rounded-2xl border border-white/10" alt="">
+                                        @else
+                                            <div class="w-full h-full bg-white/5 rounded-2xl flex items-center justify-center">
+                                                <i class="fas fa-folder text-gray-700"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-white font-bold group-hover:text-blue-400 transition-colors truncate uppercase tracking-tight">{{ $list->name }}</h4>
+                                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest truncate">POR {{ $list->user->username ?: 'USUARIO' }}</p>
+                                    </div>
+                                    <div class="text-[10px] font-black text-gray-700 uppercase">{{ $list->items->count() }} ITEMS</div>
+                                </div>
                             </a>
-                        @elseif($post->user)
-                            <span class="text-lg font-semibold text-white">{{ $post->user->name ?: 'Usuario' }}</span>
-                        @else
-                            <span class="text-lg font-semibold text-gray-400">Anónimo</span>
-                        @endif
+                        @endforeach
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="text-sm text-gray-400">{{ $post->created_at->diffForHumans() }}</div>
-                        
-                        @if(auth()->check() && (auth()->id() === $post->user_id || auth()->user()->role === 'admin'))
-                            <form action="{{ route('forum.destroy', $post) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta publicación?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:text-red-300 transition p-2" title="Eliminar publicación">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="mt-5">
-                    <div class="flex flex-wrap items-center gap-2 mb-3">
-                        <span class="rounded-full bg-gray-800 px-3 py-1 text-xs uppercase tracking-wide text-gray-300">{{ $post->category ? ucfirst(str_replace('_', ' ', $post->category)) : 'General' }}</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white">{{ $post->title }}</h3>
-                    <p class="mt-3 text-gray-300 whitespace-pre-line">{{ $post->body }}</p>
-                </div>
-
-                @if($post->media)
-                    <div class="mt-5 rounded-2xl bg-gray-950 border border-gray-800 p-4">
-                        <div class="text-sm text-gray-400">Relacionado con</div>
-                        <a href="{{ route('media.show', $post->media->id) }}" class="text-blue-400 hover:text-blue-300">{{ $post->media->title ?? 'Media desconocida' }}</a>
-                    </div>
-                @endif
-
-                @if($post->attachment_path)
-                    @php
-                        // Intentar obtener URL de S3, si falla o no es S3, usar storage local
-                        if (str_starts_with($post->attachment_path, 'foro/')) {
-                            $attachmentUrl = Storage::disk('s3')->url($post->attachment_path);
-                        } else {
-                            $attachmentUrl = asset('storage/' . $post->attachment_path);
-                        }
-                        
-                        $extension = strtolower(pathinfo($post->attachment_path, PATHINFO_EXTENSION));
-                        $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
-                    @endphp
-                    <div class="mt-5 rounded-2xl bg-gray-950 border border-gray-800 p-4">
-                        <div class="text-sm text-gray-400">Archivo adjunto</div>
-                        @if($isImage)
-                            <a href="{{ $attachmentUrl }}" target="_blank" class="block mt-3 rounded-xl overflow-hidden border border-gray-800">
-                                <img src="{{ $attachmentUrl }}" alt="Adjunto" class="w-full object-cover" />
-                            </a>
-                        @else
-                            <a href="{{ $attachmentUrl }}" target="_blank" class="mt-3 inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 transition">
-                                <i class="fas fa-file-arrow-down"></i>Descargar archivo adjunto
-                            </a>
-                        @endif
-                    </div>
-                @endif
-            </div>
-        @empty
-            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center">
-                <p class="text-gray-400">No hay publicaciones todavía. Vuelve pronto para ver nuevas recomendaciones y actualizaciones.</p>
-            </div>
-        @endforelse
-    </div>
-
-    <div class="mt-10">
-        {{ $posts->links() }}
+                </section>
+            @endif
+        </aside>
     </div>
 </div>
+
+<script>
+async function toggleLike(id, type, button) {
+    @guest
+        window.location.href = "{{ route('login') }}";
+        return;
+    @endguest
+
+    try {
+        const response = await fetch("{{ route('like.toggle') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                likeable_id: id,
+                likeable_type: type
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'liked') {
+            button.classList.add('text-red-500', 'bg-red-500/10');
+            button.classList.remove('text-gray-400', 'bg-gray-800');
+            button.querySelector('i').classList.replace('far', 'fas');
+        } else {
+            button.classList.remove('text-red-500', 'bg-red-500/10');
+            button.classList.add('text-gray-400', 'bg-gray-800');
+            button.querySelector('i').classList.replace('fas', 'far');
+        }
+        
+        button.querySelector('.like-count').textContent = data.count;
+    } catch (error) {
+        console.error('Error toggling like:', error);
+    }
+}
+</script>
 
 <script>
     const mediaTitleInput = document.getElementById('media_title');

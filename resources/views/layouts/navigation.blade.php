@@ -3,11 +3,8 @@
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
             <div class="flex items-center space-x-8">
-                <a href="/" class="flex items-center space-x-2 group">
-                    <div
-                        class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-                        MyFicList
-                    </div>
+                <a href="/" class="flex items-center space-x-2 no-underline" style="min-width: max-content;">
+                    <x-application-logo />
                 </a>
 
                 <!-- Main Navigation Links -->

@@ -23,14 +23,14 @@ class ForumController extends Controller
     {
         $selectedCategory = $request->query('category', 'all');
 
-        $posts = ForumPost::with(['user', 'media'])
+        $posts = ForumPost::with(['user', 'media', 'likes'])
             ->when($selectedCategory !== 'all', fn($query) => $query->where('category', $selectedCategory))
             ->whereHas('user')
             ->latest()
             ->paginate(12)
             ->withQueryString();
 
-        $publicLists = MediaList::with(['user', 'items.media'])
+        $publicLists = MediaList::with(['user', 'items.media', 'likes'])
             ->where('is_public', true)
             ->latest('updated_at')
             ->take(5)
@@ -59,16 +59,10 @@ class ForumController extends Controller
 
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
-            $fileName = 'foro/' . time() . '_' . uniqid() . '.jpg';
-
-            // Procesar con Intervention Image v3
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read($file);
-            $image->scale(width: 1200);
-            $encoded = $image->toJpeg(75)->toString();
-
-            // Subir a S3
-            Storage::disk('s3')->put($fileName, $encoded, 'public');
+            $fileName = 'foro/' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Subida directa al disco local public para evitar errores de drivers de S3
+            Storage::disk('public')->putFileAs('foro', $file, basename($fileName));
             $data['attachment_path'] = $fileName;
         }
 
@@ -84,9 +78,9 @@ class ForumController extends Controller
             return back()->with('error', 'No tienes permiso para eliminar esta publicación.');
         }
 
-        // Eliminar adjunto de S3 si existe
+        // Eliminar adjunto del disco local si existe
         if ($post->attachment_path) {
-            Storage::disk('s3')->delete($post->attachment_path);
+            Storage::disk('public')->delete($post->attachment_path);
         }
 
         $post->delete();

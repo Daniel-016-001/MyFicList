@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController; // Importante
 use App\Http\Controllers\CommentController; // Importante
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\MediaListController;
+use App\Http\Controllers\LikeController;
 use Illuminate\Support\Facades\Route;
 
 // --- 1. RUTAS PÚBLICAS ---
@@ -66,6 +67,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // LIKES
+    Route::post('/like', [LikeController::class, 'toggle'])->name('like.toggle');
 });
 
 require __DIR__.'/auth.php';

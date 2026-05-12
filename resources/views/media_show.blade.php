@@ -78,30 +78,32 @@
             <div class="main-grid">
 
                 <!-- Left Column: Poster -->
-                <div>
+                <div class="space-y-10">
                     <div style="position: sticky; top: 120px;">
-                        <div class="rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-gray-900">
-                            <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                style="width: 100%; height: auto; max-height: 500px; display: block;">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-[2rem] blur opacity-25 group-hover:opacity-60 transition duration-1000"></div>
+                            <div class="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 bg-gray-950 shimmer">
+                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}" class="w-full h-auto transition-transform duration-700 group-hover:scale-105">
+                            </div>
                         </div>
 
                         <!-- Actions -->
-                        <div class="mt-8 space-y-4">
+                        <div class="mt-12 space-y-4">
                             @auth
                                 <button onclick="document.getElementById('list-modal').classList.remove('hidden')"
-                                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black rounded-xl shadow-xl transition-all flex items-center justify-center gap-3">
+                                    class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-tighter">
                                     <i class="fas fa-plus"></i> AGREGAR A MI LISTA
                                 </button>
                             @else
                                 <a href="{{ route('login') }}"
-                                    class="w-full py-4 bg-gray-800 hover:bg-gray-700 text-white font-black rounded-xl shadow-xl transition-all flex items-center justify-center gap-3">
+                                    class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3 uppercase tracking-tighter">
                                     <i class="fas fa-sign-in-alt"></i> INICIA SESIÓN
                                 </a>
                             @endauth
 
                             <div class="flex gap-4">
                                 <a href="/"
-                                    class="flex-1 py-3 bg-gray-900 border border-white/5 text-gray-400 text-center rounded-xl font-bold text-sm">
+                                    class="flex-1 py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all border border-white/5">
                                     <i class="fas fa-arrow-left"></i>
                                 </a>
                                 <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
@@ -110,22 +112,22 @@
                                     <input type="hidden" name="source" value="{{ $media->source }}">
                                     <input type="hidden" name="media_type" value="{{ $media->media_type }}">
                                     <button type="submit"
-                                        class="w-full py-3 bg-gray-900 border border-white/5 text-gray-400 text-center rounded-xl font-bold text-sm">
+                                        class="w-full py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all border border-white/5">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </form>
                             </div>
                         </div>
-                        <!-- Metadata Sidebar: Light Values -->
-                        <div class="mt-12 space-y-4">
+
+                        <!-- Metadata Sidebar -->
+                        <div class="mt-12 space-y-10">
                             @if(!empty($extra['genres']))
-                                <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
-                                    <div class="mb-4">
-                                        <h4 class="text-sm font-black text-blue-400 uppercase tracking-[0.25em] group-hover:text-blue-300 transition-colors duration-500">Géneros</h4>
-                                    </div>
+                                <div class="space-y-4">
+                                    <h4 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Géneros</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['genres'] as $genre)
-                                            <span style="background:rgba(37,99,235,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.45); border-radius:12px; padding:6px 14px; font-size:0.875rem; font-weight:600;">
+                                            <span style="background-color: rgba(37, 99, 235, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #60a5fa !important;"
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ $genre }}
                                             </span>
                                         @endforeach
@@ -134,13 +136,12 @@
                             @endif
 
                             @if(!empty($extra['platforms']))
-                                <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
-                                    <div class="mb-4">
-                                        <h4 class="text-sm font-black text-purple-400 uppercase tracking-[0.25em] group-hover:text-purple-300 transition-colors duration-500">Plataformas</h4>
-                                    </div>
+                                <div class="space-y-4">
+                                    <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-[0.3em]">Plataformas</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['platforms'] as $platform)
-                                            <span style="background:rgba(20,0,50,0.5); color:#d8b4fe; border:1px solid rgba(139,92,246,0.65); border-radius:10px; padding:6px 14px; font-size:0.875rem; font-weight:600;">
+                                            <span style="background-color: rgba(147, 51, 234, 0.1) !important; border: 1px solid rgba(168, 85, 247, 0.3) !important; color: #c084fc !important;"
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ $platform }}
                                             </span>
                                         @endforeach
@@ -149,23 +150,15 @@
                             @endif
 
                             @if(!empty($extra['studios']))
-                                <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
-                                    <div class="mb-3">
-                                        <h4 class="text-sm font-black text-green-400 uppercase tracking-[0.25em] group-hover:text-green-300 transition-colors duration-500">Estudios</h4>
-                                    </div>
-                                    <div class="text-base text-gray-200 font-medium leading-relaxed">
-                                        {{ is_array($extra['studios']) ? implode(', ', $extra['studios']) : $extra['studios'] }}
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(!empty($extra['authors']))
-                                <div class="relative group p-6 rounded-3xl transition-all duration-500 hover:bg-white/[0.03] hover:translate-x-2">
-                                    <div class="mb-3">
-                                        <h4 class="text-sm font-black text-yellow-400 uppercase tracking-[0.25em] group-hover:text-yellow-300 transition-colors duration-500">Creadores</h4>
-                                    </div>
-                                    <div class="text-base text-gray-200 font-medium leading-relaxed">
-                                        {{ is_array($extra['authors']) ? implode(', ', $extra['authors']) : $extra['authors'] }}
+                                <div class="space-y-4">
+                                    <h4 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">Estudios</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach((array)$extra['studios'] as $studio)
+                                            <span style="background-color: rgba(5, 150, 105, 0.1) !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; color: #34d399 !important;"
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                                {{ is_array($studio) ? ($studio['name'] ?? '') : $studio }}
+                                            </span>
+                                        @endforeach
                                     </div>
                                 </div>
                             @endif
@@ -174,69 +167,55 @@
                 </div>
 
                 <!-- Right Column: Content -->
-                <div>
+                <div class="space-y-20">
                     <!-- Title & Badges -->
-                    <div class="mb-10">
-                        <div class="flex flex-wrap gap-3 mb-6">
-                            <span
-                                class="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs font-black uppercase rounded-lg border border-blue-600/30">
-                                {{ $media->source }}
-                            </span>
-                            <span
-                                class="px-3 py-1 bg-purple-600/20 text-purple-400 text-xs font-black uppercase rounded-lg border border-purple-600/30">
-                                {{ ucfirst($media->media_type) }}
-                            </span>
+                    <div class="space-y-6">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-purple-600/10 text-purple-400 border border-purple-500/10 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->source }}</span>
+                            <span class="px-3 py-1 bg-purple-600/10 text-purple-400 border border-purple-500/10 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->media_type }}</span>
                             @if(!empty($extra['year']))
-                                <span class="px-3 py-1 bg-gray-800 text-gray-400 text-xs font-black rounded-lg">
-                                    {{ $extra['year'] }}
-                                </span>
+                                <span class="px-3 py-1 bg-gray-800/40 text-gray-400 border border-white/5 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $extra['year'] }}</span>
                             @endif
                         </div>
-                        <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter">{{ $media->title }}</h1>
+                        
+                        <h1 class="text-4xl font-black text-white tracking-tighter uppercase leading-tight">{{ $media->title }}</h1>
 
-                        <div class="inline-flex items-center gap-4 bg-purple-600/10 border border-purple-500/20 px-6 py-4 rounded-3xl group hover:bg-purple-600/20 transition-all duration-500">
-                            <div class="flex flex-col">
-                                <span class="text-xs font-black text-purple-400 uppercase tracking-widest mb-1">Puntuación MyFicList</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-4xl font-black text-white">{{ $media->average_score }}</span>
-                                    <span class="text-purple-400/60 text-xl font-bold">/ 10</span>
+                        <div class="inline-flex items-center gap-4 bg-gray-900/20 border border-white/5 p-4 rounded-2xl">
+                            <div>
+                                <p class="text-[7px] font-black text-purple-500 uppercase tracking-widest mb-0.5">PUNTUACIÓN MYFICLIST</p>
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-3xl font-black text-white leading-none">{{ $media->average_score ?: 'N/A' }}</span>
+                                    <span class="text-gray-500 font-bold text-[10px]">/10</span>
                                 </div>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-purple-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(147,51,234,0.4)]">
-                                <i class="fas fa-star"></i>
+                            <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                                <i class="fas fa-star text-[10px]"></i>
                             </div>
                         </div>
                     </div>
 
-
-
                     <!-- Synopsis -->
-                    <div class="mb-12">
-                        <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Sinopsis</h3>
-                        <div class="glass p-8 rounded-3xl text-xl text-gray-300 leading-relaxed synopsis-content">
-                            @php
-                                $synopsis = $media->synopsis;
-                                if (empty($synopsis) || $synopsis === '...') {
-                                    $synopsis = 'No hay descripción disponible para este título.';
-                                }
-                                // Escapamos por seguridad pero permitimos nuestros cambios
-                                $synopsis = e($synopsis);
-                                // Convertimos los ### en encabezados estilizados
-                                $synopsis = preg_replace('/###\s*(.*?)(?:\n|$)/', '<h4 class="text-blue-400 font-black mt-8 mb-4 uppercase text-sm tracking-[0.2em]">$1</h4>', $synopsis);
-                                // Respetamos saltos de línea
-                                $synopsis = nl2br($synopsis);
-                            @endphp
-                            {!! $synopsis !!}
+                    <section class="pt-8 space-y-6">
+                        <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Sinopsis</h3>
+                        <div class="bg-gray-900/20 border border-white/5 rounded-3xl p-8">
+                            <div class="text-gray-400 text-sm leading-relaxed">
+                                @php
+                                    $synopsis = $media->synopsis;
+                                    if (empty($synopsis) || $synopsis === '...') {
+                                        $synopsis = 'No hay descripción disponible para este título.';
+                                    }
+                                @endphp
+                                {!! nl2br(e($synopsis)) !!}
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
 
-                    <!-- Trailer Section (Moved) -->
+                    <!-- Trailer Section -->
                     @if($trailerUrl)
-                        <div class="section-spacing">
-                            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Multimedia</h3>
-                            <div
-                                class="aspect-video rounded-3xl overflow-hidden border border-white/10 bg-black shadow-2xl">
+                        <section class="pt-8 space-y-6">
+                            <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Multimedia</h3>
+                            <div class="aspect-video rounded-3xl overflow-hidden border border-white/10 bg-black shadow-2xl">
                                 @if($youtubeId)
                                     <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0"
                                         frameborder="0" allowfullscreen></iframe>
@@ -246,73 +225,114 @@
                                     </video>
                                 @endif
                             </div>
-                        </div>
+                        </section>
                     @endif
 
-                        <!-- Comments Section -->
-                    <div class="mt-32">
-                        <h3 class="text-4xl font-black mb-12">Comunidad</h3>
-
-                        @if(session('success'))
-                            <div class="mb-8 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-2xl flex items-center gap-3">
-                                <i class="fas fa-check-circle"></i>
-                                <span class="font-bold">{{ session('success') }}</span>
-                            </div>
-                        @endif
-
-                        @if($errors->any())
-                            <div class="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl">
-                                <ul class="list-disc list-inside">
-                                    @foreach($errors->all() as $error)
-                                        <li class="font-bold">{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
+                    <!-- Comments Section -->
+                    <section class="pt-8 space-y-8">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                            <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Comunidad</h3>
+                            <div class="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em]">{{ $media->comments()->count() }} COMENTARIOS</div>
+                        </div>
 
                         @auth
-                            <div class="glass p-8 rounded-3xl mb-12">
-                                <form action="{{ route('media.comments.store', $media->id) }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="media_id" value="{{ $media->id }}">
-                                    <textarea name="content" required placeholder="¿Qué opinas de este título?"
-                                        class="w-full bg-gray-800 border-none rounded-2xl p-5 text-white mb-6"
-                                        rows="4"></textarea>
-                                    <button type="submit"
-                                        class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] shadow-lg">
-                                        Publicar Comentario
-                                    </button>
-                                </form>
+                            <div class="py-8">
+                                <div class="flex gap-6">
+                                    <img src="{{ auth()->user()->avatar_url }}" class="w-12 h-12 rounded-2xl object-cover border border-white/10" alt="">
+                                    <form action="{{ route('media.comments.store', $media->id) }}" method="POST" class="flex-1 space-y-4">
+                                        @csrf
+                                        <textarea name="content" required placeholder="Añadir un comentario..."
+                                            style="background-color: transparent !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;"
+                                            class="w-full rounded-2xl p-4 text-white text-sm focus:ring-0 transition-all placeholder-gray-600"
+                                            rows="3"></textarea>
+                                        <div class="flex justify-end">
+                                            <button type="submit"
+                                                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black px-8 py-3 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-purple-900/20 uppercase text-[9px] tracking-[0.2em]">
+                                                Publicar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         @endauth
 
-                        <div class="space-y-8">
-                            @forelse($media->comments()->with('user')->latest()->get() as $comment)
-                                <div class="glass p-8 rounded-3xl">
-                                    <div class="flex justify-between items-center mb-6">
+                        <div class="space-y-6">
+                            @forelse($media->comments()->with(['user', 'likes'])->latest()->get() as $comment)
+                                <article class="bg-gray-900/10 border border-white/5 p-8 rounded-3xl group transition-all hover:bg-gray-900/20">
+                                    <div class="flex justify-between items-start mb-6">
                                         <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center font-black text-xl">
-                                                {{ substr($comment->user->name, 0, 1) }}
+                                            <img src="{{ $comment->user->avatar_url }}" alt="" class="w-12 h-12 rounded-xl object-cover border border-white/10 shadow-sm">
+                                            <div>
+                                                @if($comment->user)
+                                                    <a href="{{ route('users.show', $comment->user) }}" class="text-sm font-black text-white hover:text-purple-400 transition-colors uppercase tracking-tight">{{ $comment->user->username ?: $comment->user->name }}</a>
+                                                @else
+                                                    <span class="font-black text-gray-500 text-sm">Usuario eliminado</span>
+                                                @endif
+                                                <div class="text-[9px] text-gray-600 uppercase tracking-widest font-black mt-0.5">{{ $comment->created_at->diffForHumans() }}</div>
                                             </div>
-                                            <span
-                                                class="font-black text-purple-400 text-lg">{{ $comment->user->name }}</span>
                                         </div>
-                                        <span
-                                            class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                        <!-- Like Button -->
+                                        <button onclick="toggleLike({{ $comment->id }}, 'comment', this)" 
+                                                class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all {{ auth()->user() && $comment->isLikedBy(auth()->user()) ? 'text-red-500 bg-red-500/10' : 'text-gray-500 bg-white/5 hover:bg-white/10' }}">
+                                            <i class="{{ auth()->user() && $comment->isLikedBy(auth()->user()) ? 'fas' : 'far' }} fa-heart text-xs"></i>
+                                            <span class="like-count font-black text-[10px]">{{ $comment->likes()->count() }}</span>
+                                        </button>
                                     </div>
-                                    <p class="text-gray-300 text-lg">{{ $comment->content }}</p>
-                                </div>
+                                    <p class="text-gray-400 text-sm leading-relaxed font-medium pl-16">{{ $comment->content }}</p>
+                                </article>
                             @empty
-                                <div class="text-center py-12 text-gray-600 italic text-lg">No hay comentarios todavía.
+                                <div class="text-center py-24 glass-premium rounded-[3rem] border-white/5">
+                                    <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-700">
+                                        <i class="fas fa-comment-slash text-3xl"></i>
+                                    </div>
+                                    <p class="text-gray-600 font-bold text-lg uppercase tracking-widest">Silencio absoluto</p>
                                 </div>
                             @endforelse
                         </div>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>
     </main>
+
+    <script>
+    async function toggleLike(id, type, button) {
+        @guest
+            window.location.href = "{{ route('login') }}";
+            return;
+        @endguest
+
+        try {
+            const response = await fetch("{{ route('like.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    likeable_id: id,
+                    likeable_type: type
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.status === 'liked') {
+                button.classList.add('text-red-500', 'bg-red-500/10');
+                button.classList.remove('text-gray-400', 'bg-gray-800/50');
+                button.querySelector('i').classList.replace('far', 'fas');
+            } else {
+                button.classList.remove('text-red-500', 'bg-red-500/10');
+                button.classList.add('text-gray-400', 'bg-gray-800/50');
+                button.querySelector('i').classList.replace('fas', 'far');
+            }
+            
+            button.querySelector('.like-count').textContent = data.count;
+        } catch (error) {
+            console.error('Error toggling like:', error);
+        }
+    }
+    </script>
     @include('layouts.footer')
 
     <!-- Modal -->

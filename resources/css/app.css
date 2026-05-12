@@ -26,45 +26,109 @@
     }
 
     .glass-effect {
-        @apply bg-gray-900/50 backdrop-blur-md border border-gray-800/50;
+        @apply bg-gray-950/40 backdrop-blur-xl border border-white/5;
+    }
+
+    .glass-premium {
+        @apply bg-gradient-to-br from-white/10 to-transparent backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] transition-all duration-500;
+    }
+
+    .glass-premium:hover {
+        @apply border-white/20 bg-white/[0.08] shadow-[0_8px_48px_0_rgba(0,0,0,0.9)];
+    }
+
+    .text-glow {
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .text-glow-purple {
+        text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .neon-border {
+        @apply border-transparent bg-clip-padding relative;
+    }
+
+    .neon-border::before {
+        content: '';
+        @apply absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-[inherit] -z-10 blur opacity-10 transition-opacity duration-1000;
+    }
+
+    .neon-border:hover::before {
+        @apply opacity-40;
+    }
+
+    .shimmer {
+        @apply relative overflow-hidden;
+    }
+
+    .shimmer::after {
+        content: '';
+        @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent;
+        animation: shimmer 4s infinite;
+    }
+
+    @keyframes shimmer {
+        100% { transform: translateX(100%); }
     }
 
     .badge {
-        @apply inline-block px-3 py-1 text-xs font-bold rounded-full;
+        @apply inline-block px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-widest italic;
     }
 
     .badge-primary {
-        @apply badge bg-blue-600/20 text-blue-300 border border-blue-500/50;
+        @apply badge bg-blue-600/10 text-blue-400 border border-blue-500/20;
     }
 
     .badge-success {
-        @apply badge bg-green-600/20 text-green-300 border border-green-500/50;
+        @apply badge bg-green-600/10 text-green-400 border border-green-500/20;
     }
 
     .badge-warning {
-        @apply badge bg-yellow-600/20 text-yellow-300 border border-yellow-500/50;
+        @apply badge bg-yellow-600/10 text-yellow-400 border border-yellow-500/20;
     }
 
     .badge-error {
-        @apply badge bg-red-600/20 text-red-300 border border-red-500/50;
+        @apply badge bg-red-600/10 text-red-400 border border-red-500/20;
+    }
+
+    .input-field {
+        @apply bg-gray-950 border-white/5 text-white focus:ring-2 focus:ring-blue-600 transition-all rounded-2xl;
+    }
+
+    input[type="text"], input[type="password"], input[type="email"], select, textarea {
+        @apply bg-gray-950 border-none text-white focus:ring-2 focus:ring-blue-600 transition-all rounded-2xl;
     }
 }
 
 /* Smooth scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgb(15, 23, 42);
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgb(55, 65, 81);
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgb(75, 85, 99);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.selection\:bg-blue-500\/30 *::selection {
+    background-color: rgba(59, 130, 246, 0.3);
 }
