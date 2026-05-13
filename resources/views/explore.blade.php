@@ -93,8 +93,8 @@
                 </div>
             </div>
 
-            <!-- Results Grid (Stable Grid System) -->
-            <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
+            <!-- Results Grid (Precise Masonry) -->
+            <div id="media-grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
                 @forelse($mediaItems as $media)
                     @php
                         $extra = $media->extra_data ?? [];
@@ -119,51 +119,64 @@
                             ? number_format((float) $media->avg_score, 1)
                             : null;
                     @endphp
-                    <div class="flex flex-col h-full bg-gray-900/50 border border-white/5 rounded-[2rem] overflow-hidden hover:border-blue-500/30 transition-all duration-300 group shadow-2xl">
-                        <!-- Image Container -->
-                        <a href="{{ route('media.show', $media->id) }}" class="block relative aspect-[2/3] overflow-hidden">
-                            <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                class="w-full h-full object-cover brightness-90 group-hover:brightness-110 group-hover:scale-110 transition-all duration-700">
-                            
-                            @if($displayScore)
-                                <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-yellow-400 text-[10px] font-black flex items-center gap-1.5 shadow-lg">
-                                    <i class="fas fa-star text-[9px]"></i> {{ $displayScore }}
-                                </div>
-                            @endif
-                        </div>
+                    <div class="break-inside-avoid mb-6">
+                        <div
+                            class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
 
-                        <!-- Card Body -->
-                        <div class="p-6 flex flex-col flex-grow">
-                            @if(!empty($platformIcons))
-                                <div class="flex items-center gap-2 mb-3">
-                                    @foreach($platformIcons as $icon)
-                                        <i class="{{ $icon }} text-blue-500/70 text-[10px]"></i>
-                                    @endforeach
-                                </div>
-                            @endif
+                            <!-- Image Container linked to details -->
+                            <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
+                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
+                                    class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
 
-                            <h3 class="text-white font-bold text-sm leading-snug mb-4 line-clamp-2 group-hover:text-blue-400 transition-colors">
-                                {{ $media->title }}
-                            </h3>
+                                @if($displayScore)
+                                    <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
+                                        class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
+                                        <i class="fas fa-star text-[9px]"></i> {{ $displayScore }}
+                                    </div>
+                                @endif
 
-                            <!-- Footer Actions -->
-                            <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-                                @auth
-                                    <button onclick="openListModal({{ $media->id }})"
-                                        class="text-[10px] font-black text-blue-500 hover:text-blue-400 uppercase tracking-widest flex items-center gap-2 transition-colors">
-                                        <i class="fas fa-plus-circle"></i> Agregar
-                                    </button>
-                                @else
-                                    <a href="{{ route('login') }}"
-                                        class="text-[10px] font-black text-blue-500 hover:text-blue-400 uppercase tracking-widest flex items-center gap-2 transition-colors">
-                                        <i class="fas fa-plus-circle"></i> Agregar
+
+                                @if(!empty($extra['trailer_url']))
+                                    <div
+                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fas fa-play text-white text-xs ml-1"></i>
+                                    </div>
+                                @endif
+                            </a>
+
+                            <!-- Content -->
+                            <div class="p-5 flex-grow flex flex-col">
+                                @if(!empty($platformIcons))
+                                    <!-- Platforms -->
+                                    <div class="flex items-center gap-2 mb-3">
+                                        @foreach($platformIcons as $icon)
+                                            <i class="{{ $icon }} text-blue-400 text-[11px]"></i>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <h3 class="font-bold text-lg text-white leading-tight mb-0">
+                                    {{ $media->title }}
+                                </h3>
+
+                                <!-- Action Buttons -->
+                                <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                    @auth
+                                        <button onclick="openListModal({{ $media->id }})"
+                                            class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                            <i class="fas fa-plus-circle"></i> Agregar
+                                        </button>
+                                    @else
+                                        <a href="{{ route('login') }}"
+                                            class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                            <i class="fas fa-plus-circle"></i> Agregar
+                                        </a>
+                                    @endauth
+                                    <a href="{{ route('media.show', $media->id) }}"
+                                        class="text-gray-400 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                        Detalles <i class="fas fa-arrow-right"></i>
                                     </a>
-                                @endauth
-                                
-                                <a href="{{ route('media.show', $media->id) }}"
-                                    class="text-[10px] font-black text-gray-500 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
-                                    Detalles <i class="fas fa-arrow-right text-[8px]"></i>
-                                </a>
+                                </div>
                             </div>
                         </div>
                     </div>
