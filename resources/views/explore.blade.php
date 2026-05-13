@@ -93,8 +93,8 @@
                 </div>
             </div>
 
-            <!-- Results Grid (Precise Masonry) -->
-            <div id="media-grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
+            <!-- Results Grid (Stable Grid System) -->
+            <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
                 @forelse($mediaItems as $media)
                     @php
                         $extra = $media->extra_data ?? [];
@@ -119,7 +119,7 @@
                             ? number_format((float) $media->avg_score, 1)
                             : null;
                     @endphp
-                    <div class="break-inside-avoid mb-6">
+                    <div class="h-full">
                         <div
                             class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
 
