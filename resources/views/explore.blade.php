@@ -124,9 +124,9 @@
                             class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
 
                             <!-- Image Container linked to details -->
-                            <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
+                            <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer overflow-hidden aspect-[2/3]">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                    class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                    class="w-full h-full object-cover brightness-90 group-hover:brightness-110 group-hover:scale-110 transition-all duration-700">
 
                                 @if($displayScore)
                                     <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
