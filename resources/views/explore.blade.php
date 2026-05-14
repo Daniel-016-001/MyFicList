@@ -182,16 +182,8 @@
                     </div>
                 @empty
                     <div class="col-span-full py-24 text-center">
-                        <div
-                            class="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-blue-900/20">
-                            <i class="fas fa-search text-3xl text-slate-600"></i>
-                        </div>
                         <h3 class="text-xl font-bold text-gray-300">No se encontraron resultados</h3>
                         <p class="text-gray-500 mt-2">Prueba ajustando los filtros de búsqueda.</p>
-                        <a href="{{ route('media.explore') }}"
-                            class="mt-6 inline-block bg-blue-600 text-white font-bold px-8 py-3 rounded-2xl hover:bg-blue-500 transition-colors">
-                            Ver todo el catálogo
-                        </a>
                     </div>
                 @endforelse
             </div>

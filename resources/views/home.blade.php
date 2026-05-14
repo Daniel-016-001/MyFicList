@@ -71,9 +71,9 @@
                         </select>
 
                         <label class="flex items-center gap-2 text-gray-400 text-sm cursor-pointer">
-                            <input type="checkbox" name="safe" value="1" checked
+                            <input type="checkbox" name="safe" value="1"
                                 class="w-4 h-4 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500">
-                            +18
+                            Filtro +18
                         </label>
 
                         <button type="submit"

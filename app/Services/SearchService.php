@@ -15,12 +15,13 @@ class SearchService
      */
     public function searchMultiple(string $query, string $type = 'anime'): array
     {
-        $cacheKey = "search_{$type}_" . md5($query);
+        $safe = request()->filled('safe');
+        $cacheKey = "search_{$type}_" . md5($query) . ($safe ? '_nsfw' : '_safe');
 
-        return Cache::remember($cacheKey, 1800, function () use ($query, $type) {
+        return Cache::remember($cacheKey, 1800, function () use ($query, $type, $safe) {
             $results = [];
 
-            $localResults = $this->searchInDatabase($query, $type);
+            $localResults = $this->searchInDatabase($query, $type, false, $safe);
             $results = array_merge($results, $localResults);
 
             $existingKeys = collect($localResults)
@@ -34,14 +35,20 @@ class SearchService
                 ->toArray();
 
             try {
-                if (in_array($type, ['anime', 'manga'])) {
-                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
-                    $results = array_merge($results, $tmdbResults);
-
-                    $jikanResults = array_filter($this->searchMultipleInJikan($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                if ($type === 'manga') {
+                    // El Manga SOLO viene de Jikan (TMDB no tiene manga)
+                    $jikanResults = array_filter($this->searchMultipleInJikan($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $jikanResults);
+                } elseif ($type === 'anime') {
+                    // El Anime viene de Jikan y de TMDB (filtrando por animación)
+                    $jikanResults = array_filter($this->searchMultipleInJikan($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $jikanResults);
+
+                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    $results = array_merge($results, $tmdbResults);
                 } elseif (in_array($type, ['movie', 'series'])) {
-                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
+                    // Películas y Series vienen de TMDB
+                    $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
                 } elseif ($type === 'game') {
                     $rawgResults = array_filter($this->searchMultipleInRawg($query), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
@@ -127,9 +134,20 @@ class SearchService
 
     // --- MÉTODOS DE BÚSQUEDA ESPECÍFICOS ---
 
-    private function searchInDatabase(string $query, string $type, bool $exact = false): array
+    private function searchInDatabase(string $query, string $type, bool $exact = false, bool $showAdult = false): array
     {
         $builder = Media::where('media_type', $type);
+
+        if (!$showAdult) {
+            // Filtrar contenido adulto si la casilla NO está marcada
+            $builder->where(function ($q) {
+                $q->whereNull('extra_data->is_adult')
+                  ->orWhere('extra_data->is_adult', false);
+            })->where(function ($q) {
+                $q->whereNull('extra_data->rating')
+                  ->orWhere('extra_data->rating', 'NOT LIKE', '%hentai%');
+            });
+        }
 
         if ($exact) {
             $builder->whereRaw('LOWER(title) = ?', [mb_strtolower(trim($query), 'UTF-8')]);
@@ -151,25 +169,52 @@ class SearchService
             ])->toArray();
     }
 
-    private function searchMultipleInTmdb(string $query, string $type): array
+    private function searchMultipleInTmdb(string $query, string $type, bool $showAdult = false): array
     {
         try {
-            $tmdbType = ($type == 'movie') ? 'movie' : 'tv';
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->get("https://api.themoviedb.org/3/search/{$tmdbType}", [
-                    'query' => $query,
-                    'language' => 'es-ES',
-                    'include_adult' => false
-                ]);
+            // Si buscamos anime, TMDB no tiene categoría propia, así que usamos búsqueda MULTI
+            // para encontrar tanto películas como series de animación
+            if ($type === 'anime') {
+                $response = Http::withToken(config('services.tmdb.token'))
+                    ->get("https://api.themoviedb.org/3/search/multi", [
+                        'query' => $query,
+                        'language' => 'es-ES',
+                        'include_adult' => $showAdult
+                    ]);
+                
+                $results = $response->json()['results'] ?? [];
+                
+                // Filtrar por género Animación (16)
+                $results = array_filter($results, function($item) {
+                    return (($item['media_type'] ?? '') === 'movie' || ($item['media_type'] ?? '') === 'tv') 
+                           && in_array(16, $item['genre_ids'] ?? []);
+                });
 
-            $results = $response->json()['results'] ?? [];
+            } else {
+                $tmdbType = ($type == 'movie') ? 'movie' : 'tv';
+                $response = Http::withToken(config('services.tmdb.token'))
+                    ->get("https://api.themoviedb.org/3/search/{$tmdbType}", [
+                        'query' => $query,
+                        'language' => 'es-ES',
+                        'include_adult' => $showAdult
+                    ]);
 
-            // Filtrar animaciones si estamos buscando series
-            if ($type === 'series') {
+                $results = $response->json()['results'] ?? [];
+
+                // Filtrar para EXCLUIR animaciones si buscamos series/películas de imagen real
                 $results = array_filter($results, fn($item) => !in_array(16, $item['genre_ids'] ?? []));
             }
 
             return array_map(function ($item) use ($type) {
+                // En búsqueda multi de TMDB, el tipo real viene en media_type
+                $actualType = $type;
+                if ($type === 'anime' && isset($item['media_type'])) {
+                    $actualType = ($item['media_type'] === 'movie') ? 'movie' : 'series';
+                    // Pero mantenemos la categoría visual como 'anime' para que se guarde correctamente
+                    // en la sección de anime del usuario
+                    $actualType = 'anime';
+                }
+
                 return [
                     'id' => null,
                     'external_id' => $item['id'],
@@ -178,7 +223,7 @@ class SearchService
                     'synopsis' => $item['overview'] ? substr($item['overview'], 0, 120) . '...' : 'Sin descripción',
                     'source' => 'TMDB',
                     'is_stored' => false,
-                    'media_type' => $type
+                    'media_type' => $actualType
                 ];
             }, array_slice($results, 0, 8));
         } catch (\Exception $e) {
@@ -205,14 +250,14 @@ class SearchService
         return mb_strtolower(preg_replace('/[^\p{L}\p{N}]+/u', '', trim($text)), 'UTF-8');
     }
 
-    private function searchMultipleInJikan(string $query, string $type): array
+    private function searchMultipleInJikan(string $query, string $type, bool $showAdult = false): array
     {
         try {
             $endpoint = ($type == 'manga') ? 'manga' : 'anime';
             $response = Http::get("https://api.jikan.moe/v4/{$endpoint}", [
                 'q' => $query,
                 'limit' => 10,
-                'sfw' => true
+                'sfw' => !$showAdult
             ]);
 
             $results = $response->json()['data'] ?? [];

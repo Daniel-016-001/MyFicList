@@ -20,15 +20,20 @@ class MediaIntegrationService
             ->where('external_id', $result['external_id'])
             ->first();
 
-        // FILTRO ANTI-NSFW de último nivel
-        if (!empty($result['is_adult']) && $result['is_adult'] === true) {
-            Log::warning("Contenido NSFW bloqueado (TMDB): " . ($result['title'] ?? 'ID ' . $result['external_id']));
-            return new Media(); // Devolvemos objeto vacío para evitar errores pero no guardamos
-        }
+        // FILTRO ANTI-NSFW: Solo bloqueamos si el usuario NO ha marcado la casilla "+18"
+        // Si request('safe') está presente, significa que el usuario QUIERE ver contenido +18
+        $showAdult = request()->filled('safe');
 
-        if (!empty($result['rating']) && str_contains(strtolower($result['rating']), 'hentai')) {
-            Log::warning("Contenido NSFW bloqueado (Jikan): " . ($result['title'] ?? 'ID ' . $result['external_id']));
-            return new Media();
+        if (!$showAdult) {
+            if (!empty($result['is_adult']) && $result['is_adult'] === true) {
+                Log::warning("Contenido NSFW bloqueado (TMDB): " . ($result['title'] ?? 'ID ' . $result['external_id']));
+                return new Media();
+            }
+
+            if (!empty($result['rating']) && str_contains(strtolower($result['rating']), 'hentai')) {
+                Log::warning("Contenido NSFW bloqueado (Jikan): " . ($result['title'] ?? 'ID ' . $result['external_id']));
+                return new Media();
+            }
         }
 
         if (!$media) {
@@ -74,6 +79,8 @@ class MediaIntegrationService
             'studios' => $result['studios'] ?? [],
             'authors' => $result['authors'] ?? [],
             'platforms' => $result['platforms'] ?? [],
+            'is_adult' => $result['is_adult'] ?? false,
+            'rating' => $result['rating'] ?? null,
         ];
 
         if ($isFullDetail) {
