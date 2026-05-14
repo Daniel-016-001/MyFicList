@@ -1,9 +1,8 @@
 @extends('layouts.app')
+@section('title', $mediaList->name)
 
 @section('content')
 <div class="bg-gray-950 min-h-screen text-gray-100">
-    @include('layouts.navigation')
-
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div class="bg-gray-900 rounded-lg p-8 border border-gray-800">
             <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
@@ -69,6 +68,11 @@
                     @endforeach
                 </div>
             @endif
+        </div>
+
+        <!-- Comments Section -->
+        <div class="mt-8 bg-gray-900 rounded-lg p-8 border border-gray-800">
+            <x-comments :model="$mediaList" />
         </div>
     </div>
 </div>

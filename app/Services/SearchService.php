@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Models\Media;
 
-class AnimeSearchService
+class SearchService
 {
     /**
      * Busca múltiples resultados en cascada con CACHE
@@ -16,8 +16,8 @@ class AnimeSearchService
     public function searchMultiple(string $query, string $type = 'anime'): array
     {
         $cacheKey = "search_{$type}_" . md5($query);
-        
-        return Cache::remember($cacheKey, 1800, function() use ($query, $type) {
+
+        return Cache::remember($cacheKey, 1800, function () use ($query, $type) {
             $results = [];
 
             $localResults = $this->searchInDatabase($query, $type);
@@ -76,7 +76,7 @@ class AnimeSearchService
             // 2. TMDB
             // 3. Jikan
             // 4. Otros
-            
+
             $local = $group->firstWhere('is_stored', true);
             if ($local) {
                 return $local;
@@ -163,12 +163,12 @@ class AnimeSearchService
                 ]);
 
             $results = $response->json()['results'] ?? [];
-            
+
             // Filtrar animaciones si estamos buscando series
             if ($type === 'series') {
                 $results = array_filter($results, fn($item) => !in_array(16, $item['genre_ids'] ?? []));
             }
-            
+
             return array_map(function ($item) use ($type) {
                 return [
                     'id' => null,
@@ -178,10 +178,12 @@ class AnimeSearchService
                     'synopsis' => $item['overview'] ? substr($item['overview'], 0, 120) . '...' : 'Sin descripción',
                     'source' => 'TMDB',
                     'is_stored' => false,
-                    'media_type' => $type 
+                    'media_type' => $type
                 ];
             }, array_slice($results, 0, 8));
-        } catch (\Exception $e) { return []; }
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     private function isExactTmdbMatch(string $query, array $tmdbResults): bool
@@ -227,7 +229,9 @@ class AnimeSearchService
                     'media_type' => $type
                 ];
             }, array_slice($results, 0, 8));
-        } catch (\Exception $e) { return []; }
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     // ... (Puedes mantener tus métodos de RAWG y OpenLibrary igual que antes)
@@ -235,10 +239,13 @@ class AnimeSearchService
     private function translateText(string $text): string
     {
         try {
-            if (empty($text) || strlen($text) < 3) return $text;
+            if (empty($text) || strlen($text) < 3)
+                return $text;
             $translator = new GoogleTranslate('es');
             return $translator->translate($text);
-        } catch (\Exception $e) { return $text; }
+        } catch (\Exception $e) {
+            return $text;
+        }
     }
 
     private function searchMultipleInRawg(string $query): array
@@ -264,7 +271,9 @@ class AnimeSearchService
                     'media_type' => 'game'
                 ];
             }, $results);
-        } catch (\Exception $e) { return []; }
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     private function searchMultipleInOpenLibrary(string $query): array
@@ -289,6 +298,8 @@ class AnimeSearchService
                     'media_type' => 'book'
                 ];
             }, $results);
-        } catch (\Exception $e) { return []; }
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }

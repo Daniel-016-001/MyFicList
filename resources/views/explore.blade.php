@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Explorar - {{ config('app.name', 'MyFicList') }}</title>
+    <title>Explorar</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=outfit:400,600,800&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
@@ -42,7 +42,7 @@
                     <div>
                         <h1
                             class="text-4xl md:text-5xl font-black tracking-tighter bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                            Explorar Catálogo
+                            Explorar catálogo
                         </h1>
                         <p class="text-gray-400 mt-2 font-medium">Descubre todo el contenido guardado en nuestra base de
                             datos.</p>
@@ -66,7 +66,7 @@
                             <option value="movie" {{ request('type') == 'movie' ? 'selected' : '' }}>Película</option>
                             <option value="series" {{ request('type') == 'series' ? 'selected' : '' }}>Serie</option>
                             <option value="game" {{ request('type') == 'game' ? 'selected' : '' }}>Videojuego</option>
-                            <option value="book" {{ request('type') == 'book' ? 'selected' : '' }}>Libro</option>
+                            <!--<option value="book" {{ request('type') == 'book' ? 'selected' : '' }}>Libro</option>-->
                         </select>
 
                         <select name="genre"
@@ -221,7 +221,7 @@
                     <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Lista</label>
                     <select name="media_list_id" onchange="toggleNewListForm(this.value)"
                         class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
-                        <option value="">Mi Lista (Predeterminada)</option>
+                        <option value="">Mi lista</option>
                         @auth
                             @foreach($mediaLists as $list)
                                 <option value="{{ $list->id }}">{{ $list->name }}
@@ -254,9 +254,8 @@
                     <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Estado</label>
                     <select name="status"
                         class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
-                        <option value="watching">Viendo / Jugando</option>
+                        <option value="watching">En progreso</option>
                         <option value="completed">Completado</option>
-                        <option value="on_hold">En Pausa</option>
                         <option value="dropped">Abandonado</option>
                         <option value="plan_to_watch">Pendiente</option>
                     </select>

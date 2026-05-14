@@ -98,6 +98,11 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'followers', 'followed_id', 'follower_id');
     }
 
+    public function forumPosts()
+    {
+        return $this->hasMany(ForumPost::class);
+    }
+
     public function media()
     {
         return $this->belongsToMany(Media::class, 'user_lists')

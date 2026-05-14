@@ -24,6 +24,7 @@ class LikeController extends Controller
             'comment' => \App\Models\Comment::class,
             'post' => \App\Models\ForumPost::class,
             'list' => \App\Models\MediaList::class,
+            'media_list' => \App\Models\MediaList::class,
         ];
 
         if (!array_key_exists($likeableType, $allowedTypes)) {

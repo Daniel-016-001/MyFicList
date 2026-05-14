@@ -4,10 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'media_id', 'content', 'parent_id'];
+    protected $fillable = [
+        'user_id',
+        'media_id',          // legacy, nullable tras migración polimórfica
+        'commentable_type',  // App\Models\Media | ForumPost | MediaList
+        'commentable_id',
+        'content',
+        'parent_id',
+    ];
 
     /**
      * Usuario que creó el comentario
@@ -26,27 +36,35 @@ class Comment extends Model
     }
 
     /**
+     * Relación polimórfica: a qué objeto pertenece este comentario
+     */
+    public function commentable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
      * Comentarios anidados (respuestas)
      */
-    public function replies()
+    public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(Comment::class, 'parent_id')->with(['user', 'likes', 'replies'])->latest();
     }
 
     /**
      * Comentario padre (si es respuesta)
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function likes()
+    public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
     }
 
-    public function isLikedBy(User $user)
+    public function isLikedBy(User $user): bool
     {
         return $this->likes()->where('user_id', $user->id)->exists();
     }

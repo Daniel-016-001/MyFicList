@@ -1,16 +1,17 @@
 @extends('layouts.app')
+@section('title', 'Mi Lista')
 
 @section('content')
     <div class="bg-gray-950 min-h-screen text-gray-100">
         <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold">Mis Listas</h1>
+                    <h1 class="text-3xl font-bold">Mis listas</h1>
                     <p class="text-gray-400">Administra tus colecciones y controla qué listas puedes compartir.</p>
                 </div>
                 <a href="{{ route('media.explore') }}"
                     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
-                    <i class="fas fa-compass"></i> Explorar Catálogo
+                    <i class="fas fa-compass"></i> Explorar catálogo
                 </a>
             </div>
 
@@ -28,13 +29,12 @@
 
             @if($mediaLists->isEmpty())
                 <div class="rounded-3xl border border-gray-800 bg-gray-900 p-16 text-center">
-                    <div class="text-6xl mb-6">📋</div>
                     <p class="text-gray-400 text-xl mb-6">Aún no tienes listas creadas.</p>
                     <p class="text-gray-500 text-sm mb-8">Explora el catálogo y agrega contenido para comenzar a crear tus
                         colecciones.</p>
                     <a href="{{ route('media.explore') }}"
                         class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white py-3 px-8 rounded-xl transition font-bold shadow-lg">
-                        <i class="fas fa-search"></i> Explorar Catálogo
+                        <i class="fas fa-search"></i> Explorar catálogo
                     </a>
                 </div>
             @else
@@ -53,7 +53,8 @@
 
                                         <div class="flex items-center gap-3">
                                             <button type="submit"
-                                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $list->is_public ? 'bg-blue-600' : 'bg-gray-700' }}"
+                                                style="height: 28px; width: 48px; padding: 2px;"
+                                                class="relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $list->is_public ? 'bg-blue-600' : 'bg-gray-700' }}"
                                                 role="switch">
                                                 <span
                                                     class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center {{ $list->is_public ? 'translate-x-5' : 'translate-x-0' }}">

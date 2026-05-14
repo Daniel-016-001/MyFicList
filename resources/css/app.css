@@ -33,10 +33,6 @@
         @apply bg-gradient-to-br from-white/10 to-transparent backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] transition-all duration-500;
     }
 
-    .glass-premium:hover {
-        @apply border-white/20 bg-white/[0.08] shadow-[0_8px_48px_0_rgba(0,0,0,0.9)];
-    }
-
     .text-glow {
         text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
     }

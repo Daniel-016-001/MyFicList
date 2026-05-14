@@ -24,7 +24,7 @@ La aplicación utiliza APIs externas para buscar datos y guarda en la base de da
 2. `GET /search`
    - Controlador: `App\Http\Controllers\MediaController@search`.
    - Valida los parámetros `q` y `type`.
-   - Llama a `App\Services\AnimeSearchService::searchMultiple`.
+   - Llama a `App\Services\SearchService::searchMultiple`.
    - Devuelve la vista `resources/views/media_results.blade.php` con resultados.
 
 3. `POST /media/add-from-search`
@@ -71,7 +71,7 @@ La aplicación utiliza APIs externas para buscar datos y guarda en la base de da
 
 ### 3.2 Servicio de búsqueda
 
-#### `App\Services\AnimeSearchService`
+#### `App\Services\SearchService`
 Este servicio es el motor de búsqueda y normalización de datos.
 
 - `searchMultiple(string $query, string $type)`
@@ -161,6 +161,6 @@ Este servicio es el motor de búsqueda y normalización de datos.
 ---
 
 ## 7. Conclusión
-MyFicList combina búsqueda multi-fuente con una biblioteca personal. El núcleo es el servicio de búsqueda (`AnimeSearchService`), los controladores `MediaController`/`UserListController`, y los modelos `Media`/`UserList`.
+MyFicList combina búsqueda multi-fuente con una biblioteca personal. El núcleo es el servicio de búsqueda (`SearchService`), los controladores `MediaController`/`UserListController`, y los modelos `Media`/`UserList`.
 
 El diseño permite que el usuario vea resultados externos, añada solo lo que quiera guardar y luego administre su colección desde su dashboard.

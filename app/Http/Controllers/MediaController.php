@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\MediaIntegrationService;
-use App\Services\AnimeSearchService; // Importamos el servicio de búsqueda
+use App\Services\SearchService; // Importamos el servicio de búsqueda
 use Illuminate\Http\Request;
 use App\Models\Media;
 
@@ -12,7 +12,7 @@ class MediaController extends Controller
     protected $mediaService;
     protected $searchService;
 
-    public function __construct(MediaIntegrationService $mediaService, AnimeSearchService $searchService)
+    public function __construct(MediaIntegrationService $mediaService, SearchService $searchService)
     {
         $this->mediaService = $mediaService;
         $this->searchService = $searchService;
@@ -24,7 +24,7 @@ class MediaController extends Controller
     public function show($id)
     {
         $media = Media::findOrFail($id);
-        
+
         // Lazy load de detalles completos si no se han cargado antes
         $extra = $media->extra_data ?? [];
         if (!isset($extra['full_details_loaded']) || $extra['full_details_loaded'] !== true) {
@@ -48,7 +48,7 @@ class MediaController extends Controller
         $results = $this->searchService->searchMultiple($query, $type);
 
         // Filtrar resultados que no tienen imagen de portada
-        $results = array_filter($results, function($result) {
+        $results = array_filter($results, function ($result) {
             return !empty($result['cover_url']);
         });
 
@@ -77,7 +77,7 @@ class MediaController extends Controller
         $results = $this->mediaService->getUnifiedResults((string) $query);
 
         // Filtrar resultados que no tienen imagen de portada
-        $results = array_filter($results, function($result) {
+        $results = array_filter($results, function ($result) {
             return !empty($result['cover_url']);
         });
 

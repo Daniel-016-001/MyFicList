@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Mi Perfil')
 
 @section('content')
     <div class="bg-gray-950 min-h-screen text-gray-100 selection:bg-blue-500/30 pb-20">
@@ -66,7 +67,7 @@
                             <div class="grid grid-cols-1 gap-4">
                                 @foreach($mediaLists as $list)
                                     <div
-                                        class="p-6 rounded-3xl bg-blue-800/20 border border-white/5 flex items-center justify-between group hover:bg-blue-700/30 transition-all">
+                                        class="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
                                         <div>
                                             <h4 class="text-white font-bold">{{ $list->name }}</h4>
                                             <p class="text-[10px] font-black text-gray-600 uppercase tracking-tighter">

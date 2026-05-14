@@ -1,3 +1,6 @@
+@extends('layouts.app')
+
+@section('content')
 <div class="bg-gray-950 min-h-screen text-gray-100 selection:bg-blue-500/30">
     <!-- Header Cinematográfico del Perfil -->
     <div class="relative w-full overflow-hidden">
@@ -258,5 +261,4 @@ async function toggleLike(id, type, button) {
     }
 }
 </script>
-@endsection</script>
 @endsection

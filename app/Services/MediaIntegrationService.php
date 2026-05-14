@@ -37,16 +37,19 @@ class MediaIntegrationService
             $media->external_id = $result['external_id'];
         }
 
-        if (!empty($result['title'])) $media->title = $result['title'];
-        if (!empty($result['cover_url'])) $media->cover_url = $result['cover_url'];
-        
+        if (!empty($result['title']))
+            $media->title = $result['title'];
+        if (!empty($result['cover_url']))
+            $media->cover_url = $result['cover_url'];
+
         $newSynopsis = trim($result['synopsis'] ?? '');
         // Si la sinopsis es solo "..." o está vacía, la ignoramos si ya tenemos algo
         $isPoorSynopsis = ($newSynopsis === '...' || $newSynopsis === '');
 
         if ($isFullDetail) {
             // Si es la carga completa de detalles, mandamos nosotros
-            if (!$isPoorSynopsis) $media->synopsis = $newSynopsis;
+            if (!$isPoorSynopsis)
+                $media->synopsis = $newSynopsis;
         } else {
             // Si es una búsqueda, solo guardamos si no había nada
             if (!$media->synopsis && !$isPoorSynopsis) {
@@ -101,8 +104,9 @@ class MediaIntegrationService
     public function importToDatabase($externalId, $source, $type): ?Media
     {
         $details = $this->getExternalDetails($externalId, $source, $type);
-        
-        if (!$details) return null;
+
+        if (!$details)
+            return null;
 
         return $this->importSearchResult($details, true);
     }
@@ -112,14 +116,14 @@ class MediaIntegrationService
      */
     public function getUnifiedResults(string $query): array
     {
-        $animeSearchService = app(AnimeSearchService::class);
+        $SearchService = app(SearchService::class);
         $results = [];
 
         $types = ['anime', 'manga', 'movie', 'series', 'game'];
-        
+
         foreach ($types as $type) {
             try {
-                $results = array_merge($results, $animeSearchService->searchMultiple($query, $type));
+                $results = array_merge($results, $SearchService->searchMultiple($query, $type));
             } catch (\Exception $e) {
                 Log::warning("Fallo en búsqueda unificada para tipo {$type}: " . $e->getMessage());
             }
@@ -188,7 +192,7 @@ class MediaIntegrationService
                     $youtubeResponse = Http::get("https://api.rawg.io/api/games/{$id}/youtube", [
                         'key' => config('services.rawg.key')
                     ]);
-                    
+
                     if ($youtubeResponse->successful()) {
                         $youtube = $youtubeResponse->json();
                         if (isset($youtube['results'][0]['external_id'])) {
@@ -205,21 +209,21 @@ class MediaIntegrationService
 
             return [
                 'external_id' => $id,
-                'title'       => $details['name'] ?? 'Sin título',
-                'cover_url'   => $details['background_image'] ?? null,
-                'synopsis'    => $this->translateText($details['description_raw'] ?? strip_tags($details['description'] ?? '')),
-                'media_type'  => 'game',
-                'source'      => 'RAWG',
-                'genres'      => $genres,
-                'categories'  => $genres,
-                'year'        => isset($details['released']) ? substr($details['released'], 0, 4) : null,
+                'title' => $details['name'] ?? 'Sin título',
+                'cover_url' => $details['background_image'] ?? null,
+                'synopsis' => $this->translateText($details['description_raw'] ?? strip_tags($details['description'] ?? '')),
+                'media_type' => 'game',
+                'source' => 'RAWG',
+                'genres' => $genres,
+                'categories' => $genres,
+                'year' => isset($details['released']) ? substr($details['released'], 0, 4) : null,
                 'trailer_url' => $trailerUrl,
-                'platforms'   => $platforms,
-                'images'      => [],
-                'episodes'    => null,
-                'chapters'    => null,
-                'studios'     => collect($details['developers'] ?? [])->pluck('name')->toArray(),
-                'authors'     => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
+                'platforms' => $platforms,
+                'images' => [],
+                'episodes' => null,
+                'chapters' => null,
+                'studios' => collect($details['developers'] ?? [])->pluck('name')->toArray(),
+                'authors' => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
             ];
         } catch (\Exception $e) {
             Log::error("Critical error in getRawgDetails for ID {$id}: " . $e->getMessage());
@@ -241,29 +245,29 @@ class MediaIntegrationService
         $genres = collect($details['genres'] ?? [])->pluck('name')->toArray();
 
         // Para series, los "autores" son los creadores
-        $authors = ($type == 'series') 
+        $authors = ($type == 'series')
             ? collect($details['created_by'] ?? [])->pluck('name')->toArray()
             : collect($details['credits']['crew'] ?? [])->where('job', 'Director')->pluck('name')->toArray();
 
         return [
             'external_id' => $details['id'],
-            'title'       => $details['title'] ?? $details['name'],
-            'cover_url'   => $details['poster_path'] ? 'https://image.tmdb.org/t/p/w500' . $details['poster_path'] : null,
-            'synopsis'    => $details['overview'],
-            'type'        => ($type == 'movie') ? 'Película' : 'Serie',
-            'source'      => 'TMDB',
-            'genres'      => $genres,
-            'categories'  => $genres,
-            'year'        => substr($details['release_date'] ?? $details['first_air_date'] ?? '', 0, 4),
+            'title' => $details['title'] ?? $details['name'],
+            'cover_url' => $details['poster_path'] ? 'https://image.tmdb.org/t/p/w500' . $details['poster_path'] : null,
+            'synopsis' => $details['overview'],
+            'type' => ($type == 'movie') ? 'Película' : 'Serie',
+            'source' => 'TMDB',
+            'genres' => $genres,
+            'categories' => $genres,
+            'year' => substr($details['release_date'] ?? $details['first_air_date'] ?? '', 0, 4),
             'trailer_url' => $trailerUrl,
-            'images'      => [],
-            'episodes'    => $details['number_of_episodes'] ?? null,
-            'seasons'     => $details['number_of_seasons'] ?? null,
-            'chapters'    => null,
-            'studios'     => collect($details['production_companies'] ?? [])->pluck('name')->toArray(),
-            'authors'     => $authors,
-            'is_adult'    => $details['adult'] ?? false,
-            'media_type'  => $type
+            'images' => [],
+            'episodes' => $details['number_of_episodes'] ?? null,
+            'seasons' => $details['number_of_seasons'] ?? null,
+            'chapters' => null,
+            'studios' => collect($details['production_companies'] ?? [])->pluck('name')->toArray(),
+            'authors' => $authors,
+            'is_adult' => $details['adult'] ?? false,
+            'media_type' => $type
         ];
     }
 
@@ -274,22 +278,22 @@ class MediaIntegrationService
 
         return [
             'external_id' => $details['mal_id'],
-            'title'       => $details['title'],
-            'cover_url'   => $details['images']['jpg']['large_image_url'],
-            'synopsis'    => $this->translateText($details['synopsis'] ?? ''),
-            'type'        => ($type == 'manga') ? 'Manga' : 'Anime',
-            'source'      => 'Jikan',
-            'genres'      => collect($details['genres'] ?? [])->pluck('name')->toArray(),
-            'categories'  => collect($details['genres'] ?? [])->pluck('name')->toArray(),
-            'year'        => $details['year'] ?? substr($details['published']['from'] ?? '', 0, 4),
+            'title' => $details['title'],
+            'cover_url' => $details['images']['jpg']['large_image_url'],
+            'synopsis' => $this->translateText($details['synopsis'] ?? ''),
+            'type' => ($type == 'manga') ? 'Manga' : 'Anime',
+            'source' => 'Jikan',
+            'genres' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
+            'categories' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
+            'year' => $details['year'] ?? substr($details['published']['from'] ?? '', 0, 4),
             'trailer_url' => $details['trailer']['url'] ?? null,
-            'images'      => [],
-            'episodes'    => $details['episodes'] ?? null,
-            'chapters'    => $details['chapters'] ?? $details['volumes'] ?? null,
-            'studios'     => collect($details['studios'] ?? [])->pluck('name')->toArray(),
-            'authors'     => collect($details['authors'] ?? [])->pluck('name')->toArray(),
-            'rating'      => $details['rating'] ?? '',
-            'media_type'  => $type
+            'images' => [],
+            'episodes' => $details['episodes'] ?? null,
+            'chapters' => $details['chapters'] ?? $details['volumes'] ?? null,
+            'studios' => collect($details['studios'] ?? [])->pluck('name')->toArray(),
+            'authors' => collect($details['authors'] ?? [])->pluck('name')->toArray(),
+            'rating' => $details['rating'] ?? '',
+            'media_type' => $type
         ];
     }
 
@@ -300,28 +304,29 @@ class MediaIntegrationService
 
         return [
             'external_id' => $id,
-            'title'       => $details['title'],
-            'cover_url'   => isset($details['covers'][0]) ? "https://covers.openlibrary.org/b/id/{$details['covers'][0]}-L.jpg" : null,
-            'synopsis'    => $this->translateText($details['description']['value'] ?? $details['description'] ?? ''),
-            'type'        => 'Libro',
-            'source'      => 'OpenLibrary',
-            'genres'      => [],
-            'categories'  => [],
-            'year'        => substr($details['first_publish_date'] ?? '', -4),
+            'title' => $details['title'],
+            'cover_url' => isset($details['covers'][0]) ? "https://covers.openlibrary.org/b/id/{$details['covers'][0]}-L.jpg" : null,
+            'synopsis' => $this->translateText($details['description']['value'] ?? $details['description'] ?? ''),
+            'type' => 'Libro',
+            'source' => 'OpenLibrary',
+            'genres' => [],
+            'categories' => [],
+            'year' => substr($details['first_publish_date'] ?? '', -4),
             'trailer_url' => null,
-            'images'      => [],
-            'episodes'    => null,
-            'chapters'    => null,
-            'studios'     => [],
-            'authors'     => [],
-            'media_type'  => 'book'
+            'images' => [],
+            'episodes' => null,
+            'chapters' => null,
+            'studios' => [],
+            'authors' => [],
+            'media_type' => 'book'
         ];
     }
 
     private function translateText(string $text): string
     {
         try {
-            if (empty($text) || strlen($text) < 3) return $text;
+            if (empty($text) || strlen($text) < 3)
+                return $text;
             $translator = new GoogleTranslate('es');
             return $translator->translate($text);
         } catch (\Exception $e) {

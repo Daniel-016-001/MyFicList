@@ -17,18 +17,87 @@ class ForumController extends Controller
         'recomendaciones' => 'Recomendaciones',
         'discusion' => 'Discusión',
         'spoilers' => 'Spoilers',
+        'listas' => 'Listas',
     ];
 
     public function index(Request $request)
     {
         $selectedCategory = $request->query('category', 'all');
+        $search = $request->query('search');
 
-        $posts = ForumPost::with(['user', 'media', 'likes'])
-            ->when($selectedCategory !== 'all', fn($query) => $query->where('category', $selectedCategory))
-            ->whereHas('user')
-            ->latest()
-            ->paginate(12)
-            ->withQueryString();
+        if ($selectedCategory === 'listas') {
+            $items = MediaList::with(['user', 'items.media', 'likes'])
+                ->where('is_public', true)
+                ->when($search, function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhereHas('user', function($q) use ($search) {
+                              $q->where('username', 'like', "%{$search}%");
+                          });
+                })
+                ->latest('updated_at')
+                ->paginate(12)
+                ->withQueryString();
+        } elseif ($selectedCategory === 'all') {
+            // Unir Publicaciones y Listas para "Todas"
+            $posts = ForumPost::with(['user', 'media', 'likes'])
+                ->when($search, function($query) use ($search) {
+                    $query->where(function($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%")
+                          ->orWhere('body', 'like', "%{$search}%")
+                          ->orWhereHas('user', function($u) use ($search) {
+                              $u->where('username', 'like', "%{$search}%");
+                          });
+                    });
+                })
+                ->whereHas('user')
+                ->latest()
+                ->get();
+
+            $lists = MediaList::with(['user', 'items.media', 'likes'])
+                ->where('is_public', true)
+                ->when($search, function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhereHas('user', function($q) use ($search) {
+                              $q->where('username', 'like', "%{$search}%");
+                          });
+                })
+                ->latest('updated_at')
+                ->get();
+
+            // Combinar y paginar manualmente
+            $merged = $posts->concat($lists)->sortByDesc(function($item) {
+                return $item->created_at ?? $item->updated_at;
+            });
+
+            $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+            $perPage = 12;
+            $currentItems = $merged->slice(($currentPage - 1) * $perPage, $perPage)->all();
+            
+            $items = new \Illuminate\Pagination\LengthAwarePaginator(
+                $currentItems, 
+                $merged->count(), 
+                $perPage, 
+                $currentPage, 
+                ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+            );
+            $items->appends($request->all());
+        } else {
+            $items = ForumPost::with(['user', 'media', 'likes'])
+                ->where('category', $selectedCategory)
+                ->when($search, function($query) use ($search) {
+                    $query->where(function($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%")
+                          ->orWhere('body', 'like', "%{$search}%")
+                          ->orWhereHas('user', function($u) use ($search) {
+                              $u->where('username', 'like', "%{$search}%");
+                          });
+                    });
+                })
+                ->whereHas('user')
+                ->latest()
+                ->paginate(12)
+                ->withQueryString();
+        }
 
         $publicLists = MediaList::with(['user', 'items.media', 'likes'])
             ->where('is_public', true)
@@ -37,10 +106,11 @@ class ForumController extends Controller
             ->get();
 
         return view('forum', [
-            'posts' => $posts,
+            'items' => $items,
             'publicLists' => $publicLists,
             'categories' => self::CATEGORIES,
             'selectedCategory' => $selectedCategory,
+            'search' => $search,
         ]);
     }
 

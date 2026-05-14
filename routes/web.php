@@ -28,13 +28,11 @@ Route::get('/details/{external_id}/{source}/{type}', [MediaController::class, 'd
 
 // Comunidad (Pública para que se puedan ver perfiles de otros)
 Route::get('/comunidad', [UserController::class, 'index'])->name('users.index');
-Route::get('/u/{username}', [UserController::class, 'show'])->name('users.show');
+Route::get('/u/{user}', [UserController::class, 'show'])->name('users.show');
 Route::get('/foro', [ForumController::class, 'index'])->name('forum.index');
 Route::get('/listas/{mediaList}', [MediaListController::class, 'show'])->name('media-lists.show');
 
-// Comentarios (Ver es público, escribir es privado)
-Route::get('/media/{id}/comments', [CommentController::class, 'index'])->name('media.comments');
-
+// Comentarios (Ver es público, pero gestionado en las vistas de cada recurso)
 
 // --- 2. RUTAS PRIVADAS (Requieren estar logueado) ---
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -51,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/user-list/{id}', [UserListController::class, 'destroy'])->name('user-list.destroy');
 
     // COMENTARIOS: Escribir y responder
-    Route::post('/media/{id}/comments', [CommentController::class, 'store'])->name('media.comments.store');
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     // LISTAS DE USUARIO
@@ -70,6 +68,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // LIKES
     Route::post('/like', [LikeController::class, 'toggle'])->name('like.toggle');
+
+    // SEGUIR USUARIOS
+    Route::post('/u/{user}/follow', [UserController::class, 'follow'])->name('users.follow');
 });
 
 require __DIR__.'/auth.php';

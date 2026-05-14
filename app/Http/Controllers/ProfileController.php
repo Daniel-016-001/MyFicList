@@ -29,7 +29,26 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->fill($request->validated());
 
-        if ($request->hasFile('avatar')) {
+        if ($request->filled('avatar_cropped')) {
+            $imageData = $request->input('avatar_cropped');
+            if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                $imageData = substr($imageData, strpos($imageData, ',') + 1);
+                $type = strtolower($type[1]); // jpg, png, gif
+
+                if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
+                    throw new \Exception('invalid image type');
+                }
+                $imageData = base64_decode($imageData);
+
+                if ($imageData === false) {
+                    throw new \Exception('base64_decode failed');
+                }
+
+                $fileName = 'avatars/' . uniqid() . '.' . $type;
+                \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageData);
+                $user->avatar_url = $fileName;
+            }
+        } elseif ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar_url = $path;
         }

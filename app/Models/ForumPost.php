@@ -28,4 +28,9 @@ class ForumPost extends Model
     {
         return $this->likes()->where('user_id', $user->id)->exists();
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }

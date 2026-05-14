@@ -1,8 +1,8 @@
 <footer
-    style="background-color: rgb(17, 24, 39) !important; padding-top: 30px !important; padding-bottom: 30px !important; margin-top: 100px !important;"
+    style="background-color: rgb(17, 24, 39) !important; padding-top: 20px !important; padding-bottom: 20px !important; !important;"
     class="border-t border-white/5">
     <div class="max-w-6xl mx-auto px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 items-start">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-10 items-start">
             <!-- Branding -->
             <div class="space-y-6">
                 <div class="flex items-center space-x-3">
@@ -23,9 +23,11 @@
                     <a href="{{ route('media.explore') }}"
                         class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Explorar
                         Contenido</a>
+                    <a href="{{ route('dashboard') }}"
+                        class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Fiction top</a>
                     <a href="{{ route('forum.index') }}"
                         class="text-xs font-bold text-gray-400 hover:text-blue-400 transition-colors">Comunidad y
-                        Foro</a>
+                        foro</a>
                 </div>
             </div>
 
@@ -49,12 +51,13 @@
             </div>
         </div>
 
-        <div class="border-t border-white/5 pt-10">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[9px] font-bold text-gray-600 uppercase tracking-[0.4em]">
+        <div class="border-white/5 pt-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-2">
+                <p class="font-bold text-gray-600 uppercase tracking-[0.4em]" style="font-size: 9px;">
                     &copy; 2026 MyFicList &bull; Experiencia Premium
                 </p>
-                <div class="text-[9px] font-black text-gray-700 uppercase tracking-widest flex items-center gap-4">
+                <div class="font-black text-gray-700 uppercase tracking-widest flex items-center gap-4"
+                    style="font-size: 9px;">
                     <span>JIKAN</span>
                     <span class="w-1 h-1 bg-gray-800 rounded-full"></span>
                     <span>TMDB</span>
