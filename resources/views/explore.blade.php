@@ -94,100 +94,101 @@
             </div>
 
             <!-- Results Grid (Precise Masonry) -->
-            <div id="media-grid"
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                @forelse($mediaItems as $media)
-                    @php
-                        $extra = $media->extra_data ?? [];
-                        $platforms = $extra['platforms'] ?? [];
-                        $platformIcons = [];
-                        foreach ($platforms as $p) {
-                            $pLower = strtolower($p);
-                            if (str_contains($pLower, 'pc') || str_contains($pLower, 'windows'))
-                                $platformIcons[] = 'fab fa-windows';
-                            if (str_contains($pLower, 'playstation') || str_contains($pLower, 'ps'))
-                                $platformIcons[] = 'fab fa-playstation';
-                            if (str_contains($pLower, 'xbox'))
-                                $platformIcons[] = 'fab fa-xbox';
-                            if (str_contains($pLower, 'nintendo') || str_contains($pLower, 'switch'))
-                                $platformIcons[] = 'fab fa-nintendo-switch';
-                        }
-                        $platformIcons = array_unique($platformIcons);
+            @if($mediaItems->isEmpty())
+                <div class="py-24 text-center w-full">
+                    <h3 class="text-xl font-bold text-gray-300">No se encontraron resultados</h3>
+                    <p class="text-gray-500 mt-2">Prueba ajustando los filtros de búsqueda.</p>
+                </div>
+            @else
+                <div id="media-grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
+                    @foreach($mediaItems as $media)
+                        @php
+                            $extra = $media->extra_data ?? [];
+                            $platforms = $extra['platforms'] ?? [];
+                            $platformIcons = [];
+                            foreach ($platforms as $p) {
+                                $pLower = strtolower($p);
+                                if (str_contains($pLower, 'pc') || str_contains($pLower, 'windows'))
+                                    $platformIcons[] = 'fab fa-windows';
+                                if (str_contains($pLower, 'playstation') || str_contains($pLower, 'ps'))
+                                    $platformIcons[] = 'fab fa-playstation';
+                                if (str_contains($pLower, 'xbox'))
+                                    $platformIcons[] = 'fab fa-xbox';
+                                if (str_contains($pLower, 'nintendo') || str_contains($pLower, 'switch'))
+                                    $platformIcons[] = 'fab fa-nintendo-switch';
+                            }
+                            $platformIcons = array_unique($platformIcons);
 
-                        $emoji = '';
-                        // Use pre-loaded avg_score from withAvg, fall back to accessor
-                        $displayScore = isset($media->avg_score) && $media->avg_score !== null
-                            ? number_format((float) $media->avg_score, 1)
-                            : null;
-                    @endphp
-                    <div class="break-inside-avoid mb-6">
-                        <div
-                            class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                            $emoji = '';
+                            // Use pre-loaded avg_score from withAvg, fall back to accessor
+                            $displayScore = isset($media->avg_score) && $media->avg_score !== null
+                                ? number_format((float) $media->avg_score, 1)
+                                : null;
+                        @endphp
+                        <div class="break-inside-avoid mb-6">
+                            <div
+                                class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
 
-                            <!-- Image Container linked to details -->
-                            <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
-                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                    class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                <!-- Image Container linked to details -->
+                                <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
+                                    <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
+                                        class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
 
-                                @if($displayScore)
-                                    <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
-                                        class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
-                                        <i class="fas fa-star text-[9px]"></i> {{ $displayScore }}
-                                    </div>
-                                @endif
+                                    @if($displayScore)
+                                        <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
+                                            class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
+                                            <i class="fas fa-star text-[9px]"></i> {{ $displayScore }}
+                                        </div>
+                                    @endif
 
 
-                                @if(!empty($extra['trailer_url']))
-                                    <div
-                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <i class="fas fa-play text-white text-xs ml-1"></i>
-                                    </div>
-                                @endif
-                            </a>
+                                    @if(!empty($extra['trailer_url']))
+                                        <div
+                                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i class="fas fa-play text-white text-xs ml-1"></i>
+                                        </div>
+                                    @endif
+                                </a>
 
-                            <!-- Content -->
-                            <div class="p-5 flex-grow flex flex-col">
-                                @if(!empty($platformIcons))
-                                    <!-- Platforms -->
-                                    <div class="flex items-center gap-2 mb-3">
-                                        @foreach($platformIcons as $icon)
-                                            <i class="{{ $icon }} text-blue-400 text-[11px]"></i>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                <!-- Content -->
+                                <div class="p-5 flex-grow flex flex-col">
+                                    @if(!empty($platformIcons))
+                                        <!-- Platforms -->
+                                        <div class="flex items-center gap-2 mb-3">
+                                            @foreach($platformIcons as $icon)
+                                                <i class="{{ $icon }} text-blue-400 text-[11px]"></i>
+                                            @endforeach
+                                        </div>
+                                    @endif
 
-                                <h3 class="font-bold text-lg text-white leading-tight mb-0">
-                                    {{ $media->title }}
-                                </h3>
+                                    <h3 class="font-bold text-lg text-white leading-tight mb-0">
+                                        {{ $media->title }}
+                                    </h3>
 
-                                <!-- Action Buttons -->
-                                <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
-                                    @auth
-                                        <button onclick="openListModal({{ $media->id }})"
-                                            class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
-                                            <i class="fas fa-plus-circle"></i> Agregar
-                                        </button>
-                                    @else
-                                        <a href="{{ route('login') }}"
-                                            class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
-                                            <i class="fas fa-plus-circle"></i> Agregar
+                                    <!-- Action Buttons -->
+                                    <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        @auth
+                                            <button onclick="openListModal({{ $media->id }})"
+                                                class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                                <i class="fas fa-plus-circle"></i> Agregar
+                                            </button>
+                                        @else
+                                            <a href="{{ route('login') }}"
+                                                class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                                <i class="fas fa-plus-circle"></i> Agregar
+                                            </a>
+                                        @endauth
+                                        <a href="{{ route('media.show', $media->id) }}"
+                                            class="text-gray-400 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-colors">
+                                            Detalles <i class="fas fa-arrow-right"></i>
                                         </a>
-                                    @endauth
-                                    <a href="{{ route('media.show', $media->id) }}"
-                                        class="text-gray-400 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-colors">
-                                        Detalles <i class="fas fa-arrow-right"></i>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="col-span-full py-24 text-center">
-                        <h3 class="text-xl font-bold text-gray-300">No se encontraron resultados</h3>
-                        <p class="text-gray-500 mt-2">Prueba ajustando los filtros de búsqueda.</p>
-                    </div>
-                @endforelse
-            </div>
+                    @endforeach
+                </div>
+            @endif
 
             <!-- Pagination (Hidden for Infinite Scroll) -->
             <div id="pagination-container" class="mt-16 hidden">
