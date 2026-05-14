@@ -94,7 +94,7 @@
             </div>
 
             <!-- Results Grid (Precise Masonry) -->
-            <div id="media-grid" class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
+            <div id="media-grid">
                 @forelse($mediaItems as $media)
                     @php
                         $extra = $media->extra_data ?? [];
