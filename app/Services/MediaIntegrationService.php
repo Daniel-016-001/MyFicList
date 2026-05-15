@@ -14,7 +14,7 @@ class MediaIntegrationService
     /**
      * Sincroniza o importa un resultado de búsqueda a la base de datos
      */
-    public function importSearchResult(array $result, bool $isFullDetail = false): Media
+    public function importSearchResult(array $result, bool $isFullDetail = false): ?Media
     {
         $media = Media::where('source', $result['source'])
             ->where('external_id', $result['external_id'])
@@ -27,12 +27,12 @@ class MediaIntegrationService
         if (!$showAdult) {
             if (!empty($result['is_adult']) && $result['is_adult'] === true) {
                 Log::warning("Contenido NSFW bloqueado (TMDB): " . ($result['title'] ?? 'ID ' . $result['external_id']));
-                return new Media();
+                return null;
             }
 
             if (!empty($result['rating']) && str_contains(strtolower($result['rating']), 'hentai')) {
                 Log::warning("Contenido NSFW bloqueado (Jikan): " . ($result['title'] ?? 'ID ' . $result['external_id']));
-                return new Media();
+                return null;
             }
         }
 

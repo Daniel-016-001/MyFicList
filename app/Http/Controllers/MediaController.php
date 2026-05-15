@@ -56,10 +56,13 @@ class MediaController extends Controller
             $this->mediaService->importSearchResult($result);
         }
 
+        $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
+
         return view('search', [
             'results' => $results,
             'query' => $query,
-            'type' => $type
+            'type' => $type,
+            'mediaLists' => $mediaLists
         ]);
     }
 
@@ -85,10 +88,13 @@ class MediaController extends Controller
             $this->mediaService->importSearchResult($result);
         }
 
+        $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
+
         return view('search', [
             'results' => $results,
             'query' => $query,
-            'is_unified' => true
+            'is_unified' => true,
+            'mediaLists' => $mediaLists
         ]);
     }
 
@@ -116,8 +122,8 @@ class MediaController extends Controller
             $request->input('media_type') // Asegúrate que en el form se llame media_type o cámbialo aquí
         );
 
-        if (!$media) {
-            return back()->with('error', 'Error al importar');
+        if (!$media || !$media->id) {
+            return back()->with('error', 'Error al importar o contenido no disponible.');
         }
 
         return redirect()->route('media.show', $media->id);
@@ -131,7 +137,7 @@ class MediaController extends Controller
         // Importamos (o actualizamos) con detalles completos
         $media = $this->mediaService->importToDatabase($externalId, $source, $type);
 
-        if (!$media) {
+        if (!$media || !$media->id) {
             return redirect()->back()->with('error', 'No se pudieron obtener los detalles del contenido.');
         }
 

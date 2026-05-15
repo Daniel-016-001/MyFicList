@@ -148,10 +148,12 @@
                                         {{ $item->name }}</h3>
                                     <div class="flex flex-wrap gap-2 mt-4">
                                         @foreach($item->items->take(5) as $entry)
-                                            <div
-                                                class="w-12 h-16 rounded-lg overflow-hidden border border-white/5 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                                                <img src="{{ $entry->media->cover_url }}" class="w-full h-full object-cover" alt="">
-                                            </div>
+                                            @if($entry->media)
+                                                <div
+                                                    class="w-12 h-16 rounded-lg overflow-hidden border border-white/5 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                    <img src="{{ $entry->media->cover_url }}" class="w-full h-full object-cover" alt="">
+                                                </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>

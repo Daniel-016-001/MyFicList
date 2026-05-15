@@ -120,10 +120,10 @@
                                                 </h3>
                                             </div>
 
-                                            <div class="mt-3 space-y-2">
+                                            <div class="mt-4 space-y-3">
                                                 <a href="{{ route('media.details', ['external_id' => $result['external_id'], 'source' => $result['source'], 'type' => $result['media_type']]) }}"
-                                                    class="block text-center bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-xs transition-colors font-medium">
-                                                    <i class="fas fa-info-circle mr-1"></i>Ver
+                                                    class="block text-center bg-white/10 hover:bg-white/20 text-white py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                                    <i class="fas fa-info-circle mr-2 text-blue-400"></i>Detalles
                                                 </a>
 
                                                 @auth
@@ -136,13 +136,13 @@
                                                     @endphp
                                                     <button type="button"
                                                         onclick="openAddModal('{{ $result['external_id'] }}', '{{ $result['source'] }}', '{{ $result['media_type'] }}', '{{ addslashes($result['title']) }}', {{ $total ?? 'null' }})"
-                                                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded text-xs transition-colors font-medium">
-                                                        <i class="fas fa-plus mr-1"></i>Agregar
+                                                        class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-xl shadow-lg hover:scale-[1.02] transition-all uppercase text-[10px] tracking-widest">
+                                                        <i class="fas fa-plus mr-2"></i>Agregar
                                                     </button>
                                                 @else
                                                     <a href="{{ route('login') }}"
-                                                        class="block text-center bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded text-xs transition-colors font-medium">
-                                                        <i class="fas fa-plus mr-1"></i>Agregar
+                                                        class="block text-center py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-xl shadow-lg hover:scale-[1.02] transition-all uppercase text-[10px] tracking-widest">
+                                                        <i class="fas fa-plus mr-2"></i>Agregar
                                                     </a>
                                                 @endauth
                                             </div>
@@ -156,72 +156,84 @@
             @endif
         </div>
 
-        <!-- Modal para agregar a lista -->
-        <div id="addModal" class="fixed inset-0 bg-black bg-opacity-90 hidden z-50"
-            style="background-color: rgba(0,0,0,0.92);">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-gray-900 rounded-lg shadow-xl max-w-md w-full border border-gray-700"
-                    style="background-color:#111827;color:#f8fafc;">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-100 mb-4">Agregar a tu lista</h3>
-                        <p class="text-gray-300 mb-4" id="modalTitle"></p>
+    <!-- Modal para agregar a lista -->
+    <div id="list-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-10 rounded-3xl">
+            <h3 class="text-3xl font-black mb-2 uppercase tracking-tighter">A mi lista</h3>
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-8" id="modalTitleDisplay"></p>
+            
+            <form action="{{ route('user-list.store') }}" method="POST" class="space-y-6">
+                @csrf
+                <input type="hidden" name="external_id" id="modalExternalId">
+                <input type="hidden" name="source" id="modalSource">
+                <input type="hidden" name="media_type" id="modalMediaType">
 
-                        <form id="addForm" action="{{ route('user-list.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="external_id" id="modalExternalId">
-                            <input type="hidden" name="source" id="modalSource">
-                            <input type="hidden" name="media_type" id="modalMediaType">
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Lista</label>
+                    <select name="media_list_id" onchange="toggleNewListForm(this.value)"
+                        class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
+                        <option value="">Mi lista</option>
+                        @auth
+                            @foreach($mediaLists as $list)
+                                <option value="{{ $list->id }}">{{ $list->name }}
+                                    {{ $list->is_public ? '(Pública)' : '(Privada)' }}
+                                </option>
+                            @endforeach
+                        @endauth
+                        <option value="new">+ Crear nueva lista</option>
+                    </select>
 
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Estado</label>
-                                <select name="status"
-                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500"
-                                    style="background-color:#1f2937;color:#f8fafc;">
-                                    <option value="watching">En progreso</option>
-                                    <option value="completed">Finalizado</option>
-                                    <option value="plan_to_watch">A futuro</option>
-                                    <option value="dropped">Abandonado</option>
-                                </select>
+                    <div id="new-list-fields"
+                        class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 space-y-3">
+                        <input type="text" name="new_list_name" placeholder="Nombre de la nueva lista..."
+                            class="w-full bg-gray-800 border-none rounded-lg p-3 text-white font-bold focus:ring-2 focus:ring-purple-600 text-sm">
+                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                            <div class="relative">
+                                <input type="checkbox" name="is_public" value="1" class="sr-only peer">
+                                <div
+                                    class="w-9 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500">
+                                </div>
                             </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Puntuación
-                                    (opcional)</label>
-                                <select name="score"
-                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500"
-                                    style="background-color:#1f2937;color:#f8fafc;">
-                                    <option value="">Sin puntuación</option>
-                                    <option value="0">0 - No me gusta</option>
-                                    <option value="10">10 - Excelente</option>
-                                    <option value="9">9 - Muy bueno</option>
-                                    <option value="8">8 - Bueno</option>
-                                    <option value="7">7 - Regular</option>
-                                    <option value="6">6 - Pasable</option>
-                                    <option value="5">5 - Normal</option>
-                                    <option value="4">4 - Por debajo</option>
-                                    <option value="3">3 - Malo</option>
-                                    <option value="2">2 - Muy malo</option>
-                                    <option value="1">1 - Terrible</option>
-                                </select>
-                            </div>
-
-                            <div class="flex space-x-3">
-                                <button type="button" onclick="closeAddModal()"
-                                    class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors"
-                                    style="background-color:#374151;">
-                                    Cancelar
-                                </button>
-                                <button type="submit"
-                                    class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors"
-                                    style="background-color:#7c3aed;">
-                                    Agregar
-                                </button>
-                            </div>
-                        </form>
+                            <span
+                                class="text-xs font-black text-gray-400 uppercase tracking-wider group-hover:text-white transition-colors">Hacer
+                                Pública</span>
+                        </label>
                     </div>
                 </div>
-            </div>
+
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Estado</label>
+                    <select name="status"
+                        class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
+                        <option value="watching">En progreso</option>
+                        <option value="completed">Completado</option>
+                        <option value="dropped">Abandonado</option>
+                        <option value="plan_to_watch">Pendiente</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Puntuación
+                        (1-10)</label>
+                    <select name="score"
+                        class="w-full bg-gray-800 border-none rounded-xl p-4 text-white font-bold focus:ring-2 focus:ring-purple-600">
+                        <option value="">Sin nota</option>
+                        @for($i = 10; $i >= 1; $i--)
+                            <option value="{{ $i }}">{{ $i }} -
+                                {{ $i == 10 ? 'Obra Maestra' : ($i >= 8 ? 'Muy Bueno' : ($i >= 5 ? 'Aceptable' : 'Pobre')) }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="document.getElementById('list-modal').classList.add('hidden')"
+                        class="flex-1 py-4 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-colors uppercase text-xs tracking-widest">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-xl shadow-lg hover:scale-[1.02] transition-all uppercase text-xs tracking-widest">Guardar</button>
+                </div>
+            </form>
         </div>
+    </div>
     </main>
     @include('layouts.footer')
 
@@ -257,27 +269,30 @@
         }
 
         function openAddModal(externalId, source, mediaType, title, maxProgress) {
-            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalTitleDisplay').textContent = title;
             document.getElementById('modalExternalId').value = externalId;
             document.getElementById('modalSource').value = source;
             document.getElementById('modalMediaType').value = mediaType;
-            const progressInput = document.getElementById('modalProgress');
-            if (maxProgress !== null && maxProgress > 0) {
-                progressInput.setAttribute('max', maxProgress);
-            } else {
-                progressInput.removeAttribute('max');
-            }
-            document.getElementById('addModal').classList.remove('hidden');
+            
+            // Note: maxProgress logic was in previous script but new modal doesn't use it yet
+            // If needed, we can add a progress field to the modal similar to the score field
+            
+            document.getElementById('list-modal').classList.remove('hidden');
         }
 
-        function closeAddModal() {
-            document.getElementById('addModal').classList.add('hidden');
+        function toggleNewListForm(value) {
+            const fields = document.getElementById('new-list-fields');
+            if (value === 'new') {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
         }
 
         // Cerrar modal al hacer clic fuera
-        document.getElementById('addModal').addEventListener('click', function (e) {
+        document.getElementById('list-modal').addEventListener('click', function (e) {
             if (e.target === this) {
-                closeAddModal();
+                document.getElementById('list-modal').classList.add('hidden');
             }
         });
     </script>

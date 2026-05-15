@@ -98,9 +98,13 @@
                                         <div class="break-inside-avoid mb-4">
                                             <div
                                                 class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
-                                                <a href="{{ route('media.show', $media->id) }}" class="block group">
+                                                @if($media)
+                                                    <a href="{{ route('media.show', $media->id) }}" class="block group">
+                                                @else
+                                                    <div class="block group opacity-50 cursor-not-allowed">
+                                                @endif
                                                     <div class="relative">
-                                                        <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
+                                                        <img src="{{ $media ? $media->cover_url : '' }}" alt="{{ $media ? $media->title : 'N/A' }}"
                                                             class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
                                                         @if($entry->score)
                                                             <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
@@ -109,7 +113,8 @@
                                                             </div>
                                                         @endif
                                                     </div>
-                                                </a>
+                                                @if($media) </a> @else </div> @endif
+                                                
                                                 <div class="p-4 flex-grow flex flex-col">
                                                     <h3 class="font-bold text-sm text-white leading-tight mb-2">{{ $media->title }}</h3>
                                                     <div class="flex flex-col gap-1 mb-3 text-[10px] font-bold uppercase tracking-wider">
@@ -130,10 +135,12 @@
                                                                 <i class="fas fa-trash-alt"></i> Quitar
                                                             </button>
                                                         </form>
-                                                        <a href="{{ route('media.show', $media->id) }}"
-                                                            class="text-gray-400 hover:text-white flex items-center gap-1 text-[10px] font-bold transition-colors">
-                                                            Detalles <i class="fas fa-arrow-right"></i>
-                                                        </a>
+                                                        @if($media)
+                                                            <a href="{{ route('media.show', $media->id) }}"
+                                                                class="text-gray-400 hover:text-white flex items-center gap-1 text-[10px] font-bold transition-colors">
+                                                                Detalles <i class="fas fa-arrow-right"></i>
+                                                            </a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

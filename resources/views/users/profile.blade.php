@@ -160,7 +160,12 @@
                                     <div class="space-y-0.5">
                                         <p class="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">Crítica</p>
                                         <p class="text-sm text-gray-400 font-medium leading-relaxed">
-                                            Opinó sobre <a href="{{ route('media.show', $comment->media) }}" class="text-white font-black hover:text-blue-400 transition-colors uppercase">{{ $comment->media->title }}</a>
+                                            Opinó sobre 
+                                            @if($comment->media)
+                                                <a href="{{ route('media.show', $comment->media) }}" class="text-white font-black hover:text-blue-400 transition-colors uppercase">{{ $comment->media->title }}</a>
+                                            @else
+                                                <span class="text-gray-500 italic uppercase">un título eliminado</span>
+                                            @endif
                                         </p>
                                     </div>
                                     <div class="bg-white/5 p-5 rounded-2xl border border-white/5 text-gray-400 text-xs leading-relaxed group hover:bg-white/10 transition-colors">
