@@ -63,8 +63,8 @@
                             <option value="">Todos los tipos</option>
                             <option value="anime" {{ request('type') == 'anime' ? 'selected' : '' }}>Anime</option>
                             <option value="manga" {{ request('type') == 'manga' ? 'selected' : '' }}>Manga</option>
-                            <option value="movie" {{ request('type') == 'movie' ? 'selected' : '' }}>Película</option>
-                            <option value="series" {{ request('type') == 'series' ? 'selected' : '' }}>Serie</option>
+                            <option value="peli" {{ request('type') == 'peli' || request('type') == 'movie' ? 'selected' : '' }}>Película</option>
+                            <option value="serie" {{ request('type') == 'serie' || request('type') == 'series' ? 'selected' : '' }}>Serie</option>
                             <option value="game" {{ request('type') == 'game' ? 'selected' : '' }}>Videojuego</option>
                             <!--<option value="book" {{ request('type') == 'book' ? 'selected' : '' }}>Libro</option>-->
                         </select>

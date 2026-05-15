@@ -46,7 +46,7 @@ class SearchService
 
                     $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
-                } elseif (in_array($type, ['movie', 'series'])) {
+                } elseif (in_array($type, ['movie', 'series', 'peli', 'serie'])) {
                     // Películas y Series vienen de TMDB
                     $tmdbResults = array_filter($this->searchMultipleInTmdb($query, $type, $safe), fn($item) => !$this->isExistingSearchResult($item, $existingKeys, $existingTitles));
                     $results = array_merge($results, $tmdbResults);
@@ -191,7 +191,7 @@ class SearchService
                 });
 
             } else {
-                $tmdbType = ($type == 'movie') ? 'movie' : 'tv';
+                $tmdbType = ($type == 'movie' || $type == 'peli') ? 'movie' : 'tv';
                 $response = Http::withToken(config('services.tmdb.token'))
                     ->get("https://api.themoviedb.org/3/search/{$tmdbType}", [
                         'query' => $query,
@@ -209,11 +209,14 @@ class SearchService
                 // En búsqueda multi de TMDB, el tipo real viene en media_type
                 $actualType = $type;
                 if ($type === 'anime' && isset($item['media_type'])) {
-                    $actualType = ($item['media_type'] === 'movie') ? 'movie' : 'series';
+                    $actualType = ($item['media_type'] === 'movie') ? 'peli' : 'serie';
                     // Pero mantenemos la categoría visual como 'anime' para que se guarde correctamente
                     // en la sección de anime del usuario
                     $actualType = 'anime';
                 }
+
+                if ($actualType === 'movie') $actualType = 'peli';
+                if ($actualType === 'series') $actualType = 'serie';
 
                 return [
                     'id' => null,
@@ -271,7 +274,7 @@ class SearchService
                     'synopsis' => $this->translateText(substr($item['synopsis'] ?? '', 0, 120)) . '...',
                     'source' => 'Jikan',
                     'is_stored' => false,
-                    'media_type' => $type
+                    'media_type' => ($item['type'] === 'Movie') ? 'peli' : $type
                 ];
             }, array_slice($results, 0, 8));
         } catch (\Exception $e) {

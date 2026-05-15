@@ -14,6 +14,9 @@ class Media extends Model
         'source',
         'cover_url',
         'synopsis',
+        'episodes_count',
+        'episode_duration',
+        'total_duration',
         'extra_data'
     ];
 

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $media->title }} - {{ config('app.name', 'MyFicList') }}</title>
+    <title>{{ $media->title }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=outfit:400,600,800&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
@@ -125,6 +125,82 @@
 
                         <!-- Metadata Sidebar -->
                         <div class="mt-12 space-y-10">
+                            <!-- Ficha Técnica -->
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Ficha
+                                    Técnica</h4>
+                                <div class="grid grid-cols-1 gap-3">
+                                    @if($media->episodes_count)
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-blue-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                                <i class="fas fa-layer-group text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Episodios</p>
+                                                <p class="text-xs font-bold text-gray-200">{{ $media->episodes_count }}
+                                                    capítulos</p>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($media->episode_duration)
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-purple-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                                <i class="fas fa-clock text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Duración</p>
+                                                <p class="text-xs font-bold text-gray-200">{{ $media->episode_duration }}
+                                                    @if($media->media_type !== 'peli')@endif</p>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($media->total_duration && $media->media_type === 'peli')
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-red-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400">
+                                                <i class="fas fa-film text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Tiempo Total</p>
+                                                <p class="text-xs font-bold text-gray-200">
+                                                    {{ floor($media->total_duration / 60) }}h
+                                                    {{ $media->total_duration % 60 }}min</p>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($media->total_duration && $media->media_type === 'game')
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-green-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
+                                                <i class="fas fa-gamepad text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Promedio de Juego</p>
+                                                <p class="text-xs font-bold text-gray-200">{{ $media->total_duration }} horas
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
                             @if(!empty($extra['genres']))
                                 <div class="space-y-4">
                                     <h4 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Géneros</h4>
@@ -191,7 +267,8 @@
                         </div>
 
                         <h1 class="text-4xl font-black text-white tracking-tighter uppercase leading-tight">
-                            {{ $media->title }}</h1>
+                            {{ $media->title }}
+                        </h1>
 
                         <div
                             class="inline-flex items-center gap-4 bg-gray-900/20 border border-white/5 p-4 rounded-2xl">

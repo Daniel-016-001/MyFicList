@@ -64,8 +64,8 @@
                             <option value="all">🔍 Todo</option>
                             <option value="anime">🍙 Anime</option>
                             <option value="manga">📖 Manga</option>
-                            <option value="movie">🎬 Película</option>
-                            <option value="series">📺 Serie TV</option>
+                            <option value="peli">🎬 Película</option>
+                            <option value="serie">📺 Serie TV</option>
                             <option value="game">🎮 Videojuego</option>
                             <option value="book">📚 Libro</option>
                         </select>
@@ -162,7 +162,7 @@
                 </a>
 
                 <!-- Movies -->
-                <a href="{{ route('media.explore', ['type' => 'movie']) }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'peli']) }}" class="category-card group">
                     <div
                         class="bg-gradient-to-br from-red-900/30 to-red-900/10 border border-red-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-red-500 transition">
                         <div class="text-center">
@@ -173,7 +173,7 @@
                 </a>
 
                 <!-- Series -->
-                <a href="{{ route('media.explore', ['type' => 'series']) }}" class="category-card group">
+                <a href="{{ route('media.explore', ['type' => 'serie']) }}" class="category-card group">
                     <div
                         class="bg-gradient-to-br from-green-900/30 to-green-900/10 border border-green-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-green-500 transition">
                         <div class="text-center">

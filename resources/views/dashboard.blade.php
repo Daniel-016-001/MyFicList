@@ -126,14 +126,14 @@
             @endif
 
             <!-- Películas -->
-            @if(isset($popularByCategory['movie']) && $popularByCategory['movie']->count() > 0)
+            @if(isset($popularByCategory['peli']) && $popularByCategory['peli']->count() > 0)
                 <section class="mb-20">
                     <h3 class="text-xs font-black text-red-500 uppercase tracking-[0.4em] mb-10 flex items-center gap-6">
                         Cine y Películas
                         <span class="h-px flex-grow bg-gradient-to-r from-red-500/20 to-transparent"></span>
                     </h3>
                     <div class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
-                        @foreach($popularByCategory['movie'] as $media)
+                        @foreach($popularByCategory['peli'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
                                     class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
@@ -177,14 +177,14 @@
             @endif
 
             <!-- Series -->
-            @if(isset($popularByCategory['series']) && $popularByCategory['series']->count() > 0)
+            @if(isset($popularByCategory['serie']) && $popularByCategory['serie']->count() > 0)
                 <section class="mb-20">
                     <h3 class="text-xs font-black text-green-500 uppercase tracking-[0.4em] mb-10 flex items-center gap-6">
                         Series de TV
                         <span class="h-px flex-grow bg-gradient-to-r from-green-500/20 to-transparent"></span>
                     </h3>
                     <div class="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-6">
-                        @foreach($popularByCategory['series'] as $media)
+                        @foreach($popularByCategory['serie'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
                                     class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">

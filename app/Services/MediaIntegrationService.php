@@ -66,6 +66,16 @@ class MediaIntegrationService
             $media->media_type = $result['media_type'];
         }
 
+        if (isset($result['episodes_count'])) {
+            $media->episodes_count = $result['episodes_count'];
+        }
+        if (isset($result['episode_duration'])) {
+            $media->episode_duration = $result['episode_duration'];
+        }
+        if (isset($result['total_duration'])) {
+            $media->total_duration = $result['total_duration'];
+        }
+
         // GESTIÓN DE DETALLES
         $existingExtra = $media->extra_data ?? [];
         $newExtra = [
@@ -126,7 +136,7 @@ class MediaIntegrationService
         $SearchService = app(SearchService::class);
         $results = [];
 
-        $types = ['anime', 'manga', 'movie', 'series', 'game'];
+        $types = ['anime', 'manga', 'peli', 'serie', 'game'];
 
         foreach ($types as $type) {
             try {
@@ -228,9 +238,13 @@ class MediaIntegrationService
                 'platforms' => $platforms,
                 'images' => [],
                 'episodes' => null,
+                'episodes_count' => null,
+                'episode_duration' => null,
+                'total_duration' => $details['playtime'] ?? null,
                 'chapters' => null,
                 'studios' => collect($details['developers'] ?? [])->pluck('name')->toArray(),
                 'authors' => collect($details['publishers'] ?? [])->pluck('name')->toArray(),
+                'media_type' => 'game'
             ];
         } catch (\Exception $e) {
             Log::error("Critical error in getRawgDetails for ID {$id}: " . $e->getMessage());
@@ -240,7 +254,7 @@ class MediaIntegrationService
 
     private function getTmdbDetails($id, $type): array
     {
-        $tmdbType = ($type == 'movie') ? 'movie' : 'tv';
+        $tmdbType = ($type == 'movie' || $type == 'peli') ? 'movie' : 'tv';
         $details = Http::withToken(config('services.tmdb.token'))
             ->get("https://api.themoviedb.org/3/{$tmdbType}/{$id}", [
                 'language' => 'es-ES',
@@ -256,25 +270,39 @@ class MediaIntegrationService
             ? collect($details['created_by'] ?? [])->pluck('name')->toArray()
             : collect($details['credits']['crew'] ?? [])->where('job', 'Director')->pluck('name')->toArray();
 
+        $episodesCount = $details['number_of_episodes'] ?? null;
+        $totalDuration = ($type == 'movie' || $type == 'peli') ? ($details['runtime'] ?? null) : null;
+        $episodeDuration = null;
+        
+        if ($type == 'series' || $type == 'serie') {
+            $runtimes = $details['episode_run_time'] ?? [];
+            if (!empty($runtimes)) {
+                $episodeDuration = $runtimes[0] . ' min';
+            }
+        }
+
         return [
             'external_id' => $details['id'],
             'title' => $details['title'] ?? $details['name'],
             'cover_url' => $details['poster_path'] ? 'https://image.tmdb.org/t/p/w500' . $details['poster_path'] : null,
             'synopsis' => $details['overview'],
-            'type' => ($type == 'movie') ? 'Película' : 'Serie',
+            'type' => ($type == 'movie' || $type == 'peli') ? 'Película' : 'Serie',
             'source' => 'TMDB',
             'genres' => $genres,
             'categories' => $genres,
             'year' => substr($details['release_date'] ?? $details['first_air_date'] ?? '', 0, 4),
             'trailer_url' => $trailerUrl,
             'images' => [],
-            'episodes' => $details['number_of_episodes'] ?? null,
+            'episodes' => $episodesCount,
+            'episodes_count' => $episodesCount,
+            'episode_duration' => $episodeDuration,
+            'total_duration' => $totalDuration,
             'seasons' => $details['number_of_seasons'] ?? null,
             'chapters' => null,
             'studios' => collect($details['production_companies'] ?? [])->pluck('name')->toArray(),
             'authors' => $authors,
             'is_adult' => $details['adult'] ?? false,
-            'media_type' => $type
+            'media_type' => ($type == 'movie' || $type == 'peli') ? 'peli' : (($type == 'series' || $type == 'serie') ? 'serie' : $type)
         ];
     }
 
@@ -283,24 +311,41 @@ class MediaIntegrationService
         $endpoint = ($type == 'manga') ? 'manga' : 'anime';
         $details = Http::get("https://api.jikan.moe/v4/{$endpoint}/{$id}/full")->json()['data'] ?? [];
 
+        $episodesCount = $details['episodes'] ?? null;
+        $episodeDuration = $details['duration'] ?? null;
+        $totalDuration = null;
+        
+        // Si es una película, intentamos extraer los minutos del string de duración de Jikan (ej: "1 hr 45 min")
+        if ($details['type'] === 'Movie' && $episodeDuration) {
+            if (preg_match('/(\d+)\s*hr/', $episodeDuration, $matchesHr)) {
+                $totalDuration += intval($matchesHr[1]) * 60;
+            }
+            if (preg_match('/(\d+)\s*min/', $episodeDuration, $matchesMin)) {
+                $totalDuration += intval($matchesMin[1]);
+            }
+        }
+
         return [
             'external_id' => $details['mal_id'],
             'title' => $details['title'],
             'cover_url' => $details['images']['jpg']['large_image_url'],
             'synopsis' => $this->translateText($details['synopsis'] ?? ''),
-            'type' => ($type == 'manga') ? 'Manga' : 'Anime',
+            'type' => ($type == 'manga') ? 'Manga' : (($details['type'] === 'Movie') ? 'Película' : 'Anime'),
             'source' => 'Jikan',
             'genres' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
             'categories' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
             'year' => $details['year'] ?? substr($details['published']['from'] ?? '', 0, 4),
             'trailer_url' => $details['trailer']['url'] ?? null,
             'images' => [],
-            'episodes' => $details['episodes'] ?? null,
+            'episodes' => $episodesCount,
+            'episodes_count' => $episodesCount,
+            'episode_duration' => $episodeDuration,
+            'total_duration' => $totalDuration,
             'chapters' => $details['chapters'] ?? $details['volumes'] ?? null,
             'studios' => collect($details['studios'] ?? [])->pluck('name')->toArray(),
             'authors' => collect($details['authors'] ?? [])->pluck('name')->toArray(),
             'rating' => $details['rating'] ?? '',
-            'media_type' => $type
+            'media_type' => ($details['type'] === 'Movie') ? 'peli' : $type
         ];
     }
 

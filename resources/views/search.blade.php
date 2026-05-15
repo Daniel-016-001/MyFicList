@@ -43,8 +43,8 @@
                 $labels = [
                     'anime' => 'Anime',
                     'manga' => 'Manga',
-                    'movie' => 'Películas',
-                    'series' => 'Series',
+                    'peli' => 'Películas',
+                    'serie' => 'Series',
                     'game' => 'Videojuegos',
                     'book' => 'Novelas',
                 ];
@@ -129,7 +129,7 @@
                                                 @auth
                                                     @php
                                                         $total = match ($result['media_type']) {
-                                                            'anime', 'series' => $result['episodes'] ?? 0,
+                                                            'anime', 'serie', 'series' => $result['episodes'] ?? 0,
                                                             'manga', 'book' => $result['chapters'] ?? 0,
                                                             default => null,
                                                         };

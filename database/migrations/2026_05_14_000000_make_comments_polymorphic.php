@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
@@ -22,7 +21,7 @@ return new class extends Migration
         // Migrar los registros existentes: todos apuntan a Media
         DB::table('comments')->whereNotNull('media_id')->update([
             'commentable_type' => 'App\\Models\\Media',
-            'commentable_id'   => DB::raw('media_id'),
+            'commentable_id' => DB::raw('media_id'),
         ]);
 
         Schema::table('comments', function (Blueprint $table) {
@@ -39,9 +38,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
+            // 1. Eliminamos el índice y las columnas polimórficas
             $table->dropIndex(['commentable_type', 'commentable_id']);
             $table->dropColumn(['commentable_type', 'commentable_id']);
-            $table->foreignId('media_id')->nullable(false)->change();
+
+            // 2. Volvemos a hacer media_id obligatorio
+            // Nota: Si tienes datos huérfanos, esto podría seguir fallando.
+            // Lo ideal es limpiar los nulos antes:
+            // DB::table('comments')->whereNull('media_id')->delete();
+
+            $table->unsignedBigInteger('media_id')->nullable(false)->change();
+            $table->foreign('media_id')->references('id')->on('media')->onDelete('cascade');
         });
     }
 };
