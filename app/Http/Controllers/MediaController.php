@@ -52,8 +52,18 @@ class MediaController extends Controller
             return !empty($result['cover_url']);
         });
 
-        foreach ($results as $result) {
-            $this->mediaService->importSearchResult($result);
+        if (!empty($results)) {
+            foreach ($results as &$result) {
+                try {
+                    $importedMedia = $this->mediaService->importSearchResult($result, $result['media_type'] ?? $type);
+                    if ($importedMedia) {
+                        $result['id'] = $importedMedia->id;
+                        $result['is_stored'] = true;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
         }
 
         $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
@@ -76,6 +86,16 @@ class MediaController extends Controller
             return redirect()->back()->with('error', 'Por favor, introduce un término de búsqueda.');
         }
 
+        // Si se seleccionó un tipo específico desde la portada, redirigimos a la búsqueda específica
+        $type = $request->input('type', 'all');
+        if ($type !== 'all') {
+            return redirect()->route('media.search', [
+                'query' => $query, 
+                'type' => $type, 
+                'safe' => $request->input('safe')
+            ]);
+        }
+
         // Ahora estamos seguros de que $query es un string
         $results = $this->mediaService->getUnifiedResults((string) $query);
 
@@ -84,9 +104,20 @@ class MediaController extends Controller
             return !empty($result['cover_url']);
         });
 
-        foreach ($results as $result) {
-            $this->mediaService->importSearchResult($result);
+        if (!empty($results)) {
+            foreach ($results as &$result) {
+                try {
+                    $importedMedia = $this->mediaService->importSearchResult($result, $result['media_type'] ?? 'all');
+                    if ($importedMedia) {
+                        $result['id'] = $importedMedia->id;
+                        $result['is_stored'] = true;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
         }
+
 
         $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
 

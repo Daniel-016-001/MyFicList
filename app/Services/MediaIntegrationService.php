@@ -136,7 +136,7 @@ class MediaIntegrationService
         $SearchService = app(SearchService::class);
         $results = [];
 
-        $types = ['anime', 'manga', 'peli', 'serie', 'game'];
+        $types = ['anime', 'manga', 'peli', 'serie', 'game', 'book'];
 
         foreach ($types as $type) {
             try {
@@ -354,22 +354,58 @@ class MediaIntegrationService
         $cleanId = str_replace('/works/', '', $id);
         $details = Http::get("https://openlibrary.org/works/{$cleanId}.json")->json();
 
+        if (empty($details) || !isset($details['title'])) {
+            return [];
+        }
+
+        // Obtener descripción (puede ser string o array)
+        $description = $details['description'] ?? '';
+        if (is_array($description)) {
+            $description = $description['value'] ?? '';
+        }
+        
+        // Limpiar "cosas raras" de OpenLibrary (enlaces markdown y separadores)
+        // Convierte [Texto](url) en simplemente "Texto"
+        $description = preg_replace('/\[([^\]]+)\]\s*\([^\)]+\)/', '$1', $description);
+        // Elimina líneas separadoras largas (------)
+        $description = preg_replace('/-{5,}/', '', $description);
+
+        // Obtener géneros (subjects)
+        $genres = [];
+        if (!empty($details['subjects'])) {
+            $genres = array_slice($details['subjects'], 0, 8); // Tomar los primeros 8
+        }
+
+        // Obtener nombres de autores
+        $authors = [];
+        if (!empty($details['authors'])) {
+            foreach ($details['authors'] as $authorItem) {
+                if (!empty($authorItem['author']['key'])) {
+                    $authorKey = str_replace('/authors/', '', $authorItem['author']['key']);
+                    $authorData = Http::get("https://openlibrary.org/authors/{$authorKey}.json")->json();
+                    if (!empty($authorData['name'])) {
+                        $authors[] = $authorData['name'];
+                    }
+                }
+            }
+        }
+
         return [
-            'external_id' => $id,
+            'external_id' => $cleanId,
             'title' => $details['title'],
             'cover_url' => isset($details['covers'][0]) ? "https://covers.openlibrary.org/b/id/{$details['covers'][0]}-L.jpg" : null,
-            'synopsis' => $this->translateText($details['description']['value'] ?? $details['description'] ?? ''),
+            'synopsis' => $this->translateText($description),
             'type' => 'Libro',
             'source' => 'OpenLibrary',
-            'genres' => [],
+            'genres' => $genres,
             'categories' => [],
-            'year' => substr($details['first_publish_date'] ?? '', -4),
+            'year' => isset($details['first_publish_date']) ? substr($details['first_publish_date'], -4) : null,
             'trailer_url' => null,
             'images' => [],
             'episodes' => null,
             'chapters' => null,
             'studios' => [],
-            'authors' => [],
+            'authors' => $authors,
             'media_type' => 'book'
         ];
     }

@@ -124,8 +124,15 @@
                         </div>
 
                         <!-- Metadata Sidebar -->
+                        @php
+                            $hasFichaTecnica = $media->episodes_count || $media->episode_duration || ($media->total_duration && $media->media_type === 'peli') || ($media->total_duration && $media->media_type === 'game') || $media->chapters || !empty($extra['number_of_seasons']);
+                            $hasTechnicalData = $hasFichaTecnica || !empty($extra['genres']) || !empty($extra['categories']) || !empty($extra['platforms']) || !empty($extra['studios']) || !empty($extra['authors']);
+                        @endphp
+                        
+                        @if($hasTechnicalData)
                         <div class="mt-12 space-y-10">
                             <!-- Ficha Técnica -->
+                            @if($hasFichaTecnica)
                             <div class="space-y-4">
                                 <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Ficha
                                     Técnica</h4>
@@ -198,8 +205,41 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                    @if($media->chapters)
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-indigo-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                                <i class="fas fa-book-open text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Capítulos</p>
+                                                <p class="text-xs font-bold text-gray-200">{{ $media->chapters }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if(!empty($extra['number_of_seasons']))
+                                        <div
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-pink-500/30 transition-colors">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
+                                                <i class="fas fa-layer-group text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
+                                                    Temporadas</p>
+                                                <p class="text-xs font-bold text-gray-200">{{ $extra['number_of_seasons'] }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
+                            @endif
 
                             @if(!empty($extra['genres']))
                                 <div class="space-y-4">
@@ -210,6 +250,21 @@
                                                 style="background-color: rgba(37, 99, 235, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #60a5fa !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ $genre }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if(!empty($extra['categories']))
+                                <div class="space-y-4">
+                                    <h4 class="text-[10px] font-black text-teal-500 uppercase tracking-[0.3em]">Categorías / Etiquetas</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach((array) $extra['categories'] as $category)
+                                            <span
+                                                style="background-color: rgba(20, 184, 166, 0.1) !important; border: 1px solid rgba(20, 184, 166, 0.3) !important; color: #2dd4bf !important;"
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                                {{ is_array($category) ? ($category['name'] ?? '') : $category }}
                                             </span>
                                         @endforeach
                                     </div>
@@ -247,7 +302,24 @@
                                     </div>
                                 </div>
                             @endif
+
+                            @if(!empty($extra['authors']))
+                                <div class="space-y-4">
+                                    <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em]">Autores
+                                    </h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach((array) $extra['authors'] as $author)
+                                            <span
+                                                style="background-color: rgba(249, 115, 22, 0.1) !important; border: 1px solid rgba(249, 115, 22, 0.3) !important; color: #fb923c !important;"
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                                {{ is_array($author) ? ($author['name'] ?? '') : $author }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
+                        @endif
                     </div>
                 </div>
 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Services\S3ImageService;
 
 class ProfileController extends Controller
 {
@@ -24,7 +25,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, S3ImageService $s3Service): RedirectResponse
     {
         $user = $request->user();
         $user->fill($request->validated());
@@ -40,17 +41,23 @@ class ProfileController extends Controller
                 }
                 $imageData = base64_decode($imageData);
 
-                if ($imageData === false) {
-                    throw new \Exception('base64_decode failed');
-                }
+                // Crear un archivo temporal para que S3ImageService pueda procesarlo como UploadedFile
+                $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.' . $type;
+                file_put_contents($tmpFilePath, $imageData);
+                
+                $uploadedFile = new \Illuminate\Http\UploadedFile(
+                    $tmpFilePath,
+                    'avatar.' . $type,
+                    'image/' . $type,
+                    null,
+                    true
+                );
 
-                $fileName = 'avatars/' . uniqid() . '.' . $type;
-                \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageData);
-                $user->avatar_url = $fileName;
+                $user->avatar_url = $s3Service->uploadAvatar($uploadedFile);
+                unlink($tmpFilePath);
             }
         } elseif ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar_url = $path;
+            $user->avatar_url = $s3Service->uploadAvatar($request->file('avatar'));
         }
 
         if ($user->isDirty('email')) {

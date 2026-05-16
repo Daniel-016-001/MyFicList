@@ -66,7 +66,7 @@
                             <option value="peli" {{ request('type') == 'peli' || request('type') == 'movie' ? 'selected' : '' }}>Película</option>
                             <option value="serie" {{ request('type') == 'serie' || request('type') == 'series' ? 'selected' : '' }}>Serie</option>
                             <option value="game" {{ request('type') == 'game' ? 'selected' : '' }}>Videojuego</option>
-                            <!--<option value="book" {{ request('type') == 'book' ? 'selected' : '' }}>Libro</option>-->
+                            <option value="book" {{ request('type') == 'book' ? 'selected' : '' }}>Libro</option>
                         </select>
 
                         <select name="genre"

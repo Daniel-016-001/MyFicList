@@ -89,7 +89,6 @@ class User extends Authenticatable
 
     public function following()
     {
-        // Relación muchos a muchos: (Modelo, tabla_pivote, fk_que_sigue, fk_seguido)
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'followed_id');
     }
 
@@ -117,14 +116,15 @@ class User extends Authenticatable
     {
         if ($value) {
             // Si ya es una URL completa, devolverla
-            if (filter_var($value, FILTER_VALIDATE_URL)) return $value;
-            
+            if (filter_var($value, FILTER_VALIDATE_URL))
+                return $value;
+
             // Si empieza por storage/, quitarlo para que asset('storage/...') no lo duplique
             $path = ltrim($value, '/');
             if (str_starts_with($path, 'storage/')) {
                 $path = substr($path, 8);
             }
-            
+
             return asset('storage/' . $path);
         }
 

@@ -217,15 +217,17 @@
 
                                 @if($item->attachment_path)
                                     @php
-                                        $attachmentUrl = asset('storage/' . $item->attachment_path);
+                                        $attachmentUrl = str_starts_with($item->attachment_path, 'http') 
+                                            ? $item->attachment_path 
+                                            : asset('storage/' . $item->attachment_path);
                                     @endphp
                                     <div class="pt-2 border-t border-white/5 mt-6">
                                         <p class="text-[10px] font-bold text-gray-600 uppercase mb-3">Archivo adjunto</p>
-                                        <div class="w-48 h-32 rounded-xl overflow-hidden border border-white/5 bg-black/20 shadow-2xl">
+                                        <a href="{{ $attachmentUrl }}" target="_blank" class="block w-fit rounded-xl overflow-hidden border border-white/5 bg-black/20 shadow-2xl">
                                             <img src="{{ $attachmentUrl }}"
-                                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                                                alt="">
-                                        </div>
+                                                class="max-w-full max-h-56 object-contain hover:scale-105 transition-transform duration-500"
+                                                alt="Adjunto del foro">
+                                        </a>
                                     </div>
                                 @endif
 

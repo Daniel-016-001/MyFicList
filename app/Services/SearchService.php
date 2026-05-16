@@ -18,7 +18,8 @@ class SearchService
         $safe = request()->filled('safe');
         $cacheKey = "search_{$type}_" . md5($query) . ($safe ? '_nsfw' : '_safe');
 
-        return Cache::remember($cacheKey, 1800, function () use ($query, $type, $safe) {
+        // Caché de 7 días (604800 segundos) para evitar penalizaciones de tiempo y consultas innecesarias a la API
+        return Cache::remember($cacheKey, 604800, function () use ($query, $type, $safe) {
             $results = [];
 
             $localResults = $this->searchInDatabase($query, $type, false, $safe);
@@ -78,29 +79,36 @@ class SearchService
         });
 
         $unique = $grouped->map(function ($group) {
-            // Si hay múltiples resultados con el mismo título, preferir:
-            // 1. Local (si_stored = true)
-            // 2. TMDB
-            // 3. Jikan
-            // 4. Otros
+            // Asignar una "puntuación" a cada resultado del grupo para elegir el mejor
+            $bestItem = $group->sortByDesc(function ($item) {
+                $score = 0;
+                
+                // Prioridad absoluta: Ya lo tenemos en base de datos local
+                if ($item['is_stored'] ?? false) $score += 1000;
+                
+                // Puntos por calidad de la información
+                if (!empty($item['cover_url']) && !str_contains($item['cover_url'], 'placehold')) $score += 50;
+                if (!empty($item['synopsis'])) $score += 30;
+                if (!empty($item['year'])) $score += 10;
+                
+                // Fuentes canónicas según tipo
+                $type = $item['media_type'] ?? '';
+                $source = $item['source'] ?? '';
+                
+                if (in_array($type, ['anime', 'manga']) && $source === 'Jikan') {
+                    $score += 100; // Jikan es la fuente canónica para anime/manga
+                } elseif (in_array($type, ['peli', 'serie', 'movie', 'series']) && $source === 'TMDB') {
+                    $score += 100; // TMDB es la fuente canónica para cine/tv
+                } elseif ($type === 'game' && $source === 'RAWG') {
+                    $score += 100;
+                } elseif ($type === 'book' && $source === 'OpenLibrary') {
+                    $score += 100;
+                }
+                
+                return $score;
+            })->first();
 
-            $local = $group->firstWhere('is_stored', true);
-            if ($local) {
-                return $local;
-            }
-
-            $tmdb = $group->firstWhere('source', 'TMDB');
-            if ($tmdb) {
-                return $tmdb;
-            }
-
-            $jikan = $group->firstWhere('source', 'Jikan');
-            if ($jikan) {
-                return $jikan;
-            }
-
-            // Si no hay ninguna preferencia, devolver el primero
-            return $group->first();
+            return $bestItem;
         })->values();
 
         return $unique->take(20)->toArray();
@@ -115,7 +123,6 @@ class SearchService
         }
 
         // También comprobar solo por external_id para evitar duplicados entre fuentes distintas
-        // (ej. un registro guardado como RAWG_9767 vs resultado de búsqueda RAWG_9767)
         if (!empty($item['external_id'])) {
             $externalIdOnly = (string) $item['external_id'];
             foreach ($existingKeys as $existingKey) {
@@ -125,9 +132,9 @@ class SearchService
             }
         }
 
-        if (!empty($item['title']) && in_array($this->normalizeString($item['title']), $existingTitles, true)) {
-            return true;
-        }
+        // NOTA: Eliminamos el filtrado estricto por título aquí. 
+        // Dejamos que formatAndFilter() agrupe por título y elija el de mayor calidad.
+        // Esto evita que un mal registro local bloquee uno bueno de la API.
 
         return false;
     }
@@ -313,7 +320,7 @@ class SearchService
                     'external_id' => $item['id'],
                     'title' => $item['name'],
                     'cover_url' => $item['background_image'] ?? null,
-                    'synopsis' => $this->translateText(substr($item['description'] ?? '', 0, 120)) . '...',
+                    'synopsis' => substr($item['description'] ?? '', 0, 120) . '...',
                     'source' => 'RAWG',
                     'is_stored' => false,
                     'media_type' => 'game'
@@ -337,10 +344,10 @@ class SearchService
             return array_map(function ($item) {
                 return [
                     'id' => null,
-                    'external_id' => $item['key'],
+                    'external_id' => str_replace('/works/', '', $item['key']),
                     'title' => $item['title'],
                     'cover_url' => isset($item['cover_i']) ? "https://covers.openlibrary.org/b/id/{$item['cover_i']}-L.jpg" : null,
-                    'synopsis' => $this->translateText(substr($item['first_sentence'] ?? '', 0, 120)) . '...',
+                    'synopsis' => substr($item['first_sentence'] ?? '', 0, 120) . '...',
                     'source' => 'OpenLibrary',
                     'is_stored' => false,
                     'media_type' => 'book'

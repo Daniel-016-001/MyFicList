@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ForumPost;
 use App\Models\MediaList;
+use App\Services\S3ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 
 class ForumController extends Controller
 {
@@ -28,11 +27,11 @@ class ForumController extends Controller
         if ($selectedCategory === 'listas') {
             $items = MediaList::with(['user', 'items.media', 'likes'])
                 ->where('is_public', true)
-                ->when($search, function($query) use ($search) {
+                ->when($search, function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
-                          ->orWhereHas('user', function($q) use ($search) {
-                              $q->where('username', 'like', "%{$search}%");
-                          });
+                        ->orWhereHas('user', function ($q) use ($search) {
+                            $q->where('username', 'like', "%{$search}%");
+                        });
                 })
                 ->latest('updated_at')
                 ->paginate(12)
@@ -40,13 +39,13 @@ class ForumController extends Controller
         } elseif ($selectedCategory === 'all') {
             // Unir Publicaciones y Listas para "Todas"
             $posts = ForumPost::with(['user', 'media', 'likes'])
-                ->when($search, function($query) use ($search) {
-                    $query->where(function($q) use ($search) {
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
                         $q->where('title', 'like', "%{$search}%")
-                          ->orWhere('body', 'like', "%{$search}%")
-                          ->orWhereHas('user', function($u) use ($search) {
-                              $u->where('username', 'like', "%{$search}%");
-                          });
+                            ->orWhere('body', 'like', "%{$search}%")
+                            ->orWhereHas('user', function ($u) use ($search) {
+                                $u->where('username', 'like', "%{$search}%");
+                            });
                     });
                 })
                 ->whereHas('user')
@@ -55,42 +54,42 @@ class ForumController extends Controller
 
             $lists = MediaList::with(['user', 'items.media', 'likes'])
                 ->where('is_public', true)
-                ->when($search, function($query) use ($search) {
+                ->when($search, function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
-                          ->orWhereHas('user', function($q) use ($search) {
-                              $q->where('username', 'like', "%{$search}%");
-                          });
+                        ->orWhereHas('user', function ($q) use ($search) {
+                            $q->where('username', 'like', "%{$search}%");
+                        });
                 })
                 ->latest('updated_at')
                 ->get();
 
             // Combinar y paginar manualmente
-            $merged = $posts->concat($lists)->sortByDesc(function($item) {
+            $merged = $posts->concat($lists)->sortByDesc(function ($item) {
                 return $item->created_at ?? $item->updated_at;
             });
 
             $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
             $perPage = 12;
             $currentItems = $merged->slice(($currentPage - 1) * $perPage, $perPage)->all();
-            
+
             $items = new \Illuminate\Pagination\LengthAwarePaginator(
-                $currentItems, 
-                $merged->count(), 
-                $perPage, 
-                $currentPage, 
+                $currentItems,
+                $merged->count(),
+                $perPage,
+                $currentPage,
                 ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
             );
             $items->appends($request->all());
         } else {
             $items = ForumPost::with(['user', 'media', 'likes'])
                 ->where('category', $selectedCategory)
-                ->when($search, function($query) use ($search) {
-                    $query->where(function($q) use ($search) {
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
                         $q->where('title', 'like', "%{$search}%")
-                          ->orWhere('body', 'like', "%{$search}%")
-                          ->orWhereHas('user', function($u) use ($search) {
-                              $u->where('username', 'like', "%{$search}%");
-                          });
+                            ->orWhere('body', 'like', "%{$search}%")
+                            ->orWhereHas('user', function ($u) use ($search) {
+                                $u->where('username', 'like', "%{$search}%");
+                            });
                     });
                 })
                 ->whereHas('user')
@@ -114,7 +113,7 @@ class ForumController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, S3ImageService $s3Service)
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
@@ -129,11 +128,9 @@ class ForumController extends Controller
 
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
-            $fileName = 'foro/' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            // Subida directa al disco local public para evitar errores de drivers de S3
-            Storage::disk('public')->putFileAs('foro', $file, basename($fileName));
-            $data['attachment_path'] = $fileName;
+
+            // Subida a S3 mediante el servicio dedicado
+            $data['attachment_path'] = $s3Service->uploadForo($file);
         }
 
         ForumPost::create($data);
@@ -141,16 +138,20 @@ class ForumController extends Controller
         return redirect()->route('forum.index')->with('success', 'Tu publicación se ha creado correctamente.');
     }
 
-    public function destroy(ForumPost $post)
+    public function destroy(ForumPost $post, S3ImageService $s3Service)
     {
         // Solo el dueño o un admin pueden borrar
         if (auth()->id() !== $post->user_id && auth()->user()->role !== 'admin') {
             return back()->with('error', 'No tienes permiso para eliminar esta publicación.');
         }
 
-        // Eliminar adjunto del disco local si existe
+        // Eliminar adjunto de S3 o disco local si existe
         if ($post->attachment_path) {
-            Storage::disk('public')->delete($post->attachment_path);
+            if (str_starts_with($post->attachment_path, 'http')) {
+                $s3Service->deleteFile($post->attachment_path);
+            } else {
+                Storage::disk('public')->delete($post->attachment_path);
+            }
         }
 
         $post->delete();

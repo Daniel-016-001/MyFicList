@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserList extends Model
 {
-    // Nombre de la tabla en la base de datos (el que pusimos en el script SQL)
     protected $table = 'user_lists';
 
     protected $fillable = [

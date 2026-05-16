@@ -236,6 +236,7 @@
     </div>
     </main>
     @include('layouts.footer')
+    @include('components.search-loading')
 
     <script>
         let currentFilter = 'all';

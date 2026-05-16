@@ -138,7 +138,7 @@
         <!-- Categories Section -->
         <section class="max-w-7xl mx-auto px-4 py-20">
             <h2 class="text-4xl font-bold mb-12 text-center">Explora por tipo</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 <!-- Anime -->
                 <a href="{{ route('media.explore', ['type' => 'anime']) }}" class="category-card group">
                     <div
@@ -193,6 +193,17 @@
                         </div>
                     </div>
                 </a>
+
+                <!-- Books -->
+                <a href="{{ route('media.explore', ['type' => 'book']) }}" class="category-card group">
+                    <div
+                        class="bg-gradient-to-br from-indigo-900/30 to-indigo-900/10 border border-indigo-800/50 rounded-xl overflow-hidden h-40 flex items-center justify-center hover:border-indigo-500 transition">
+                        <div class="text-center">
+                            <div class="text-5xl mb-2">📚</div>
+                            <p class="text-lg font-bold group-hover:text-indigo-300 transition">Libros</p>
+                        </div>
+                    </div>
+                </a>
             </div>
         </section>
 
@@ -229,6 +240,7 @@
 
     <!-- Footer -->
     @include('layouts.footer')
+    @include('components.search-loading')
 </body>
 
 </html>
