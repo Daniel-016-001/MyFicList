@@ -1,6 +1,6 @@
 <footer
     style="background-color: rgb(17, 24, 39) !important; padding-top: 20px !important; padding-bottom: 20px !important; !important;"
-    class="border-t border-white/5">
+    class="">
     <div class="max-w-6xl mx-auto px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-10 items-start">
             <!-- Branding -->
@@ -36,22 +36,22 @@
                 <h4 class="text-[10px] font-black text-white uppercase tracking-[0.4em] opacity-40">Conecta</h4>
                 <div class="flex space-x-4">
                     <a href="#"
-                        class="w-12 h-12 bg-gray-800/40 hover:bg-blue-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-400 transition-all border border-white/5">
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-blue-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-400 transition-all">
                         <i class="fab fa-twitter text-base"></i>
                     </a>
                     <a href="#"
-                        class="w-12 h-12 bg-gray-800/40 hover:bg-purple-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-purple-400 transition-all border border-white/5">
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-purple-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-purple-400 transition-all">
                         <i class="fab fa-github text-base"></i>
                     </a>
                     <a href="#"
-                        class="w-12 h-12 bg-gray-800/40 hover:bg-indigo-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-indigo-400 transition-all border border-white/5">
+                        class="w-12 h-12 bg-gray-800/40 hover:bg-indigo-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-indigo-400 transition-all">
                         <i class="fab fa-discord text-base"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="border-white/5 pt-10">
+        <div class="pt-10">
             <div class="flex flex-col md:flex-row justify-between items-center gap-2">
                 <p class="font-bold text-gray-600 uppercase tracking-[0.4em]" style="font-size: 9px;">
                     &copy; 2026 MyFicList &bull; Experiencia Premium

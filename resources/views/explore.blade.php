@@ -19,7 +19,6 @@
         .glass {
             background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .card-hover:hover {
@@ -41,7 +40,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <h1
-                            class="text-4xl md:text-5xl font-black tracking-tighter bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            class="text-4xl md:text-5xl font-black tracking-tighter bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent pb-2">
                             Explorar catálogo
                         </h1>
                         <p class="text-gray-400 mt-2 font-medium">Descubre todo el contenido guardado en nuestra base de
@@ -55,11 +54,11 @@
                                 class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
                             <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Buscar título..."
-                                class="bg-gray-900/50 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all w-64">
+                                class="bg-gray-900/50 rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all w-64">
                         </div>
 
                         <select name="type"
-                            class="bg-gray-900/50 border border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer">
+                            class="bg-gray-900/50 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer">
                             <option value="">Todos los tipos</option>
                             <option value="anime" {{ request('type') == 'anime' ? 'selected' : '' }}>Anime</option>
                             <option value="manga" {{ request('type') == 'manga' ? 'selected' : '' }}>Manga</option>
@@ -70,7 +69,7 @@
                         </select>
 
                         <select name="genre"
-                            class="bg-gray-900/50 border border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer">
+                            class="bg-gray-900/50 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer">
                             <option value="">Todos los géneros</option>
                             @foreach($allGenres as $genre)
                                 <option value="{{ $genre }}" {{ request('genre') == $genre ? 'selected' : '' }}>{{ $genre }}
@@ -127,12 +126,12 @@
                         @endphp
                         <div class="break-inside-avoid mb-6">
                             <div
-                                class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
 
                                 <!-- Image Container linked to details -->
                                 <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                     <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                        class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                        class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
 
                                     @if($displayScore)
                                         <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
@@ -144,7 +143,7 @@
 
                                     @if(!empty($extra['trailer_url']))
                                         <div
-                                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                             <i class="fas fa-play text-white text-xs ml-1"></i>
                                         </div>
                                     @endif
@@ -166,7 +165,7 @@
                                     </h3>
 
                                     <!-- Action Buttons -->
-                                    <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                    <div class="mt-auto flex items-center justify-between pt-4">
                                         @auth
                                             <button onclick="openListModal({{ $media->id }})"
                                                 class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -227,7 +226,7 @@
                     </select>
 
                     <div id="new-list-fields"
-                        class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 space-y-3">
+                        class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl space-y-3">
                         <input type="text" name="new_list_name" placeholder="Nombre de la nueva lista..."
                             class="w-full bg-gray-800 border-none rounded-lg p-3 text-white font-bold focus:ring-2 focus:ring-purple-600 text-sm">
                         <label class="flex items-center gap-3 cursor-pointer group w-fit">

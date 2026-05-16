@@ -16,19 +16,19 @@
             </div>
 
             @if(session('success'))
-                <div class="mb-6 rounded-xl border border-green-700 bg-green-900/70 p-4 text-green-100">
+                <div class="mb-6 rounded-xl bg-green-900/70 p-4 text-green-100">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-6 rounded-xl border border-red-700 bg-red-900/70 p-4 text-red-100">
+                <div class="mb-6 rounded-xl bg-red-900/70 p-4 text-red-100">
                     {{ session('error') }}
                 </div>
             @endif
 
             @if($mediaLists->isEmpty())
-                <div class="rounded-3xl border border-gray-800 bg-gray-900 p-16 text-center">
+                <div class="rounded-3xl bg-gray-900 p-16 text-center">
                     <p class="text-gray-400 text-xl mb-6">Aún no tienes listas creadas.</p>
                     <p class="text-gray-500 text-sm mb-8">Explora el catálogo y agrega contenido para comenzar a crear tus
                         colecciones.</p>
@@ -40,7 +40,7 @@
             @else
                 <div class="space-y-8">
                     @foreach($mediaLists as $list)
-                        <section class="rounded-3xl border border-gray-800 bg-gray-900/60 p-6">
+                        <section class="rounded-3xl bg-gray-900/60 p-6">
                             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
                                 <div class="flex items-center gap-3 flex-wrap">
                                     <h2 class="text-2xl font-bold text-white">{{ $list->name }}</h2>
@@ -81,13 +81,13 @@
                                         elemento{{ $list->items->count() !== 1 ? 's' : '' }}</span>
                                 </div>
                                 <a href="{{ route('media-lists.show', $list) }}"
-                                    class="inline-flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-400 hover:text-white px-4 py-2 rounded-xl transition font-bold text-sm">
+                                    class="inline-flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 hover:text-white px-4 py-2 rounded-xl transition font-bold text-sm">
                                     <i class="fas fa-eye"></i> Ver lista completa
                                 </a>
                             </div>
 
                             @if($list->items->isEmpty())
-                                <div class="rounded-2xl border border-gray-800 bg-gray-900 p-8 text-center text-gray-500">
+                                <div class="rounded-2xl bg-gray-900 p-8 text-center text-gray-500">
                                     Esta lista está vacía. Agrega contenido desde <a href="{{ route('media.explore') }}"
                                         class="text-blue-400 hover:underline">Explorar</a>.
                                 </div>
@@ -97,7 +97,7 @@
                                         @php $media = $entry->media; @endphp
                                         <div class="break-inside-avoid mb-4">
                                             <div
-                                                class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                                class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                                 @if($media)
                                                     <a href="{{ route('media.show', $media->id) }}" class="block group">
                                                 @else
@@ -105,7 +105,7 @@
                                                 @endif
                                                     <div class="relative">
                                                         <img src="{{ $media ? $media->cover_url : '' }}" alt="{{ $media ? $media->title : 'N/A' }}"
-                                                            class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                            class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                                         @if($entry->score)
                                                             <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                                 class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -125,7 +125,7 @@
                                                                 {{ $entry->progress }}{{ data_get($media->extra_data, 'episodes') ? ' / ' . data_get($media->extra_data, 'episodes') : '' }}</span>
                                                         @endif
                                                     </div>
-                                                    <div class="mt-auto flex items-center justify-between pt-3 border-slate-800/50">
+                                                    <div class="mt-auto flex items-center justify-between pt-3">
                                                         <form action="{{ route('user-list.destroy', $entry->id) }}" method="POST"
                                                             class="inline-block">
                                                             @csrf

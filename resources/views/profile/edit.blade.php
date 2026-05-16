@@ -9,12 +9,12 @@
                 <!-- Columna Derecha: Formularios (8 cols) -->
                 <div class="lg:col-span-8 space-y-12">
                     <!-- Sección: Información Pública -->
-                    <section id="info" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                    <section id="info" class="glass-premium rounded-[2.5rem] p-10">
                         @include('profile.partials.update-profile-information-form')
                     </section>
 
                     <!-- Sección: Mi Colección -->
-                    <section id="collection" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                    <section id="collection" class="glass-premium rounded-[2.5rem] p-10">
                         <div class="space-y-10">
                             <div class="space-y-1">
                                 <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Mi Colección</h2>
@@ -29,7 +29,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
                                     @foreach($userLists as $item)
                                         <div
-                                            class="group relative aspect-[3/4] rounded-2xl overflow-hidden glass-premium border-white/5 hover:neon-border transition-all duration-500">
+                                            class="group relative aspect-[3/4] rounded-2xl overflow-hidden glass-premium hover:neon-border transition-all duration-500">
                                             <img src="{{ $item->media->cover_url }}" alt="{{ $item->media->title }}"
                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                             <div
@@ -39,7 +39,7 @@
                                                 <h4 class="font-bold text-[10px] text-white line-clamp-1 mb-2">
                                                     {{ $item->media->title }}</h4>
                                                 <span
-                                                    class="text-[8px] px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md text-white font-black uppercase tracking-tighter border border-white/10">
+                                                    class="text-[8px] px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md text-white font-black uppercase tracking-tighter">
                                                     {{ $item->status }}
                                                 </span>
                                             </div>
@@ -55,7 +55,7 @@
                     </section>
 
                     <!-- Sección: Listas Personalizadas -->
-                    <section id="lists" class="glass-premium rounded-[2.5rem] p-10 border-white/10">
+                    <section id="lists" class="glass-premium rounded-[2.5rem] p-10">
                         <div class="space-y-10">
                             <div class="space-y-1">
                                 <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Listas Personalizadas
@@ -67,7 +67,7 @@
                             <div class="grid grid-cols-1 gap-4">
                                 @foreach($mediaLists as $list)
                                     <div
-                                        class="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
+                                        class="p-6 rounded-3xl bg-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
                                         <div>
                                             <h4 class="text-white font-bold">{{ $list->name }}</h4>
                                             <p class="text-[10px] font-black text-gray-600 uppercase tracking-tighter">

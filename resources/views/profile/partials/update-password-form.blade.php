@@ -18,7 +18,7 @@
             <div class="relative w-full" style="position: relative;">
                 <input id="update_password_current_password" name="current_password" :type="show ? 'text' : 'password'"
                     style="color: white !important; background-color: #030712 !important;"
-                    class="mt-1 block w-full px-4 py-3 border border-white/10 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
+                    class="mt-1 block w-full px-4 py-3 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
                     autocomplete="current-password" />
                 <button type="button" @click="show = !show"
                     style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;"
@@ -35,7 +35,7 @@
             <div class="relative w-full" style="position: relative;">
                 <input id="update_password_password" name="password" :type="show ? 'text' : 'password'"
                     style="color: white !important; background-color: #030712 !important;"
-                    class="mt-1 block w-full px-4 py-3 border border-white/10 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
+                    class="mt-1 block w-full px-4 py-3 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
                     autocomplete="new-password" />
                 <button type="button" @click="show = !show"
                     style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;"
@@ -54,7 +54,7 @@
                 <input id="update_password_password_confirmation" name="password_confirmation"
                     :type="show ? 'text' : 'password'"
                     style="color: white !important; background-color: #030712 !important;"
-                    class="mt-1 block w-full px-4 py-3 border border-white/10 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
+                    class="mt-1 block w-full px-4 py-3 focus:ring-2 focus:ring-blue-600 rounded-xl shadow-sm pr-12"
                     autocomplete="new-password" />
                 <button type="button" @click="show = !show"
                     style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;"

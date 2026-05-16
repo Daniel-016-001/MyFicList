@@ -9,7 +9,7 @@
         <div class="glass rounded-3xl p-8">
             <!-- Session Status -->
             @if (session('status'))
-                <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-2xl text-sm font-medium">
+                <div class="p-4 bg-green-500/10 text-green-400 rounded-2xl text-sm font-medium">
                     {{ session('status') }}
                 </div>
             @endif
@@ -22,10 +22,9 @@
                     <label for="email" class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
                         Correo Electrónico
                     </label>
-                    <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username"
-                        style="color: white !important; background-color: #030712 !important;"
-                        class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium"
-                        placeholder="tu@correo.com">
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
+                        autocomplete="username" style="color: white !important; background-color: #030712 !important;"
+                        class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium" placeholder="tu@correo.com">
                     @error('email')
                         <p class="mt-2 text-xs text-red-400 font-medium">{{ $message }}</p>
                     @enderror
@@ -37,11 +36,14 @@
                         Contraseña
                     </label>
                     <div class="relative w-full" style="position: relative;">
-                        <input id="password" name="password" :type="show ? 'text' : 'password'" required autocomplete="current-password"
+                        <input id="password" name="password" :type="show ? 'text' : 'password'" required
+                            autocomplete="current-password"
                             style="color: white !important; background-color: #030712 !important;"
                             class="input-field w-full rounded-xl px-4 py-3 text-sm font-medium pr-12"
                             placeholder="••••••••">
-                        <button type="button" @click="show = !show" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;" class="text-gray-500 hover:text-white transition-colors flex items-center justify-center">
+                        <button type="button" @click="show = !show"
+                            style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 10;"
+                            class="text-gray-500 hover:text-white transition-colors flex items-center justify-center">
                             <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
                         </button>
                     </div>
@@ -53,11 +55,13 @@
                 <!-- Remember me & Forgot password -->
                 <div class="flex items-center justify-between pt-2">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input name="remember" type="checkbox" class="w-4 h-4 rounded bg-gray-800 border-gray-600 text-purple-600 focus:ring-purple-500">
+                        <input name="remember" type="checkbox"
+                            class="w-4 h-4 rounded bg-gray-800 border-gray-600 text-purple-600 focus:ring-purple-500">
                         <span class="text-sm text-gray-400">Recordarme</span>
                     </label>
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-sm text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                        <a href="{{ route('password.request') }}"
+                            class="text-sm text-purple-400 hover:text-purple-300 font-semibold transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
                     @endif
@@ -77,7 +81,7 @@
                 </div>
 
                 <a href="{{ route('register') }}"
-                    class="block w-full py-3 text-center bg-gray-800/50 border border-gray-700 hover:border-purple-500/50 text-gray-200 hover:text-white font-bold rounded-xl transition-all hover:bg-purple-500/10">
+                    class="block w-full py-3 text-center bg-gray-800/50 text-gray-200 hover:text-white font-bold rounded-xl transition-all hover:bg-purple-500/10">
                     Crear una cuenta nueva
                 </a>
             </form>

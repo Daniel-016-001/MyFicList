@@ -19,7 +19,6 @@
         .glass {
             background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .content-container {
@@ -85,7 +84,7 @@
                                 class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-[2rem] blur opacity-25 group-hover:opacity-60 transition duration-1000">
                             </div>
                             <div
-                                class="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 bg-gray-950 shimmer">
+                                class="relative rounded-[2rem] overflow-hidden shadow-2xl bg-gray-950 shimmer">
                                 <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
                                     class="w-full h-auto transition-transform duration-700 group-hover:scale-105">
                             </div>
@@ -107,7 +106,7 @@
 
                             <div class="flex gap-4">
                                 <a href="/"
-                                    class="flex-1 py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all border border-white/5">
+                                    class="flex-1 py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
                                     <i class="fas fa-arrow-left"></i>
                                 </a>
                                 <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
@@ -116,7 +115,7 @@
                                     <input type="hidden" name="source" value="{{ $media->source }}">
                                     <input type="hidden" name="media_type" value="{{ $media->media_type }}">
                                     <button type="submit"
-                                        class="w-full py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all border border-white/5">
+                                        class="w-full py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </form>
@@ -139,7 +138,7 @@
                                 <div class="grid grid-cols-1 gap-3">
                                     @if($media->episodes_count)
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-blue-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
                                                 <i class="fas fa-layer-group text-xs"></i>
@@ -156,7 +155,7 @@
 
                                     @if($media->episode_duration)
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-purple-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
                                                 <i class="fas fa-clock text-xs"></i>
@@ -173,7 +172,7 @@
 
                                     @if($media->total_duration && $media->media_type === 'peli')
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-red-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400">
                                                 <i class="fas fa-film text-xs"></i>
@@ -191,7 +190,7 @@
 
                                     @if($media->total_duration && $media->media_type === 'game')
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-green-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
                                                 <i class="fas fa-gamepad text-xs"></i>
@@ -208,7 +207,7 @@
 
                                     @if($media->chapters)
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-indigo-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                                                 <i class="fas fa-book-open text-xs"></i>
@@ -224,7 +223,7 @@
 
                                     @if(!empty($extra['number_of_seasons']))
                                         <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl border border-white/5 group hover:border-pink-500/30 transition-colors">
+                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
                                             <div
                                                 class="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
                                                 <i class="fas fa-layer-group text-xs"></i>
@@ -247,7 +246,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['genres'] as $genre)
                                             <span
-                                                style="background-color: rgba(37, 99, 235, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #60a5fa !important;"
+                                                style="background-color: rgba(37, 99, 235, 0.1) !important; color: #60a5fa !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ $genre }}
                                             </span>
@@ -262,7 +261,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         @foreach((array) $extra['categories'] as $category)
                                             <span
-                                                style="background-color: rgba(20, 184, 166, 0.1) !important; border: 1px solid rgba(20, 184, 166, 0.3) !important; color: #2dd4bf !important;"
+                                                style="background-color: rgba(20, 184, 166, 0.1) !important; color: #2dd4bf !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ is_array($category) ? ($category['name'] ?? '') : $category }}
                                             </span>
@@ -278,7 +277,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['platforms'] as $platform)
                                             <span
-                                                style="background-color: rgba(147, 51, 234, 0.1) !important; border: 1px solid rgba(168, 85, 247, 0.3) !important; color: #c084fc !important;"
+                                                style="background-color: rgba(147, 51, 234, 0.1) !important; color: #c084fc !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ $platform }}
                                             </span>
@@ -294,7 +293,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         @foreach((array) $extra['studios'] as $studio)
                                             <span
-                                                style="background-color: rgba(5, 150, 105, 0.1) !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; color: #34d399 !important;"
+                                                style="background-color: rgba(5, 150, 105, 0.1) !important; color: #34d399 !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ is_array($studio) ? ($studio['name'] ?? '') : $studio }}
                                             </span>
@@ -310,7 +309,7 @@
                                     <div class="flex flex-wrap gap-2">
                                         @foreach((array) $extra['authors'] as $author)
                                             <span
-                                                style="background-color: rgba(249, 115, 22, 0.1) !important; border: 1px solid rgba(249, 115, 22, 0.3) !important; color: #fb923c !important;"
+                                                style="background-color: rgba(249, 115, 22, 0.1) !important; color: #fb923c !important;"
                                                 class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
                                                 {{ is_array($author) ? ($author['name'] ?? '') : $author }}
                                             </span>
@@ -329,12 +328,12 @@
                     <div class="space-y-6">
                         <div class="flex flex-wrap gap-2">
                             <span
-                                class="px-3 py-1 bg-purple-600/10 text-purple-400 border border-purple-500/10 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->source }}</span>
+                                class="px-3 py-1 bg-purple-600/10 text-purple-400 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->source }}</span>
                             <span
-                                class="px-3 py-1 bg-purple-600/10 text-purple-400 border border-purple-500/10 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->media_type }}</span>
+                                class="px-3 py-1 bg-purple-600/10 text-purple-400 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->media_type }}</span>
                             @if(!empty($extra['year']))
                                 <span
-                                    class="px-3 py-1 bg-gray-800/40 text-gray-400 border border-white/5 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $extra['year'] }}</span>
+                                    class="px-3 py-1 bg-gray-800/40 text-gray-400 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $extra['year'] }}</span>
                             @endif
                         </div>
 
@@ -343,7 +342,7 @@
                         </h1>
 
                         <div
-                            class="inline-flex items-center gap-4 bg-gray-900/20 border border-white/5 p-4 rounded-2xl">
+                            class="inline-flex items-center gap-4 bg-gray-900/20 p-4 rounded-2xl">
                             <div>
                                 <p class="text-[7px] font-black text-purple-500 uppercase tracking-widest mb-0.5">
                                     PUNTUACIÓN MYFICLIST</p>
@@ -363,7 +362,7 @@
                     <!-- Synopsis -->
                     <section class="pt-8 space-y-6">
                         <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Sinopsis</h3>
-                        <div class="bg-gray-900/20 border border-white/5 rounded-3xl p-8">
+                        <div class="bg-gray-900/20 rounded-3xl p-8">
                             <div class="text-gray-400 text-sm leading-relaxed">
                                 @php
                                     $synopsis = $media->synopsis;
@@ -382,7 +381,7 @@
                         <section class="pt-8 space-y-6">
                             <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Multimedia</h3>
                             <div
-                                class="aspect-video rounded-3xl overflow-hidden border border-white/10 bg-black shadow-2xl">
+                                class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl">
                                 @if($youtubeId)
                                     <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0"
                                         frameborder="0" allowfullscreen></iframe>
@@ -467,7 +466,7 @@
                     </select>
 
                     <div id="new-list-fields"
-                        class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 space-y-3">
+                        class="hidden mt-3 p-4 bg-gray-900/50 rounded-xl space-y-3">
                         <input type="text" name="new_list_name" placeholder="Nombre de la nueva lista..."
                             class="w-full bg-gray-800 border-none rounded-lg p-3 text-white font-bold focus:ring-2 focus:ring-purple-600 text-sm">
                         <label class="flex items-center gap-3 cursor-pointer group w-fit">

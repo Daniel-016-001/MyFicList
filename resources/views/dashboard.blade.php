@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Welcome Card -->
             <div
-                class="mb-12 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-800/30 rounded-xl p-8">
+                class="mb-12 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl p-8">
                 <p class="text-gray-400">Contenido mejor valorado por la comunidad</p>
             </div>
 
@@ -34,11 +34,11 @@
                         @foreach($popularByCategory['anime'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                             @if($media->average_score !== 'N/A')
                                                 <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                     class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -85,11 +85,11 @@
                         @foreach($popularByCategory['manga'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                             @if($media->average_score !== 'N/A')
                                                 <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                     class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -136,11 +136,11 @@
                         @foreach($popularByCategory['peli'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                             @if($media->average_score !== 'N/A')
                                                 <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                     class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -187,11 +187,11 @@
                         @foreach($popularByCategory['serie'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                             @if($media->average_score !== 'N/A')
                                                 <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                     class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -252,11 +252,11 @@
                             @endphp
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                             @if($media->average_score !== 'N/A')
                                                 <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
                                                     class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
@@ -312,11 +312,11 @@
                         @foreach($popularByCategory['book'] as $media)
                             <div class="break-inside-avoid mb-6">
                                 <div
-                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] border border-blue-900/20 flex flex-col">
+                                    class="bg-slate-900 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-[1.02] transform-gpu flex flex-col">
                                     <a href="{{ route('media.show', $media->id) }}" class="block relative group cursor-pointer">
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all">
+                                                class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
                                         </div>
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">

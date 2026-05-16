@@ -1,8 +1,8 @@
 <article style="{{ $level > 0 ? 'margin-left: ' . min($level * 2, 6) . 'rem; margin-top: 1rem;' : '' }}" 
-         class="bg-gray-900/10 border {{ $level > 0 ? 'border-blue-500/30 border-l-4' : 'border-white/5' }} p-6 md:p-8 rounded-3xl group transition-all hover:bg-gray-900/20 relative">
+         class="bg-gray-900/10 p-6 md:p-8 rounded-3xl group transition-all hover:bg-gray-900/20 relative">
     <div class="flex justify-between items-start mb-6">
         <div class="flex items-center gap-4">
-            <img src="{{ $comment->user->avatar_url }}" alt="" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-white/10 shadow-sm">
+            <img src="{{ $comment->user->avatar_url }}" alt="" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shadow-sm">
             <div>
                 @if($comment->user)
                     @if($comment->user->username)
@@ -51,10 +51,10 @@
                 <input type="hidden" name="commentable_type" value="{{ get_class($model) }}">
                 <input type="hidden" name="commentable_id" value="{{ $model->id }}">
                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                <img src="{{ auth()->user()->avatar_url }}" class="w-8 h-8 rounded-full object-cover border border-white/10 hidden md:block" alt="">
+                <img src="{{ auth()->user()->avatar_url }}" class="w-8 h-8 rounded-full object-cover hidden md:block" alt="">
                 <div class="flex-1 space-y-3">
                     <textarea name="content" required placeholder="Escribe tu respuesta..."
-                        style="background-color: rgba(0,0,0,0.2) !important; border: 1px solid rgba(255, 255, 255, 0.05) !important;"
+                        style="background-color: rgba(0,0,0,0.2) !important;"
                         class="w-full rounded-xl p-3 text-white text-sm focus:ring-0 transition-all placeholder-gray-600"
                         rows="2"></textarea>
                     <div class="flex justify-end gap-3">

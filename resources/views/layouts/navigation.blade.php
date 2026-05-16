@@ -1,4 +1,4 @@
-<nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50 shadow-xl">
+<nav class="bg-gray-900 sticky top-0 z-50 shadow-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
@@ -46,11 +46,11 @@
                         <button
                             class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:text-white transition flex items-center space-x-2">
                             <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->username }}"
-                                class="w-8 h-8 rounded-full object-cover border border-gray-700">
+                                class="w-8 h-8 rounded-full object-cover">
                             <span class="hidden md:inline">{{ Auth::user()->username }}</span>
                         </button>
                         <div
-                            class="absolute right-0 mt-0 w-48 bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-700">
+                            class="absolute right-0 mt-0 w-48 bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-t-lg transition">
                                 <i class="fas fa-user mr-2"></i>Mi perfil

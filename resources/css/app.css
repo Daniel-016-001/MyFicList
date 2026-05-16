@@ -6,6 +6,10 @@
     body {
         @apply bg-gray-950;
     }
+
+    *, ::before, ::after {
+        border-style: none;
+    }
 }
 
 @layer components {
@@ -22,15 +26,15 @@
     }
 
     .btn-secondary {
-        @apply px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg transition-all border border-gray-700;
+        @apply px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg transition-all;
     }
 
     .glass-effect {
-        @apply bg-gray-950/40 backdrop-blur-xl border border-white/5;
+        @apply bg-gray-950/40 backdrop-blur-xl;
     }
 
     .glass-premium {
-        @apply bg-gradient-to-br from-white/10 to-transparent backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] transition-all duration-500;
+        @apply bg-gradient-to-br from-white/10 to-transparent backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] transition-all duration-500;
     }
 
     .text-glow {
@@ -82,19 +86,19 @@
     }
 
     .badge-primary {
-        @apply badge bg-blue-600/10 text-blue-400 border border-blue-500/20;
+        @apply badge bg-blue-600/10 text-blue-400;
     }
 
     .badge-success {
-        @apply badge bg-green-600/10 text-green-400 border border-green-500/20;
+        @apply badge bg-green-600/10 text-green-400;
     }
 
     .badge-warning {
-        @apply badge bg-yellow-600/10 text-yellow-400 border border-yellow-500/20;
+        @apply badge bg-yellow-600/10 text-yellow-400;
     }
 
     .badge-error {
-        @apply badge bg-red-600/10 text-red-400 border border-red-500/20;
+        @apply badge bg-red-600/10 text-red-400;
     }
 
     .input-field {

@@ -17,11 +17,9 @@
         .glass {
             background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .input-field {
             background: rgba(31, 41, 55, 0.8);
-            border: 1px solid rgba(75, 85, 99, 0.4);
             color: white;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -35,7 +33,7 @@
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
     <!-- Navigation -->
-    <nav class="border-b border-gray-800/50 bg-gray-950/80 backdrop-blur-md">
+    <nav class="bg-gray-950/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
             <a href="{{ url('/') }}" class="flex items-center gap-2 text-xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 MyFicList
@@ -49,7 +47,7 @@
     </main>
 
     <!-- Footer minimal -->
-    <footer class="border-t border-gray-800/50 py-4 text-center text-xs text-gray-600">
+    <footer class="py-4 text-center text-xs text-gray-600">
         © {{ date('Y') }} MyFicList. Tu biblioteca universal de entretenimiento.
     </footer>
 </body>
