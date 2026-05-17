@@ -129,7 +129,6 @@ class ForumController extends Controller
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
 
-            // Subida a S3 mediante el servicio dedicado
             $data['attachment_path'] = $s3Service->uploadForo($file);
         }
 

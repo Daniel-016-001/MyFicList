@@ -44,8 +44,8 @@ Estas dependencias se instalan a través de Composer y npm:
 1. Clona el repositorio:
 
 ```bash
-git clone <tu-repositorio> hub-app
-cd hub-app
+git clone <tu-repositorio> <nombre>
+cd <nombre>
 ```
 
 2. Instala dependencias PHP:

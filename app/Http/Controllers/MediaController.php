@@ -25,9 +25,9 @@ class MediaController extends Controller
     {
         $media = Media::findOrFail($id);
 
-        // Lazy load de detalles completos si no se han cargado antes
+        // Lazy load de detalles completos si no se han cargado antes o si falta el trailer
         $extra = $media->extra_data ?? [];
-        if (!isset($extra['full_details_loaded']) || $extra['full_details_loaded'] !== true) {
+        if (!array_key_exists('full_details_loaded', $extra) || $extra['full_details_loaded'] !== true || !array_key_exists('trailer_url', $extra)) {
             $updatedMedia = $this->mediaService->importToDatabase($media->external_id, $media->source, $media->media_type);
             if ($updatedMedia) {
                 $media = $updatedMedia;

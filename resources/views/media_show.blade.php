@@ -63,9 +63,16 @@
         $isYoutube = !empty($trailerUrl) && (str_contains($trailerUrl, 'youtube.com') || str_contains($trailerUrl, 'youtu.be'));
         $youtubeId = null;
         if ($isYoutube) {
-            if (preg_match('/(?:v=|\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{11})/', $trailerUrl, $matches)) {
+            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/', $trailerUrl, $matches)) {
                 $youtubeId = $matches[1];
             }
+        }
+        // Detectar tipo MIME por extensión para el <video> tag
+        $videoMime = 'video/mp4'; // Por defecto mp4
+        if ($trailerUrl && str_ends_with(strtolower(parse_url($trailerUrl, PHP_URL_PATH) ?? ''), '.webm')) {
+            $videoMime = 'video/webm';
+        } elseif ($trailerUrl && str_ends_with(strtolower(parse_url($trailerUrl, PHP_URL_PATH) ?? ''), '.ogg')) {
+            $videoMime = 'video/ogg';
         }
     @endphp
 
@@ -386,8 +393,9 @@
                                     <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $youtubeId }}?rel=0"
                                         frameborder="0" allowfullscreen></iframe>
                                 @else
-                                    <video class="w-full h-full" controls>
-                                        <source src="{{ $trailerUrl }}" type="video/mp4">
+                                    <video class="w-full h-full" controls preload="metadata">
+                                        <source src="{{ $trailerUrl }}" type="{{ $videoMime }}">
+                                        Tu navegador no soporta la reproducción de vídeo.
                                     </video>
                                 @endif
                             </div>
