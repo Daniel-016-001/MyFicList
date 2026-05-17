@@ -55,7 +55,7 @@ class MediaController extends Controller
         if (!empty($results)) {
             foreach ($results as &$result) {
                 try {
-                    $importedMedia = $this->mediaService->importSearchResult($result, $result['media_type'] ?? $type);
+                    $importedMedia = $this->mediaService->importSearchResult($result);
                     if ($importedMedia) {
                         $result['id'] = $importedMedia->id;
                         $result['is_stored'] = true;
@@ -107,7 +107,7 @@ class MediaController extends Controller
         if (!empty($results)) {
             foreach ($results as &$result) {
                 try {
-                    $importedMedia = $this->mediaService->importSearchResult($result, $result['media_type'] ?? 'all');
+                    $importedMedia = $this->mediaService->importSearchResult($result);
                     if ($importedMedia) {
                         $result['id'] = $importedMedia->id;
                         $result['is_stored'] = true;

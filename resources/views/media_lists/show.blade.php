@@ -57,7 +57,7 @@
                                         <div class="text-gray-500">Estado: <span class="text-blue-400">{{ ucfirst(str_replace('_', ' ', $entry->status)) }}</span></div>
 
                                         @if($media->media_type !== 'game')
-                                            <div class="text-gray-500">Progreso: <span class="text-purple-400">{{ $entry->progress }}{{ data_get($media->extra_data, 'episodes') ? ' / ' . data_get($media->extra_data, 'episodes') : '' }}{{ !data_get($media->extra_data, 'episodes') && data_get($media->extra_data, 'chapters') ? ' / ' . data_get($media->extra_data, 'chapters') : '' }}</span></div>
+                                            <!-- Progreso eliminado por solicitud del usuario -->
                                         @endif
                                     </div>
 

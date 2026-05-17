@@ -1,0 +1,1 @@
+{"is_adult":false,"year":"2005","genres":["Acci\u00f3n"],"studios":["SCE Santa Monica Studio"],"authors":["Sony Computer Entertainment"],"platforms":["PS Vita","PlayStation 2","PlayStation 3"],"trailer_url":null,"full_details_loaded":true}

@@ -278,7 +278,7 @@ class SearchService
                     'external_id' => $item['mal_id'],
                     'title' => $item['title'],
                     'cover_url' => $item['images']['jpg']['large_image_url'],
-                    'synopsis' => $this->translateText(substr($item['synopsis'] ?? '', 0, 120)) . '...',
+                    'synopsis' => substr($item['synopsis'] ?? '', 0, 120) . '...',
                     'source' => 'Jikan',
                     'is_stored' => false,
                     'media_type' => ($item['type'] === 'Movie') ? 'peli' : $type

@@ -252,11 +252,11 @@
                                     <h4 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Géneros</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['genres'] as $genre)
-                                            <span
+                                            <a href="{{ route('media.explore', ['genre' => $genre]) }}"
                                                 style="background-color: rgba(37, 99, 235, 0.1) !important; color: #60a5fa !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight hover:bg-blue-900/40 hover:scale-105 transition-all inline-block cursor-pointer">
                                                 {{ $genre }}
-                                            </span>
+                                            </a>
                                         @endforeach
                                     </div>
                                 </div>

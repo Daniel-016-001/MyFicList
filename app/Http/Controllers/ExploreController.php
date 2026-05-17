@@ -11,6 +11,12 @@ class ExploreController extends Controller
     {
         $query = Media::query();
 
+        // Mostrar SOLO los títulos que han sido importados en su totalidad (con detalles completos).
+        // Esto evita que el catálogo se llene de resultados de búsqueda parciales que rompen los filtros.
+        if (!$request->filled('search')) {
+            $query->where('extra_data->full_details_loaded', true);
+        }
+
         // Filtro por tipo de media
         if ($request->filled('type')) {
             $query->where('media_type', $request->type);
@@ -18,7 +24,14 @@ class ExploreController extends Controller
 
         // Filtro por género (dentro de extra_data JSON)
         if ($request->filled('genre')) {
-            $query->whereJsonContains('extra_data->genres', $request->genre);
+            $genre = $request->genre;
+            $escapedGenre = trim(json_encode($genre), '"');
+            $escapedGenreSafe = str_replace('\\', '_', $escapedGenre);
+
+            $query->where(function($q) use ($genre, $escapedGenreSafe) {
+                $q->whereJsonContains('extra_data->genres', $genre)
+                  ->orWhere('extra_data', 'like', '%"' . $escapedGenreSafe . '"%');
+            });
         }
 
         // Filtro por búsqueda de título

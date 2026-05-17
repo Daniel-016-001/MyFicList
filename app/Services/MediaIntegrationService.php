@@ -330,7 +330,7 @@ class MediaIntegrationService
 
                 'genres' => $genres,
 
-                'categories' => $genres,
+                'categories' => [],
 
                 'year' => !empty($details['released'])
                     ? substr($details['released'], 0, 4)
@@ -414,7 +414,7 @@ class MediaIntegrationService
             'type' => ($type == 'movie' || $type == 'peli') ? 'Película' : 'Serie',
             'source' => 'TMDB',
             'genres' => $genres,
-            'categories' => $genres,
+            'categories' => [],
             'year' => substr($details['release_date'] ?? $details['first_air_date'] ?? '', 0, 4),
             'trailer_url' => $trailerUrl,
             'images' => [],
@@ -441,7 +441,7 @@ class MediaIntegrationService
         $totalDuration = null;
 
         // Si es una película, intentamos extraer los minutos del string de duración de Jikan (ej: "1 hr 45 min")
-        if ($details['type'] === 'Movie' && $episodeDuration) {
+        if (($details['type'] ?? '') === 'Movie' && $episodeDuration) {
             if (preg_match('/(\d+)\s*hr/', $episodeDuration, $matchesHr)) {
                 $totalDuration += intval($matchesHr[1]) * 60;
             }
@@ -450,27 +450,70 @@ class MediaIntegrationService
             }
         }
 
+        // Extraer mejor el trailer
+        $trailerUrl = $details['trailer']['url'] ?? null;
+        if (!$trailerUrl && !empty($details['trailer']['youtube_id'])) {
+            $trailerUrl = "https://www.youtube.com/watch?v=" . $details['trailer']['youtube_id'];
+        } elseif (!$trailerUrl && !empty($details['trailer']['embed_url'])) {
+            if (preg_match('/embed\/([A-Za-z0-9_-]{11})/', $details['trailer']['embed_url'], $matches)) {
+                $trailerUrl = "https://www.youtube.com/watch?v=" . $matches[1];
+            } else {
+                $trailerUrl = $details['trailer']['embed_url'];
+            }
+        }
+
+        // Mejorar la sinopsis añadiendo el background (si existe)
+        $synopsisRaw = $details['synopsis'] ?? '';
+        if (!empty($details['background'])) {
+            $synopsisRaw .= "\n\nContexto: " . $details['background'];
+        }
+        $synopsis = $this->translateText($synopsisRaw);
+
+        // Agrupar géneros, temáticas y demografía
+        $genresRaw = collect($details['genres'] ?? [])->pluck('name')->toArray();
+        $themesRaw = collect($details['themes'] ?? [])->pluck('name')->toArray();
+        $demographicsRaw = collect($details['demographics'] ?? [])->pluck('name')->toArray();
+        $allCategoriesRaw = array_unique(array_merge($genresRaw, $themesRaw, $demographicsRaw));
+        
+        // Traducir géneros al español
+        $categoriesString = implode(' | ', $allCategoriesRaw);
+        // Corrección manual rápida para términos comunes antes de traducir
+        $categoriesString = str_replace(['Slice of Life', 'Sci-Fi'], ['Recuentos de la vida', 'Ciencia ficción'], $categoriesString);
+        $translatedCategoriesString = $this->translateText($categoriesString);
+        $translatedCategories = array_map(function($cat) {
+            return mb_convert_case(trim($cat), MB_CASE_TITLE, "UTF-8");
+        }, explode('|', $translatedCategoriesString));
+
+        // Agrupar estudios y productores (anime) o serializaciones (manga)
+        $studios = collect($details['studios'] ?? [])->pluck('name')->toArray();
+        $producers = collect($details['producers'] ?? [])->pluck('name')->toArray();
+        $serializations = collect($details['serializations'] ?? [])->pluck('name')->toArray();
+        $allStudios = array_unique(array_merge($studios, $producers, $serializations));
+
+        $title = $details['title'] ?? '';
+
         return [
-            'external_id' => $details['mal_id'],
-            'title' => $details['title'],
-            'cover_url' => $details['images']['jpg']['large_image_url'],
-            'synopsis' => $this->translateText($details['synopsis'] ?? ''),
-            'type' => ($type == 'manga') ? 'Manga' : (($details['type'] === 'Movie') ? 'Película' : 'Anime'),
+            'external_id' => $details['mal_id'] ?? $id,
+            'title' => $title,
+            'cover_url' => $details['images']['jpg']['large_image_url'] ?? null,
+            'synopsis' => $synopsis,
+            'type' => ($type == 'manga') ? 'Manga' : ((($details['type'] ?? '') === 'Movie') ? 'Película' : 'Anime'),
             'source' => 'Jikan',
-            'genres' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
-            'categories' => collect($details['genres'] ?? [])->pluck('name')->toArray(),
+            'genres' => $translatedCategories,
+            'categories' => [],
             'year' => $details['year'] ?? substr($details['published']['from'] ?? '', 0, 4),
-            'trailer_url' => $details['trailer']['url'] ?? (isset($details['trailer']['youtube_id']) ? "https://www.youtube.com/watch?v={$details['trailer']['youtube_id']}" : null),
+            'trailer_url' => $trailerUrl,
             'images' => [],
             'episodes' => $episodesCount,
             'episodes_count' => $episodesCount,
             'episode_duration' => $episodeDuration,
             'total_duration' => $totalDuration,
             'chapters' => $details['chapters'] ?? $details['volumes'] ?? null,
-            'studios' => collect($details['studios'] ?? [])->pluck('name')->toArray(),
+            'studios' => $allStudios,
             'authors' => collect($details['authors'] ?? [])->pluck('name')->toArray(),
             'rating' => $details['rating'] ?? '',
-            'media_type' => ($details['type'] === 'Movie') ? 'peli' : $type
+            'score' => $details['score'] ?? null,
+            'media_type' => (($details['type'] ?? '') === 'Movie') ? 'peli' : $type
         ];
     }
 
