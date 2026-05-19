@@ -1,4 +1,4 @@
-﻿# Requisitos de entorno para la aplicación Hub App
+# Requisitos de entorno para la aplicación Hub App
 # Este archivo no es un requirements.txt de Python, sino un listado de software y extensiones necesarias.
 
 PHP ^8.2
@@ -29,6 +29,9 @@ Git
 # Dependencias PHP clave (Composer)
 laravel/framework ^12.0
 guzzlehttp/guzzle ^7.10
+intervention/image ^3.11
+league/flysystem-aws-s3-v3 ^3.32
+stichoza/google-translate-php 5.3
 laravel/tinker ^2.10.1
 
 # Dependencias de desarrollo

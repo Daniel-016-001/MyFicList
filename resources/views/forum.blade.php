@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Foro de la Comunidad')
+@section('title', 'Foro')
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pb-20">

@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Fiction top</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Fiction Top')
 
-<body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col">
-    @include('layouts.navigation')
+@section('content')
 
-    <main class="flex-grow bg-gray-950 py-12">
+    <div class="flex-grow bg-gray-950 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Welcome Card -->
             <div
@@ -351,8 +340,7 @@
                 </div>
             @endif
         </div>
-    </main>
-    @include('layouts.footer')
+    </div>
 
     <!-- Modal -->
     <div id="list-modal"
@@ -441,6 +429,4 @@
             }
         });
     </script>
-</body>
-
-</html>
+@endsection

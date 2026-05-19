@@ -1,29 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Resultados de Búsqueda</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
-</head>
+@section('title', 'Resultados de Búsqueda')
 
-<body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col">
-    @include('layouts.navigation')
+@push('styles')
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+@endpush
 
-    <main class="flex-grow">
+@section('content')
+
+    <div class="flex-grow">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold mb-8">Resultados de Búsqueda</h1>
 
@@ -234,10 +226,7 @@
             </form>
         </div>
     </div>
-    </main>
-    @include('layouts.footer')
     @include('components.search-loading')
-
     <script>
         let currentFilter = 'all';
 
@@ -297,6 +286,4 @@
             }
         });
     </script>
-</body>
-
-</html>
+@endsection

@@ -1,61 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $media->title }}</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=outfit:400,600,800&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #030712;
-        }
+@section('title', $media->title)
 
-        .glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-        }
+@push('styles')
+<style>
+    .glass {
+        background: rgba(17, 24, 39, 0.7);
+        backdrop-filter: blur(12px);
+    }
+    .content-container { padding-top: 80px !important; }
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        grid-column-gap: 60px !important;
+    }
+    @media (max-width: 1024px) {
+        .main-grid { grid-template-columns: 1fr; grid-row-gap: 30px; }
+    }
+    .section-spacing { margin-bottom: 80px !important; }
+    .synopsis-content h4 {
+        color: #60a5fa; font-weight: 800; margin-top: 40px;
+        margin-bottom: 16px; text-transform: uppercase;
+        font-size: 0.875rem; letter-spacing: 0.1em;
+    }
+</style>
+@endpush
 
-        .content-container {
-            padding-top: 80px !important;
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 3fr;
-            grid-column-gap: 60px !important;
-        }
-
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-                grid-row-gap: 30px;
-            }
-        }
-
-        .section-spacing {
-            margin-bottom: 80px !important;
-        }
-
-        .synopsis-content h4 {
-            color: #60a5fa;
-            font-weight: 800;
-            margin-top: 40px;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            letter-spacing: 0.1em;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
-    @include('layouts.navigation')
+@section('content')
 
     @php
         $extra = $media->extra_data ?? [];
@@ -76,7 +47,7 @@
         }
     @endphp
 
-    <main class="flex-grow pb-20">
+    <div class="flex-grow pb-20">
         <!-- Contenedor con Margen Superior Forzado -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 content-container">
 
@@ -407,7 +378,7 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
         async function toggleLike(id, type, button) {
@@ -447,7 +418,6 @@
             }
         }
     </script>
-    @include('layouts.footer')
 
     <!-- Modal -->
     <div id="list-modal"
@@ -534,6 +504,4 @@
             }
         }
     </script>
-</body>
-
-</html>
+@endsection

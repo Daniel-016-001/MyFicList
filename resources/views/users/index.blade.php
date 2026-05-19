@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Comunidad')
+
 @section('content')
 <div class="bg-gray-950 min-h-screen text-gray-100">
     @include('layouts.navigation')

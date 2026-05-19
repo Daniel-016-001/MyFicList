@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Mi Lista')
+
+@section('title', 'Mi lista')
 
 @section('content')
     <div class="bg-gray-950 min-h-screen text-gray-100">

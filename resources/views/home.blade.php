@@ -1,40 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyFicList - Buscador Universal de Entretenimiento</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <style>
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-        }
+@section('title', 'MyFicList')
 
-        .category-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+@push('styles')
+<style>
+    .hero-gradient {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    }
+    .category-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border-radius: 0.75rem;
+    }
+    .category-card:hover {
+        transform: translateY(-8px);
+    }
+    .category-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    }
+</style>
+@endpush
 
-        .category-card:hover {
-            transform: translateY(-8px);
-        }
-
-        .category-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
-        }
-    </style>
-</head>
-
-<body class="bg-gray-950 text-white min-h-screen flex flex-col">
-    @include('layouts.navigation')
-
-    <main class="flex-grow">
+@section('content')
+    <div class="flex-grow">
         <!-- Hero Section -->
         <section class="hero-gradient min-h-[80vh] flex items-center justify-center px-4 py-20">
             <div class="max-w-4xl w-full text-center">
@@ -236,11 +228,9 @@
                 @endauth
             </div>
         </section>
-    </main>
+    </div>
+@endsection
 
-    <!-- Footer -->
-    @include('layouts.footer')
+@push('scripts')
     @include('components.search-loading')
-</body>
-
-</html>
+@endpush

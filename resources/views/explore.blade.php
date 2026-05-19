@@ -1,38 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Explorar</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=outfit:400,600,800&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #030712;
-        }
+@section('title', 'Explorar')
 
-        .glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-        }
+@push('styles')
+<style>
+    .glass {
+        background: rgba(17, 24, 39, 0.7);
+        backdrop-filter: blur(12px);
+    }
+    .card-hover:hover {
+        transform: translateY(-8px);
+        border-color: rgba(96, 165, 250, 0.5);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+</style>
+@endpush
 
-        .card-hover:hover {
-            transform: translateY(-8px);
-            border-color: rgba(96, 165, 250, 0.5);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-        }
-    </style>
-</head>
+@section('content')
 
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
-    @include('layouts.navigation')
-
-    <main class="flex-grow py-12">
+    <div class="flex-grow py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Header & Filters -->
@@ -199,7 +185,7 @@
                 <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500"></i>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Modal -->
     <div id="list-modal"
@@ -342,8 +328,4 @@
             loadingIndicator.classList.add('hidden');
         }
     </script>
-
-    @include('layouts.footer')
-</body>
-
-</html>
+@endsection

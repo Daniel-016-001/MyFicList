@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ficGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="60%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+  </defs>
+
+  <g fill="none" stroke="url(#ficGradient)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 60 230 L 170 340 L 280 120" />
+
+    <line x1="350" y1="120" x2="450" y2="120" />
+    <line x1="350" y1="256" x2="410" y2="256" />
+    <line x1="350" y1="392" x2="450" y2="392" />
+  </g>
+</svg>

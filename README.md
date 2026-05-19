@@ -39,75 +39,80 @@ Estas dependencias se instalan a través de Composer y npm:
 - Vite + Tailwind CSS
 - Alpine.js
 
-## Configuración en un entorno nuevo
+## Configuración en un equipo nuevo
 
-1. Clona el repositorio:
+1. Extrae el archivo ZIP del proyecto o clona el repositorio:
 
 ```bash
+# Si usas git
 git clone <tu-repositorio> <nombre>
 cd <nombre>
 ```
 
-2. Instala dependencias PHP:
+2. Instala dependencias PHP (requiere Composer):
 
 ```bash
 composer install
 ```
 
-3. Instala dependencias JavaScript:
+3. Instala dependencias JavaScript (requiere Node.js/npm):
 
 ```bash
 npm install
 ```
 
-4. Copia el archivo de entorno:
+4. Configura el entorno:
 
-```bash
+Copia el archivo `.env.example` y renómbralo a `.env`:
+
+**En Windows:**
+```cmd
 copy .env.example .env
 ```
 
-5. Copia las claves en el archivo .env:
-
-TMDB_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlOTQ5ZDY4NTY2YjRiODYyNmZlMjU1Mjc0MzlmMzFhMyIsIm5iZiI6MTc3MjcxNjY0OS44NSwic3ViIjoiNjlhOTgyNjlkNWQwNzc1YWRmZWM2MDRiIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ypXrUf9HXOzpW8rTRmtKdWI4g1zpc-I_uGu0iJRjXVQ
-RAWG_KEY=86d2496fd8814790b8068b3056774276
-
-
-6. Genera la clave de aplicación:
-
+**En Linux / macOS:**
 ```bash
-php artisan key:generate
+cp .env.example .env
 ```
 
-7. Si usas SQLite, crea el archivo de base de datos:
+5. Configura la Base de Datos (SQLite está configurado por defecto para requerir mínima instalación):
 
-```bash
+**En Windows:**
+```cmd
 php artisan storage:link
 if not exist database\database.sqlite type nul > database\database.sqlite
 ```
 
-8. Ejecuta las migraciones:
+**En Linux / macOS:**
+```bash
+php artisan storage:link
+touch database/database.sqlite
+```
+
+6. Genera la clave de aplicación y ejecuta las migraciones:
 
 ```bash
+php artisan key:generate
 php artisan migrate --force
 ```
 
-9. Compila los assets:
+7. Compila los assets (Tailwind CSS, Alpine.js, etc.):
 
 ```bash
 npm run build
 ```
 
-10. Inicia el servidor local:
+8. Inicia el servidor local:
 
 ```bash
 php artisan serve
 ```
 
-Luego abre `http://127.0.0.1:8000`.
+Luego abre `http://127.0.0.1:8000` en tu navegador.
 
 ## Desarrollo local
 
-Para trabajar en modo desarrollo con recarga en caliente:
+Para trabajar en modo desarrollo con recarga en caliente de los assets:
 
 ```bash
 npm run dev
@@ -125,24 +130,11 @@ npm run dev
 - `php artisan test`
 - `php artisan db:seed`
 
-## Ajustes de base de datos
+## Notas adicionales
 
-Por defecto el proyecto usa SQLite con la variable `DB_CONNECTION=sqlite`. Si prefieres MySQL/MariaDB, actualiza en `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nombre_de_base_de_datos
-DB_USERNAME=usuario
-DB_PASSWORD=contraseña
-```
-
-## Notas para Windows / XAMPP
-
-- Asegúrate de usar el PHP de XAMPP si no tienes PHP global instalado.
-- Si `composer install` falla por extensiones, instala las extensiones listadas arriba y reinicia Apache / el servicio PHP.
-- Para ejecutar el servidor interno de Laravel, usa `php artisan serve` desde la carpeta del proyecto.
+- **Base de Datos Alternativa:** Si prefieres MySQL/MariaDB en lugar de SQLite, edita tu archivo `.env`, cambia `DB_CONNECTION=mysql` y configura las credenciales (Host, Port, Database, Username, Password).
+- **Windows / XAMPP:** Asegúrate de que el ejecutable de PHP está en las variables de entorno de tu sistema, o usa la ruta completa al binario (ej. `C:\xampp\php\php.exe artisan serve`). Si `composer install` falla, verifica en tu `php.ini` que extensiones como `zip`, `pdo_sqlite` y `fileinfo` estén habilitadas.
+- **Linux:** Asegúrate de tener instaladas las extensiones necesarias (`php-sqlite3`, `php-xml`, `php-zip`, `php-mbstring`, `php-curl`, etc.) según tu distribución.
 
 ## Cómo contribuir
 

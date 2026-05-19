@@ -39,7 +39,7 @@
                         class="w-12 h-12 bg-gray-800/40 hover:bg-blue-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-400 transition-all">
                         <i class="fab fa-twitter text-base"></i>
                     </a>
-                    <a href="#"
+                    <a href="https://github.com/MyFicList"
                         class="w-12 h-12 bg-gray-800/40 hover:bg-purple-600/20 rounded-xl flex items-center justify-center text-gray-400 hover:text-purple-400 transition-all">
                         <i class="fab fa-github text-base"></i>
                     </a>

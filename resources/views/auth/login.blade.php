@@ -1,4 +1,8 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('title', 'Iniciar sesión')
+
+@section('content')
     <div class="w-full max-w-md mx-auto">
         <!-- Logo & Header -->
         <div class="text-center mb-10 flex flex-col items-center">
@@ -87,4 +91,4 @@
             </form>
         </div>
     </div>
-</x-guest-layout>
+@endsection

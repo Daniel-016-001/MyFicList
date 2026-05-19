@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('title', $mediaList->name)
 
 @section('content')

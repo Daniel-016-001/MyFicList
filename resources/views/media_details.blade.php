@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ data_get($details, 'title', 'Detalle') }} - {{ config('app.name', 'MyFicList') }}</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', data_get($details, 'title', 'Detalle'))
 
-<body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col">
-    @include('layouts.navigation')
+@section('content')
 
-    <main class="flex-grow">
+    <div class="flex-grow">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             @if(session('success'))
                 <div class="mb-6 rounded-2xl border border-green-700 bg-green-900/70 p-4 text-green-100">
@@ -267,8 +256,7 @@
                 </div>
             </div>
         </div>
-    </main>
-    @include('layouts.footer')
+    </div>
 
     <script>
         function openAddModal(externalId, source, mediaType, title, maxProgress) {
@@ -296,6 +284,4 @@
             }
         });
     </script>
-</body>
-
-</html>
+@endsection

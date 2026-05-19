@@ -1,4 +1,8 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('title', 'Registrar cuenta')
+
+@section('content')
     <div class="w-full max-w-md mx-auto">
         <!-- Logo & Header -->
         <div class="text-center flex flex-col items-center">
@@ -116,4 +120,4 @@
             </form>
         </div>
     </div>
-</x-guest-layout>
+@endsection
