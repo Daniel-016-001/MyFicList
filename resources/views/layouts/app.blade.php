@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@hasSection('title')@yield('title')@else MyFicList @endif</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/svg+xml" href="https://myficlist-bucket.s3.eu-north-1.amazonaws.com/favicon.svg">
         <link rel="alternate icon" href="/favicon.ico">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

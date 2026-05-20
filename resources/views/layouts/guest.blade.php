@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@hasSection('title')@yield('title')@else {{ config('app.name', 'MyFicList') }} @endif</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/svg+xml" href="https://myficlist-bucket.s3.eu-north-1.amazonaws.com/favicon.svg">
         <link rel="alternate icon" href="/favicon.ico">
 
         <!-- Fonts -->

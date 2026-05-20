@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Resultados de Búsqueda')
+@section('title', 'Resultados de búsqueda')
 
 @push('styles')
 <style>
