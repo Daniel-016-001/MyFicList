@@ -125,15 +125,22 @@ Durante la navegación, le recomendamos prestar especial atención a los siguien
 3.  **Modelo de Datos Polimórfico:** Comentarios anidados en cascada (respuestas infinitas) y sistema de reacciones "Me gusta" unificados polimórficamente bajo los mismos modelos para servir de forma uniforme a obras, posts de foro y listas personalizadas.
 4.  **Red Social de Comunidad:** Posibilidad de seguir a otros usuarios de la comunidad, revisar sus colecciones, participar en el foro temático (`/foro`) con soporte para adjuntar archivos y crear listas personalizadas públicas o privadas.
 
-### 📧 Cómo Probar la Verificación de Email en Local
+### 📧 Cómo Probar el Envío de Emails en Local (Verificación y Contraseñas)
 Para evitar que tenga que configurar un servidor SMTP real (como Gmail o SendGrid), la aplicación está preconfigurada en modo **Log** para el correo electrónico (`MAIL_MAILER=log` en el `.env`). 
 
-Si desea probar el flujo completo de registro y verificación de correo:
+Esto significa que todos los correos electrónicos se escriben en texto plano en el archivo de registro local: **`storage/logs/laravel.log`**.
+
+#### A. Para probar la Verificación de Email:
 1. Regístrese con un correo nuevo en la página de registro.
 2. La aplicación le mostrará la pantalla de espera de verificación de email.
-3. Abra el archivo de registro local del proyecto en su editor: **`storage/logs/laravel.log`**.
-4. Al final del archivo verá el email de verificación generado. Copie el enlace de verificación que aparece (ej. `http://127.0.0.1:8000/verify-email/...`) y péguelo en su navegador.
-5. El correo quedará verificado automáticamente y podrá acceder a todas las funcionalidades privadas.
+3. Abra el archivo **`storage/logs/laravel.log`** en su editor.
+4. Al final del archivo verá el email de verificación generado. Copie el enlace que aparece (ej. `http://127.0.0.1:8000/verify-email/...`) y péguelo en su navegador para verificar la cuenta.
+
+#### B. Para probar el Restablecimiento de Contraseña:
+1. En la pantalla de Login, haga clic en **"Forgot your password?"**.
+2. Introduzca el correo electrónico de una cuenta registrada y envíe la solicitud.
+3. Abra el archivo **`storage/logs/laravel.log`** en su editor.
+4. Al final del archivo verá el correo con el enlace de restablecimiento. Copie el enlace generado (ej. `http://127.0.0.1:8000/reset-password/...`), péguelo en su navegador y elija su nueva contraseña.
 
 ---
 
