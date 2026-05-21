@@ -1,48 +1,50 @@
-﻿# Requisitos de entorno para la aplicación Hub App
-# Este archivo no es un requirements.txt de Python, sino un listado de software y extensiones necesarias.
+# Requisitos de Entorno para la Aplicación MyFicList
+# Este archivo es un listado técnico detallado del software y las extensiones necesarias para ejecutar MyFicList.
 
-PHP ^8.2
-Composer 2
-Node.js >=18
-npm (incluido con Node.js)
+## Requisitos del Servidor y Entorno
+- **PHP**: `^8.2`
+- **Composer**: `2.x`
+- **Node.js**: `>=18.x`
+- **Gestor de Paquetes**: `npm` (incluido con Node.js) o `yarn`
 
-# Extensiones PHP necesarias
-bcmath
-ctype
-fileinfo
-json
-mbstring
-openssl
-pdo
-pdo_sqlite
-tokenizer
-xml
-zip
+## Extensiones PHP Obligatorias
+Para garantizar el correcto funcionamiento del framework Laravel y de los adaptadores de base de datos local:
+- `bcmath`
+- `ctype`
+- `fileinfo`
+- `json`
+- `mbstring`
+- `openssl`
+- `pdo`
+- `pdo_sqlite` (Necesaria para la conexión por defecto)
+- `tokenizer`
+- `xml`
+- `zip`
 
-# Base de datos
-SQLite (por defecto)
-# o MySQL / MariaDB si prefieres otra base de datos
+## Motor de Base de Datos
+- **SQLite**: (Configurado por defecto, no requiere instalación externa)
+- *Opcional*: MySQL o MariaDB (si se opta por configurar una base de datos externa en el archivo `.env`)
 
-# Herramientas adicionales
-Git
+## Sistemas Adicionales
+- **Git** (Recomendado para el control de versiones y clonación)
 
-# Dependencias PHP clave (Composer)
-laravel/framework ^12.0
-guzzlehttp/guzzle ^7.10
-laravel/tinker ^2.10.1
+## Dependencias de Producción (Composer)
+- `laravel/framework`: `^12.0` (Lógica central, enrutamiento, ORM Eloquent)
+- `guzzlehttp/guzzle`: `^7.10` (Consumo asíncrono de APIs externas)
+- `laravel/tinker`: `^2.10` (Consola interactiva de depuración)
 
-# Dependencias de desarrollo
-fakerphp/faker ^1.23
-laravel/breeze ^2.3
-laravel/pint ^1.24
-phpunit/phpunit ^11.5.3
+## Dependencias de Desarrollo (Composer)
+- `fakerphp/faker`: `^1.23` (Generación de datos ficticios)
+- `laravel/breeze`: `^2.3` (Estructura base de autenticación y sesiones)
+- `laravel/pint`: `^1.24` (Estilizador y corrector de código PHP)
+- `phpunit/phpunit`: `^11.5` (Entorno de pruebas automatizadas)
 
-# Dependencias JS clave (npm)
-@tailwindcss/forms ^0.5.2
-@tailwindcss/vite ^4.0.0
-alpinejs ^3.4.2
-axios ^1.11.0
-laravel-vite-plugin ^2.0.0
-postcss ^8.4.31
-tailwindcss ^3.1.0
-vite ^7.0.7
+## Dependencias de Frontend (npm)
+- `@tailwindcss/forms`: `^0.5` (Estilos optimizados para formularios)
+- `@tailwindcss/vite`: `^4.0` (Integración de Tailwind v4 en el pipeline de Vite)
+- `alpinejs`: `^3.4` (Interactividad ligera e interactiva de frontend)
+- `axios`: `^1.11` (Peticiones asíncronas HTTP desde el cliente)
+- `laravel-vite-plugin`: `^2.0` (Enlace de compilación de assets para Laravel)
+- `postcss`: `^8.4` (Postprocesador de hojas de estilo)
+- `tailwindcss`: `^4.0` (Framework CSS de utilidad moderno)
+- `vite`: `^7.0` (Compilador ultra veloz de código cliente)

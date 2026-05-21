@@ -1,6 +1,6 @@
-# Hub App
+# MyFicList
 
-Aplicación web Laravel basada en Laravel 12, configurada para un entorno local con soporte de consultas, almacenamiento, colas y assets Vite.
+Aplicación web Laravel (MyFicList) basada en Laravel 12, configurada para realizar un seguimiento de contenidos cinematográficos y de ficción, con integración de APIs (TMDB y RAWG) y una base de datos local SQLite.
 
 ## Requisitos mínimos
 
@@ -16,7 +16,7 @@ Aplicación web Laravel basada en Laravel 12, configurada para un entorno local 
   - `mbstring`
   - `openssl`
   - `pdo`
-  - `pdo_sqlite` o `pdo_mysql`
+  - `pdo_sqlite`
   - `tokenizer`
   - `xml`
   - `zip`
@@ -41,11 +41,12 @@ Estas dependencias se instalan a través de Composer y npm:
 
 ## Configuración en un entorno nuevo
 
-1. Clona el repositorio:
+Sigue estos pasos para realizar una instalación limpia del proyecto en un equipo nuevo:
+
+1. Extrae la carpeta del archivo comprimido y posicionate sobre la carpeta:
 
 ```bash
-git clone <tu-repositorio> <nombre>
-cd <nombre>
+cd MyFicList
 ```
 
 2. Instala dependencias PHP:
@@ -60,38 +61,61 @@ composer install
 npm install
 ```
 
-4. Copia el archivo de entorno:
+4. Copia el archivo de configuración de entorno:
 
+En Windows (PowerShell/CMD):
 ```bash
 copy .env.example .env
 ```
 
-5. Copia las claves en el archivo .env:
+En Linux / macOS:
+```bash
+cp .env.example .env
+```
 
+5. Configura las claves de API en el archivo `.env`. Si no se han incluido automáticamente, asegúrate de que tengan este aspecto:
+
+```env
 TMDB_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlOTQ5ZDY4NTY2YjRiODYyNmZlMjU1Mjc0MzlmMzFhMyIsIm5iZiI6MTc3MjcxNjY0OS44NSwic3ViIjoiNjlhOTgyNjlkNWQwNzc1YWRmZWM2MDRiIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ypXrUf9HXOzpW8rTRmtKdWI4g1zpc-I_uGu0iJRjXVQ
 RAWG_KEY=86d2496fd8814790b8068b3056774276
+```
 
-
-6. Genera la clave de aplicación:
+6. Genera la clave de aplicación de Laravel:
 
 ```bash
 php artisan key:generate
 ```
 
-7. Si usas SQLite, crea el archivo de base de datos:
+7. Enlaza el almacenamiento y crea el archivo de base de datos SQLite (configurado por defecto):
 
+Enlazar el storage para las imágenes/avatars:
 ```bash
 php artisan storage:link
-if not exist database\database.sqlite type nul > database\database.sqlite
 ```
 
-8. Ejecuta las migraciones:
+Crear el archivo SQLite vacío:
+* **En Windows (PowerShell):**
+  ```powershell
+  New-Item -Path database\database.sqlite -ItemType File -Force
+  ```
+* **En Windows (CMD):**
+  ```cmd
+  type nul > database\database.sqlite
+  ```
+* **En Linux / macOS:**
+  ```bash
+  touch database/database.sqlite
+  ```
+
+8. Ejecuta las migraciones e inserta los datos de prueba (Demo):
 
 ```bash
-php artisan migrate --force
+php artisan migrate --seed --force
 ```
 
-9. Compila los assets:
+*(Esto creará la estructura de tablas y un usuario de prueba con credenciales `demo@myficlist.com` y contraseña `password`, además de algunos títulos de demostración)*.
+
+9. Compila los assets de Vite para producción:
 
 ```bash
 npm run build
@@ -103,11 +127,11 @@ npm run build
 php artisan serve
 ```
 
-Luego abre `http://127.0.0.1:8000`.
+Luego abre `http://127.0.0.1:8000` en tu navegador para ver la aplicación funcionando.
 
 ## Desarrollo local
 
-Para trabajar en modo desarrollo con recarga en caliente:
+Si vas a realizar cambios y quieres verlos reflejados en tiempo real (recarga en caliente de assets/Tailwind):
 
 ```bash
 npm run dev
@@ -115,15 +139,13 @@ npm run dev
 
 ## Comandos útiles
 
-- `composer install`
-- `composer dump-autoload`
-- `npm install`
-- `npm run dev`
-- `npm run build`
-- `php artisan serve`
-- `php artisan migrate`
-- `php artisan test`
-- `php artisan db:seed`
+- `composer install` - Instalar dependencias PHP
+- `npm install` - Instalar dependencias JavaScript
+- `npm run dev` - Ejecutar servidor de desarrollo Vite
+- `npm run build` - Compilar assets para producción
+- `php artisan serve` - Servidor local de desarrollo Laravel
+- `php artisan migrate:fresh --seed` - Reiniciar base de datos e insertar datos semilla
+- `php artisan test` - Ejecutar tests unitarios y de integración
 
 ## Ajustes de base de datos
 
