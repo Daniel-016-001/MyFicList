@@ -1,174 +1,145 @@
-# MyFicList
+# 🎬 MyFicList — Plataforma Cinéfila e Interactiva de Medios
 
-Aplicación web Laravel (MyFicList) basada en Laravel 12, configurada para realizar un seguimiento de contenidos cinematográficos y de ficción, con integración de APIs (TMDB y RAWG) y una base de datos local SQLite.
+[![Laravel v12](https://img.shields.io/badge/Laravel-v12.0-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38BDF8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
+[![SQLite](https://img.shields.io/badge/SQLite-predeterminado-003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org)
+[![Vite](https://img.shields.io/badge/Vite-compilador-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
 
-## Requisitos mínimos
+**MyFicList** es una aplicación web moderna diseñada como un buscador unificado, biblioteca de catalogación personal y red social interactiva orientada al sector del entretenimiento. Los usuarios pueden explorar, puntuar, reseñar y organizar obras pertenecientes a seis categorías fundamentales: **Películas**, **Series de TV**, **Anime**, **Manga**, **Videojuegos** y **Libros**.
 
-- PHP `^8.2`
-- Composer 2
-- Node.js `>=18`
-- npm (incluido con Node.js) o Yarn
-- Extensiones PHP:
-  - `bcmath`
-  - `ctype`
-  - `fileinfo`
-  - `json`
-  - `mbstring`
-  - `openssl`
-  - `pdo`
-  - `pdo_sqlite`
-  - `tokenizer`
-  - `xml`
-  - `zip`
-- SQLite (para el valor por defecto de `.env`) o MySQL / MariaDB si prefieres otra DB
-- Git (recomendado)
+El proyecto ha sido desarrollado bajo estrictos estándares de ingeniería de software para cumplir con los requerimientos académicos de un **Trabajo de Fin de Grado (TFG)**, priorizando el rendimiento, la experiencia de usuario y una arquitectura limpia y mantenible.
 
-> El archivo `requirements.txt` contiene la lista de dependencias y el software requerido para ejecutar esta aplicación.
+---
 
-## Dependencias principales
+## 🚀 Guía de Despliegue Local (Desde Archivo ZIP)
 
-Estas dependencias se instalan a través de Composer y npm:
+Siga estas instrucciones paso a paso para realizar una instalación limpia del proyecto en cualquier máquina a partir del archivo comprimido.
 
-- PHP: `^8.2`
-- Laravel Framework: `^12.0`
-- Guzzle HTTP: `^7.10`
-- Laravel Tinker
-- Laravel Breeze (dev)
-- Laravel Pint (dev)
-- PHPUnit (dev)
-- Vite + Tailwind CSS
-- Alpine.js
+### 📋 Requisitos Previos Mínimos
+Asegúrese de tener instalados los siguientes componentes globales en su sistema:
+*   **PHP**: `^8.2` (con extensiones habilitadas: `pdo`, `pdo_sqlite`, `mbstring`, `openssl`, `xml`, `zip`)
+*   **Composer**: `v2.x` (gestor de dependencias PHP)
+*   **Node.js**: `>=18.x` (con gestor de paquetes `npm`)
+*   **Servidor web local** (o simplemente el CLI de PHP para ejecutar el servidor integrado de Laravel)
 
-## Configuración en un entorno nuevo
+---
 
-Sigue estos pasos para realizar una instalación limpia del proyecto en un equipo nuevo:
+### 🔧 Proceso de Instalación
 
-1. Extrae la carpeta del archivo comprimido y posicionate sobre la carpeta:
-
+#### 1. Extraer y Posicionarse en el Directorio
+Extraiga el contenido del archivo `.zip` en la ubicación de su preferencia y abra una terminal en la carpeta raíz del proyecto:
 ```bash
 cd MyFicList
 ```
 
-2. Instala dependencias PHP:
-
+#### 2. Instalar Dependencias de Backend (PHP)
+Descargue e instale de forma segura las dependencias del framework mediante Composer:
 ```bash
 composer install
 ```
 
-3. Instala dependencias JavaScript:
-
+#### 3. Instalar Dependencias de Frontend (Javascript)
+Descargue los módulos de Node necesarios para compilar la interfaz de usuario:
 ```bash
 npm install
 ```
 
-4. Copia el archivo de configuración de entorno:
+#### 4. Configurar el Entorno Local (`.env`)
+Copie el archivo de plantilla para generar su configuración local. 
 
-En Windows (PowerShell/CMD):
-```bash
-copy .env.example .env
-```
+*   **En Windows (CMD / PowerShell):**
+    ```bash
+    copy .env.example .env
+    ```
+*   **En Linux / macOS:**
+    ```bash
+    cp .env.example .env
+    ```
 
-En Linux / macOS:
-```bash
-cp .env.example .env
-```
+> 💡 **Nota sobre las APIs:** El archivo `.env.example` ya incluye las claves de desarrollo preestablecidas para las APIs de **TMDB** y **RAWG**, facilitando un despliegue inmediato sin necesidad de registros externos.
 
-5. Configura las claves de API en el archivo `.env`. Si no se han incluido automáticamente, asegúrate de que tengan este aspecto:
-
-```env
-TMDB_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlOTQ5ZDY4NTY2YjRiODYyNmZlMjU1Mjc0MzlmMzFhMyIsIm5iZiI6MTc3MjcxNjY0OS44NSwic3ViIjoiNjlhOTgyNjlkNWQwNzc1YWRmZWM2MDRiIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ypXrUf9HXOzpW8rTRmtKdWI4g1zpc-I_uGu0iJRjXVQ
-RAWG_KEY=86d2496fd8814790b8068b3056774276
-```
-
-6. Genera la clave de aplicación de Laravel:
-
+#### 5. Generar la Clave de Seguridad de Laravel
+Establezca la firma criptográfica única de la sesión de la aplicación:
 ```bash
 php artisan key:generate
 ```
 
-7. Enlaza el almacenamiento y crea el archivo de base de datos SQLite (configurado por defecto):
+#### 6. Crear la Base de Datos SQLite (Base de Datos por Defecto)
+Para lograr un despliegue ágil sin dependencias de motores complejos de base de datos como MySQL, el proyecto está configurado para utilizar **SQLite**.
 
-Enlazar el storage para las imágenes/avatars:
+Cree el archivo de base de datos vacío según su sistema operativo:
+*   **En Windows (PowerShell):**
+    ```powershell
+    New-Item -Path database\database.sqlite -ItemType File -Force
+    ```
+*   **En Windows (CMD):**
+    ```cmd
+    type nul > database\database.sqlite
+    ```
+*   **En Linux / macOS:**
+    ```bash
+    touch database/database.sqlite
+    ```
+
+Asimismo, configure el enlace simbólico del almacenamiento público para los archivos multimedia/avatars:
 ```bash
 php artisan storage:link
 ```
 
-Crear el archivo SQLite vacío:
-* **En Windows (PowerShell):**
-  ```powershell
-  New-Item -Path database\database.sqlite -ItemType File -Force
-  ```
-* **En Windows (CMD):**
-  ```cmd
-  type nul > database\database.sqlite
-  ```
-* **En Linux / macOS:**
-  ```bash
-  touch database/database.sqlite
-  ```
-
-8. Ejecuta las migraciones e inserta los datos de prueba (Demo):
-
+#### 7. Ejecutar Migraciones y Datos Semilla (Seeds Demo)
+Ejecute las migraciones para crear la estructura de tablas e inyecte los datos de demostración para evaluar la aplicación al instante:
 ```bash
 php artisan migrate --seed --force
 ```
 
-*(Esto creará la estructura de tablas y un usuario de prueba con credenciales `demo@myficlist.com` y contraseña `password`, además de algunos títulos de demostración)*.
-
-9. Compila los assets de Vite para producción:
-
+#### 8. Compilar los Assets con Vite
+Realice la compilación optimizada y empaquetamiento del frontend para producción:
 ```bash
 npm run build
 ```
 
-10. Inicia el servidor local:
-
+#### 9. Iniciar el Servidor de Laravel
+Ejecute el servidor de desarrollo integrado de PHP:
 ```bash
 php artisan serve
 ```
 
-Luego abre `http://127.0.0.1:8000` en tu navegador para ver la aplicación funcionando.
+Acceda a la aplicación abriendo la siguiente URL en su navegador web preferido:
+👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
-## Desarrollo local
+---
 
-Si vas a realizar cambios y quieres verlos reflejados en tiempo real (recarga en caliente de assets/Tailwind):
+## 🎓 Información Exclusiva para el Tribunal / Jurado
 
+Para facilitar una evaluación exhaustiva y dinámica del proyecto, se ha precargado un escenario de demostración durante la fase de inyección de semillas (paso 7):
+
+### 🔑 Credenciales de Acceso Demo
+Utilice estas credenciales para iniciar sesión y explorar el panel de administración, su colección privada y las funciones sociales:
+*   **Usuario:** `demo@myficlist.com`
+*   **Contraseña:** `password`
+
+### 🔍 Puntos Clave de Valoración Técnica
+Durante la navegación, le recomendamos prestar especial atención a los siguientes hitos de ingeniería:
+1.  **Buscador Inteligente Multifuente:** Búsquedas concurrentes unificadas. Se realizan consultas ligeras e instantáneas para una renderización fluida del listado.
+2.  **Carga Diferida (*Lazy Details Import*):** Los detalles pesados (como listados de episodios, sinopsis traducidas, duraciones, etc.) se importan a la base de datos local de manera diferida, únicamente cuando el usuario accede a la ficha detallada.
+3.  **Modelo de Datos Polimórfico:** Comentarios anidados en cascada (respuestas infinitas) y sistema de reacciones "Me gusta" unificados polimórficamente bajo los mismos modelos para servir de forma uniforme a obras, posts de foro y listas personalizadas.
+4.  **Red Social de Comunidad:** Posibilidad de seguir a otros usuarios de la comunidad, revisar sus colecciones, participar en el foro temático (`/foro`) con soporte para adjuntar archivos y crear listas personalizadas públicas o privadas.
+
+---
+
+## 🛠️ Desarrollo Activo
+Si desea realizar cambios en el código o estilos y ver las actualizaciones en tiempo real con recarga en caliente de Tailwind CSS v4, ejecute el compilador en modo desarrollo:
 ```bash
 npm run dev
 ```
 
-## Comandos útiles
+---
 
-- `composer install` - Instalar dependencias PHP
-- `npm install` - Instalar dependencias JavaScript
-- `npm run dev` - Ejecutar servidor de desarrollo Vite
-- `npm run build` - Compilar assets para producción
-- `php artisan serve` - Servidor local de desarrollo Laravel
-- `php artisan migrate:fresh --seed` - Reiniciar base de datos e insertar datos semilla
-- `php artisan test` - Ejecutar tests unitarios y de integración
+## 📂 Estructura Principal del Proyecto
 
-## Ajustes de base de datos
-
-Por defecto el proyecto usa SQLite con la variable `DB_CONNECTION=sqlite`. Si prefieres MySQL/MariaDB, actualiza en `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nombre_de_base_de_datos
-DB_USERNAME=usuario
-DB_PASSWORD=contraseña
-```
-
-## Notas para Windows / XAMPP
-
-- Asegúrate de usar el PHP de XAMPP si no tienes PHP global instalado.
-- Si `composer install` falla por extensiones, instala las extensiones listadas arriba y reinicia Apache / el servicio PHP.
-- Para ejecutar el servidor interno de Laravel, usa `php artisan serve` desde la carpeta del proyecto.
-
-## Cómo contribuir
-
-1. Crear una rama nueva.
-2. Realizar cambios.
-3. Hacer un commit claro.
-4. Enviar un Pull Request.
+*   `app/Models/` — Modelos de Eloquent con relaciones complejas y polimórficas.
+*   `app/Services/SearchService.php` — Lógica central de búsqueda cruzada y normalización.
+*   `app/Http/Controllers/` — Controladores de las funciones de comunidad, catálogo y listas.
+*   `database/migrations/` — Historial de estructuración de tablas.
+*   `resources/views/` — Vistas optimizadas escritas en HTML y Blade con Tailwind CSS.
+*   `routes/web.php` — Declaración de endpoints públicos y protegidos.
