@@ -476,13 +476,16 @@ class MediaIntegrationService
         $allCategoriesRaw = array_unique(array_merge($genresRaw, $themesRaw, $demographicsRaw));
         
         // Traducir géneros al español
-        $categoriesString = implode(' | ', $allCategoriesRaw);
         // Corrección manual rápida para términos comunes antes de traducir
-        $categoriesString = str_replace(['Slice of Life', 'Sci-Fi'], ['Recuentos de la vida', 'Ciencia ficción'], $categoriesString);
+        $allCategoriesRaw = array_map(function($cat) {
+            return str_replace(['Slice of Life', 'Sci-Fi'], ['Recuentos de la vida', 'Ciencia ficción'], $cat);
+        }, $allCategoriesRaw);
+        // Usamos '|||' como separador inequívoco para que no se confunda con el texto traducido
+        $categoriesString = implode(' ||| ', $allCategoriesRaw);
         $translatedCategoriesString = $this->translateText($categoriesString);
         $translatedCategories = array_map(function($cat) {
             return mb_convert_case(trim($cat), MB_CASE_TITLE, "UTF-8");
-        }, explode('|', $translatedCategoriesString));
+        }, explode('|||', $translatedCategoriesString));
 
         // Agrupar estudios y productores (anime) o serializaciones (manga)
         $studios = collect($details['studios'] ?? [])->pluck('name')->toArray();
@@ -538,10 +541,20 @@ class MediaIntegrationService
         // Elimina líneas separadoras largas (------)
         $description = preg_replace('/-{5,}/', '', $description);
 
-        // Obtener géneros (subjects)
+        // Obtener géneros (subjects) y traducirlos al español
         $genres = [];
         if (!empty($details['subjects'])) {
-            $genres = array_slice($details['subjects'], 0, 8); // Tomar los primeros 8
+            $rawGenres = array_slice($details['subjects'], 0, 8);
+            // Traducir en lote usando el mismo separador inequívoco
+            $genresString = implode(' ||| ', $rawGenres);
+            $translatedGenresString = $this->translateText($genresString);
+            $genres = array_map(function($g) {
+                return mb_convert_case(trim($g), MB_CASE_TITLE, 'UTF-8');
+            }, explode('|||', $translatedGenresString));
+            // Fallback: si la traducción devuelve menos elementos, usar los originales
+            if (count($genres) !== count($rawGenres)) {
+                $genres = $rawGenres;
+            }
         }
 
         // Obtener nombres de autores

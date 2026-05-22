@@ -34,6 +34,18 @@ class ExploreController extends Controller
             });
         }
 
+        // Filtro por plataforma (dentro de extra_data JSON)
+        if ($request->filled('platform')) {
+            $platform = $request->platform;
+            $escapedPlatform = trim(json_encode($platform), '"');
+            $escapedPlatformSafe = str_replace('\\', '_', $escapedPlatform);
+
+            $query->where(function($q) use ($platform, $escapedPlatformSafe) {
+                $q->whereJsonContains('extra_data->platforms', $platform)
+                  ->orWhere('extra_data', 'like', '%"' . $escapedPlatformSafe . '%');
+            });
+        }
+
         // Filtro por búsqueda de título
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -57,8 +69,17 @@ class ExploreController extends Controller
             ->sort()
             ->values();
 
+        // Obtener todas las plataformas únicas para el filtro
+        $allPlatforms = Media::pluck('extra_data')
+            ->filter()
+            ->map(fn($data) => $data['platforms'] ?? [])
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values();
+
         $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
 
-        return view('explore', compact('mediaItems', 'allGenres', 'mediaLists'));
+        return view('explore', compact('mediaItems', 'allGenres', 'allPlatforms', 'mediaLists'));
     }
 }

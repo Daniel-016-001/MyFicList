@@ -24,8 +24,9 @@
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-bold text-white uppercase tracking-wider">Publicaciones</h2>
                         <button id="toggle-forum-form"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-xl transition shadow-lg shadow-blue-900/20">
-                            NUEVA PUBLICACIÓN
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm rounded-xl transition shadow-lg shadow-blue-900/20 whitespace-nowrap shrink-0">
+                            <span class="hidden md:inline">NUEVA PUBLICACIÓN</span>
+                            <span class="md:hidden"><i class="fas fa-plus mr-1"></i>Publicar</span>
                         </button>
                     </div>
 
@@ -89,7 +90,7 @@
                             </div>
 
                             <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-xl transition">
+                                class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition">
                                 PUBLICAR
                             </button>
                         </form>

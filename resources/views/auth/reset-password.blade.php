@@ -8,7 +8,12 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+            @if ($request->email)
+                <x-text-input id="email_display" class="block mt-1 w-full bg-gray-800/50 text-gray-400 cursor-not-allowed" type="email" :value="$request->email" disabled />
+                <input type="hidden" name="email" value="{{ $request->email }}">
+            @else
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+            @endif
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 

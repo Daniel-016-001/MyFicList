@@ -100,7 +100,9 @@ class ForumController extends Controller
 
         $publicLists = MediaList::with(['user', 'items.media', 'likes'])
             ->where('is_public', true)
-            ->latest('updated_at')
+            ->withCount(['likes', 'comments'])
+            ->orderByRaw('(likes_count + comments_count) DESC')
+            ->orderBy('updated_at', 'DESC')
             ->take(5)
             ->get();
 

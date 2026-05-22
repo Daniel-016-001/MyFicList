@@ -8,6 +8,13 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
     ],
+    safelist: [
+        'lg:hidden',
+        'lg:flex',
+        'lg:block',
+        'lg:inline-flex',
+    ],
+
 
     theme: {
         extend: {

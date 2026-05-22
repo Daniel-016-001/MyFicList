@@ -64,11 +64,18 @@
                                     <i class="fas fa-heart text-red-500 text-xl"></i> {{ $totalLikes }}
                                 </p>
                             </div>
-                            <div class="space-y-1 group">
+                            <div class="space-y-1 group cursor-pointer" onclick="window.toggleModal('followers-modal')">
                                 <p
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] group-hover:text-purple-400 transition-colors">
                                     Seguidores</p>
-                                <p class="text-3xl font-black text-white tracking-tighter">{{ $user->followers()->count() }}
+                                <p class="text-3xl font-black text-white tracking-tighter">{{ $followers->count() }}
+                                </p>
+                            </div>
+                            <div class="space-y-1 group cursor-pointer" onclick="window.toggleModal('following-modal')">
+                                <p
+                                    class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] group-hover:text-purple-400 transition-colors">
+                                    Siguiendo</p>
+                                <p class="text-3xl font-black text-white tracking-tighter">{{ $following->count() }}
                                 </p>
                             </div>
                         </div>
@@ -274,9 +281,96 @@
                 </div>
             </div>
         </div>
+        <!-- Modales de Seguidores y Siguiendo -->
+        <!-- Modal Seguidores -->
+        <div id="followers-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="window.toggleModal('followers-modal')"></div>
+            <!-- Content -->
+            <div class="relative w-[92%] sm:w-full max-w-md rounded-[2.5rem] bg-gray-900 border border-gray-800 p-8 shadow-2xl shadow-black/80 overflow-hidden max-h-[80vh] flex flex-col z-10">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full pointer-events-none"></div>
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6 relative z-10">
+                    <h3 class="text-2xl font-black text-white tracking-tighter uppercase">Seguidores</h3>
+                    <button type="button" onclick="window.toggleModal('followers-modal')" class="relative z-20 text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <!-- List -->
+                <div class="overflow-y-auto pr-2 space-y-4 flex-1">
+                    @forelse($followers as $f)
+                        <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300">
+                            <a href="{{ route('users.show', $f) }}" class="flex items-center gap-3 group">
+                                <img src="{{ $f->avatar_url }}" alt="{{ $f->username }}" class="w-12 h-12 rounded-xl object-cover border border-white/10 group-hover:scale-105 transition-transform">
+                                <span class="font-bold text-white group-hover:text-blue-400 transition-colors uppercase tracking-tight text-sm">{{ $f->username }}</span>
+                            </a>
+                            @if(auth()->check() && auth()->id() !== $f->id)
+                                <form action="{{ route('users.follow', $f) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-[10px] font-black px-4 py-2 rounded-xl border border-white/10 transition-all hover:scale-105 active:scale-95 uppercase tracking-wider {{ auth()->user()->following->contains($f->id) ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-blue-600 text-white hover:bg-blue-500' }}">
+                                        {{ auth()->user()->following->contains($f->id) ? 'Siguiendo' : 'Seguir' }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-users text-3xl mb-2 block"></i>
+                            <p class="text-xs uppercase font-black tracking-widest">Sin seguidores todavía</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Siguiendo -->
+        <div id="following-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="window.toggleModal('following-modal')"></div>
+            <!-- Content -->
+            <div class="relative w-[92%] sm:w-full max-w-md rounded-[2.5rem] bg-gray-900 border border-gray-800 p-8 shadow-2xl shadow-black/80 overflow-hidden max-h-[80vh] flex flex-col z-10">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 blur-3xl rounded-full pointer-events-none"></div>
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6 relative z-10">
+                    <h3 class="text-2xl font-black text-white tracking-tighter uppercase">Siguiendo</h3>
+                    <button type="button" onclick="window.toggleModal('following-modal')" class="relative z-20 text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <!-- List -->
+                <div class="overflow-y-auto pr-2 space-y-4 flex-1">
+                    @forelse($following as $f)
+                        <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300">
+                            <a href="{{ route('users.show', $f) }}" class="flex items-center gap-3 group">
+                                <img src="{{ $f->avatar_url }}" alt="{{ $f->username }}" class="w-12 h-12 rounded-xl object-cover border border-white/10 group-hover:scale-105 transition-transform">
+                                <span class="font-bold text-white group-hover:text-blue-400 transition-colors uppercase tracking-tight text-sm">{{ $f->username }}</span>
+                            </a>
+                            @if(auth()->check() && auth()->id() !== $f->id)
+                                <form action="{{ route('users.follow', $f) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-[10px] font-black px-4 py-2 rounded-xl border border-white/10 transition-all hover:scale-105 active:scale-95 uppercase tracking-wider {{ auth()->user()->following->contains($f->id) ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-blue-600 text-white hover:bg-blue-500' }}">
+                                        {{ auth()->user()->following->contains($f->id) ? 'Siguiendo' : 'Seguir' }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-users text-3xl mb-2 block"></i>
+                            <p class="text-xs uppercase font-black tracking-widest">No sigue a nadie todavía</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        window.toggleModal = function(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.toggle('hidden');
+            }
+        }
+
         async function toggleLike(id, type, button) {
             @guest
                 window.location.href = "{{ route('login') }}";

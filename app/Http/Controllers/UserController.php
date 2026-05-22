@@ -31,6 +31,9 @@ class UserController extends Controller
         $recentListItems = $user->userLists()->with('media')->latest()->take(5)->get();
         $recentPosts = $user->forumPosts()->latest()->take(5)->get();
 
+        $followers = $user->followers()->get();
+        $following = $user->following()->get();
+
         return view('users.profile', [
             'user' => $user,
             'totalCompleted' => $totalCompleted,
@@ -39,6 +42,8 @@ class UserController extends Controller
             'recentComments' => $recentComments,
             'recentListItems' => $recentListItems,
             'recentPosts' => $recentPosts,
+            'followers' => $followers,
+            'following' => $following,
         ]);
     }
 

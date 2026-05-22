@@ -33,8 +33,39 @@
 
         @media (max-width: 1024px) {
             .main-grid {
-                grid-template-columns: 1fr;
-                grid-row-gap: 30px;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 30px !important;
+            }
+
+            .left-column,
+            .right-column,
+            .sticky-container {
+                display: contents !important;
+            }
+
+            .poster-actions-section {
+                order: 1;
+            }
+
+            .title-section {
+                order: 2;
+            }
+
+            .categories-section {
+                order: 3;
+            }
+
+            .synopsis-section {
+                order: 4;
+            }
+
+            .trailer-section {
+                order: 5;
+            }
+
+            .comments-section {
+                order: 6;
             }
         }
 
@@ -84,59 +115,62 @@
             <div class="main-grid">
 
                 <!-- Left Column: Poster -->
-                <div class="space-y-10">
-                    <div style="position: sticky; top: 120px;">
-                        <div class="relative group">
-                            <div
-                                class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-[2rem] blur opacity-25 group-hover:opacity-60 transition duration-1000">
+                <div class="space-y-10 left-column">
+                    <div class="sticky-container" style="position: sticky; top: 120px;">
+                        <!-- Poster and Actions Wrapper -->
+                        <div class="poster-actions-section">
+                            <div class="relative group">
+                                <div
+                                    class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-[2rem] blur opacity-25 group-hover:opacity-60 transition duration-1000">
+                                </div>
+                                <div
+                                    class="relative rounded-[2rem] overflow-hidden shadow-2xl bg-gray-950 shimmer">
+                                    <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
+                                        class="w-full h-auto transition-transform duration-700 group-hover:scale-105">
+                                </div>
                             </div>
-                            <div
-                                class="relative rounded-[2rem] overflow-hidden shadow-2xl bg-gray-950 shimmer">
-                                <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
-                                    class="w-full h-auto transition-transform duration-700 group-hover:scale-105">
-                            </div>
-                        </div>
 
-                        <!-- Actions -->
-                        <div class="mt-12 space-y-4">
-                            @auth
-                                <button onclick="document.getElementById('list-modal').classList.remove('hidden')"
-                                    class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-tighter">
-                                    <i class="fas fa-plus"></i> AGREGAR A MI LISTA
-                                </button>
-                            @else
-                                <a href="{{ route('login') }}"
-                                    class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3 uppercase tracking-tighter">
-                                    <i class="fas fa-sign-in-alt"></i> INICIA SESIÓN
-                                </a>
-                            @endauth
-
-                            <div class="flex gap-4">
-                                <a href="/"
-                                    class="flex-1 py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
-                                    <i class="fas fa-arrow-left"></i>
-                                </a>
-                                <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
-                                    @csrf
-                                    <input type="hidden" name="external_id" value="{{ $media->external_id }}">
-                                    <input type="hidden" name="source" value="{{ $media->source }}">
-                                    <input type="hidden" name="media_type" value="{{ $media->media_type }}">
-                                    <button type="submit"
-                                        class="w-full py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
-                                        <i class="fas fa-sync-alt"></i>
+                            <!-- Actions -->
+                            <div class="mt-12 space-y-4">
+                                @auth
+                                    <button onclick="document.getElementById('list-modal').classList.remove('hidden')"
+                                        class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-tighter">
+                                        <i class="fas fa-plus"></i> AGREGAR A MI LISTA
                                     </button>
-                                </form>
+                                @else
+                                    <a href="{{ route('login') }}"
+                                        class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-2xl shadow-xl shadow-purple-900/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3 uppercase tracking-tighter">
+                                        <i class="fas fa-sign-in-alt"></i> INICIA SESIÓN
+                                    </a>
+                                @endauth
+
+                                <div class="flex gap-4">
+                                    <a href="/"
+                                        class="flex-1 py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+                                    <form action="{{ route('media.add-from-search') }}" method="POST" class="flex-1">
+                                        @csrf
+                                        <input type="hidden" name="external_id" value="{{ $media->external_id }}">
+                                        <input type="hidden" name="source" value="{{ $media->source }}">
+                                        <input type="hidden" name="media_type" value="{{ $media->media_type }}">
+                                        <button type="submit"
+                                            class="w-full py-4 bg-gray-900/50 text-gray-500 text-center rounded-2xl font-black text-xs hover:text-white transition-all">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Metadata Sidebar -->
                         @php
-                            $hasFichaTecnica = $media->episodes_count || $media->episode_duration || ($media->total_duration && $media->media_type === 'peli') || ($media->total_duration && $media->media_type === 'game') || $media->chapters || !empty($extra['number_of_seasons']);
+                            $hasFichaTecnica = $media->episodes_count || $media->episode_duration || ($media->total_duration && $media->media_type === 'game') || $media->chapters || !empty($extra['number_of_seasons']);
                             $hasTechnicalData = $hasFichaTecnica || !empty($extra['genres']) || !empty($extra['categories']) || !empty($extra['platforms']) || !empty($extra['studios']) || !empty($extra['authors']);
                         @endphp
                         
                         @if($hasTechnicalData)
-                        <div class="mt-12 space-y-10">
+                        <div class="mt-12 space-y-10 categories-section">
                             <!-- Ficha Técnica -->
                             @if($hasFichaTecnica)
                             <div class="space-y-4">
@@ -177,23 +211,7 @@
                                         </div>
                                     @endif
 
-                                    @if($media->total_duration && $media->media_type === 'peli')
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400">
-                                                <i class="fas fa-film text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Tiempo Total</p>
-                                                <p class="text-xs font-bold text-gray-200">
-                                                    {{ floor($media->total_duration / 60) }}h
-                                                    {{ $media->total_duration % 60 }}min</p>
-                                            </div>
-                                        </div>
-                                    @endif
+
 
                                     @if($media->total_duration && $media->media_type === 'game')
                                         <div
@@ -283,11 +301,11 @@
                                         Plataformas</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($extra['platforms'] as $platform)
-                                            <span
+                                            <a href="{{ route('media.explore', ['type' => 'game', 'platform' => $platform]) }}"
                                                 style="background-color: rgba(147, 51, 234, 0.1) !important; color: #c084fc !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight hover:bg-purple-900/40 hover:scale-105 transition-all inline-block cursor-pointer">
                                                 {{ $platform }}
-                                            </span>
+                                            </a>
                                         @endforeach
                                     </div>
                                 </div>
@@ -330,9 +348,9 @@
                 </div>
 
                 <!-- Right Column: Content -->
-                <div class="space-y-20">
+                <div class="space-y-20 right-column">
                     <!-- Title & Badges -->
-                    <div class="space-y-6">
+                    <div class="space-y-6 title-section">
                         <div class="flex flex-wrap gap-2">
                             <span
                                 class="px-3 py-1 bg-purple-600/10 text-purple-400 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->source }}</span>
@@ -367,7 +385,7 @@
                     </div>
 
                     <!-- Synopsis -->
-                    <section class="pt-8 space-y-6">
+                    <section class="pt-8 space-y-6 synopsis-section">
                         <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Sinopsis</h3>
                         <div class="bg-gray-900/20 rounded-3xl p-8">
                             <div class="text-gray-400 text-sm leading-relaxed">
@@ -385,7 +403,7 @@
 
                     <!-- Trailer Section -->
                     @if($trailerUrl)
-                        <section class="pt-8 space-y-6">
+                        <section class="pt-8 space-y-6 trailer-section">
                             <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Multimedia</h3>
                             <div
                                 class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl">
@@ -403,7 +421,9 @@
                     @endif
 
                     <!-- Comments Section -->
-                    <x-comments :model="$media" />
+                    <div class="comments-section">
+                        <x-comments :model="$media" />
+                    </div>
                 </div>
             </div>
         </div>

@@ -32,7 +32,7 @@
                 <div class="lg:col-span-1">
                     <div class="sticky top-8">
                         <img src="{{ data_get($details, 'cover_url') }}" alt="{{ data_get($details, 'title') }}"
-                            class="w-full rounded-lg shadow-lg mb-6">
+                            class="w-full max-w-[280px] lg:max-w-full mx-auto lg:mx-0 rounded-lg shadow-lg mb-6 block object-contain">
 
                         <div class="space-y-3">
                             <a href="{{ url()->previous() }}"

@@ -124,7 +124,7 @@
                                                             <!-- Progreso eliminado por solicitud del usuario -->
                                                         @endif
                                                     </div>
-                                                    <div class="mt-auto flex items-center justify-between pt-3">
+                                                    <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
                                                         <form action="{{ route('user-list.destroy', $entry->id) }}" method="POST"
                                                             class="inline-block">
                                                             @csrf

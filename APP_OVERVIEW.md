@@ -207,5 +207,13 @@ La plataforma divide sus rutas en áreas públicas de comunidad y exploración, 
 
 ---
 
-## 5. Resumen
+## 5. Sistema de Autenticación y Localización (Español)
+Para ofrecer una experiencia completamente localizada y profesional a los usuarios hispanohablantes, la plataforma implementa una traducción nativa e integral de los flujos de cuenta:
+- **Correos Electrónicos Transaccionales**: Las notificaciones y plantillas de correo para la **verificación de cuenta** y el **restablecimiento de contraseña** han sido completamente traducidas al español mediante diccionarios en JSON (`lang/es.json`).
+- **Mensajería del Sistema**: Se han creado archivos de traducción específicos (`lang/es/auth.php` y `lang/es/passwords.php`) que manejan con naturalidad los estados de error de inicio de sesión, bloqueos de seguridad y el proceso de recuperación de contraseñas.
+- **Configuración del Framework**: La aplicación establece el español (`es`) como el idioma predeterminado y de respaldo en el archivo de entorno `.env` de manera global.
+
+---
+
+## 6. Resumen
 MyFicList combina eficientemente la riqueza de catálogos internacionales (gracias al consumo optimizado y diferido de APIs como TMDB, Jikan y RAWG) con una base de datos local SQLite y una potente red social interactiva. Sus sistemas de relaciones polimórficas (comentarios, likes) y su arquitectura desacoplada garantizan una experiencia fluida, rápida y moderna para el usuario, manteniendo la base de datos limpia de peticiones redundantes.

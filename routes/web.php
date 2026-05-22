@@ -25,6 +25,7 @@ Route::get('/top', [PopularMediaController::class, 'index'])->name('dashboard');
 Route::get('/explorar', [ExploreController::class, 'index'])->name('media.explore');
 Route::get('/catalogo/{id}', [MediaController::class, 'show'])->name('media.show');
 Route::get('/details/{external_id}/{source}/{type}', [MediaController::class, 'details'])->name('media.details');
+Route::post('/media/import', [MediaController::class, 'addFromSearch'])->name('media.add-from-search');
 
 // Comunidad (Pública para que se puedan ver perfiles de otros)
 Route::get('/comunidad', [UserController::class, 'index'])->name('users.index');
@@ -40,8 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // LISTA DEL USUARIO
     Route::get('/mi-lista', [UserListController::class, 'index'])->name('user-list.index');
 
-    // IMPORTACIÓN: Solo usuarios registrados pueden meter contenido nuevo a la BD
-    Route::post('/media/import', [MediaController::class, 'addFromSearch'])->name('media.add-from-search');
+    // IMPORTACIÓN: Movido a rutas públicas para que usuarios no registrados también puedan refrescar datos
 
     // MI LISTA: Gestión de lo que estoy viendo/he visto
     Route::post('/user-list', [UserListController::class, 'store'])->name('user-list.store');
