@@ -38,7 +38,7 @@
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">
                                         <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
-                                        <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-slate-800/50 gap-2 md:gap-0">
                                             @auth
                                                 <button onclick="openListModal({{ $media->id }})"
                                                     class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -89,7 +89,7 @@
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">
                                         <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
-                                        <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-slate-800/50 gap-2 md:gap-0">
                                             @auth
                                                 <button onclick="openListModal({{ $media->id }})"
                                                     class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -140,7 +140,7 @@
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">
                                         <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
-                                        <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-slate-800/50 gap-2 md:gap-0">
                                             @auth
                                                 <button onclick="openListModal({{ $media->id }})"
                                                     class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -191,7 +191,7 @@
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">
                                         <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
-                                        <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-slate-800/50 gap-2 md:gap-0">
                                             @auth
                                                 <button onclick="openListModal({{ $media->id }})"
                                                     class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -265,7 +265,7 @@
                                             </div>
                                         @endif
                                         <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
-                                        <div class="mt-auto flex items-center justify-between pt-4 border-slate-800/50">
+                                        <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-slate-800/50 gap-2 md:gap-0">
                                             @auth
                                                 <button onclick="openListModal({{ $media->id }})"
                                                     class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">
@@ -306,12 +306,16 @@
                                         <div class="relative">
                                             <img src="{{ $media->cover_url }}" alt="{{ $media->title }}"
                                                 class="w-full h-auto object-cover brightness-90 group-hover:brightness-100 transition-all rounded-t-2xl">
+                                            @if($media->average_score !== 'N/A')
+                                                <div style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.75); border-radius: 0.5rem; padding: 0.25rem 0.5rem; z-index: 10; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;"
+                                                    class="backdrop-blur-sm shadow-lg text-yellow-400 text-xs font-black">
+                                                    <i class="fas fa-star text-[9px]"></i> {{ $media->average_score }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </a>
                                     <div class="p-5 flex-grow flex flex-col">
-                                        <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}
-                                            @if($media->average_score !== 'N/A') ({{ $media->average_score }}) @endif
-                                        </h4>
+                                        <h4 class="font-bold text-lg text-white leading-tight mb-0">{{ $media->title }}</h4>
                                         <div class="mt-auto flex items-center justify-between pt-2 border-slate-800/50">
                                             <button
                                                 class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">

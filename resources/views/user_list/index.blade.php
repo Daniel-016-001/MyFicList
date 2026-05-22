@@ -54,8 +54,8 @@
 
                                         <div class="flex items-center gap-3">
                                             <button type="submit"
-                                                style="height: 28px; width: 48px; padding: 2px;"
-                                                class="relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $list->is_public ? 'bg-blue-600' : 'bg-gray-700' }}"
+                                                style="height: 24px; width: 44px; padding: 2px;"
+                                                class="relative inline-flex flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none sm:!w-12 sm:!h-7 {{ $list->is_public ? 'bg-blue-600' : 'bg-gray-700' }}"
                                                 role="switch">
                                                 <span
                                                     class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center {{ $list->is_public ? 'translate-x-5' : 'translate-x-0' }}">
@@ -125,7 +125,7 @@
                                                             <!-- Progreso eliminado por solicitud del usuario -->
                                                         @endif
                                                     </div>
-                                                    <div class="mt-auto flex items-center justify-between pt-3">
+                                                    <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-3 gap-2 md:gap-0">
                                                         <form action="{{ route('user-list.destroy', $entry->id) }}" method="POST"
                                                             class="inline-block">
                                                             @csrf

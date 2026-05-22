@@ -38,12 +38,6 @@
         @forelse($model->comments()->whereNull('parent_id')->with(['user', 'likes', 'replies'])->latest()->get() as $comment)
             @include('components.comment-item', ['comment' => $comment, 'model' => $model, 'level' => 0])
         @empty
-            <div class="text-center py-24 glass-premium rounded-[3rem] border-white/5">
-                <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-700">
-                    <i class="fas fa-comment-slash text-3xl"></i>
-                </div>
-                <p class="text-gray-600 font-bold text-lg uppercase tracking-widest">Silencio absoluto</p>
-            </div>
         @endforelse
     </div>
 </section>

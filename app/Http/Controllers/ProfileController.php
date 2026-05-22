@@ -17,8 +17,19 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        
+        $totalCompleted = $user->userLists()->where('status', 'completed')->count();
+        
+        $likesOnComments = $user->comments()->withCount('likes')->get()->sum('likes_count');
+        $likesOnPosts = $user->forumPosts()->withCount('likes')->get()->sum('likes_count');
+        $likesOnLists = $user->mediaLists()->withCount('likes')->get()->sum('likes_count');
+        $totalLikes = $likesOnComments + $likesOnPosts + $likesOnLists;
+        
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'totalCompleted' => $totalCompleted,
+            'totalLikes' => $totalLikes,
         ]);
     }
 

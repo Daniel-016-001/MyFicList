@@ -53,7 +53,7 @@
                             class="absolute right-0 mt-0 w-48 bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-t-lg transition">
-                                <i class="fas fa-user mr-2"></i>Mi perfil
+                                <i class="fas fa-user mr-2"></i>Ajustes de Perfil
                             </a>
                             <a href="{{ route('user-list.index') }}"
                                 class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
@@ -132,7 +132,7 @@
                 </div>
                 <div class="px-2 space-y-1">
                     <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800">
-                        <i class="fas fa-user mr-2 w-5 text-center"></i>Mi perfil
+                        <i class="fas fa-user mr-2 w-5 text-center"></i>Ajustes de Perfil
                     </a>
                     <a href="{{ route('user-list.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800">
                         <i class="fas fa-list mr-2 w-5 text-center"></i>Mi lista

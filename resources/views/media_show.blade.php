@@ -14,8 +14,32 @@
         grid-template-columns: 1fr 3fr;
         grid-column-gap: 60px !important;
     }
+    .left-column { order: 1; }
+    .right-column { order: 2; }
+    .right-column-title { order: 1; }
+    .right-column-metadata { order: 2; }
+    .right-column-synopsis { order: 3; }
+    .right-column-trailer { order: 4; }
+    .right-column-comments { order: 5; }
+    
     @media (max-width: 1024px) {
-        .main-grid { grid-template-columns: 1fr; grid-row-gap: 30px; }
+        .main-grid { 
+            grid-template-columns: 1fr;
+            grid-row-gap: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        .left-column { order: 3; }
+        .right-column {
+            order: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .right-column-title { order: 1; }
+        .right-column-metadata { order: 2; }
+        .right-column-synopsis { order: 3; }
+        .right-column-trailer { order: 4; }
+        .right-column-comments { order: 5; }
     }
     .section-spacing { margin-bottom: 80px !important; }
     .synopsis-content h4 {
@@ -55,7 +79,7 @@
             <div class="main-grid">
 
                 <!-- Left Column: Poster -->
-                <div class="space-y-10">
+                <div class="left-column space-y-10">
                     <div style="position: sticky; top: 120px;">
                         <div class="relative group">
                             <div
@@ -100,210 +124,14 @@
                             </div>
                         </div>
 
-                        <!-- Metadata Sidebar -->
-                        @php
-                            $hasFichaTecnica = $media->episodes_count || $media->episode_duration || ($media->total_duration && $media->media_type === 'peli') || ($media->total_duration && $media->media_type === 'game') || $media->chapters || !empty($extra['number_of_seasons']);
-                            $hasTechnicalData = $hasFichaTecnica || !empty($extra['genres']) || !empty($extra['categories']) || !empty($extra['platforms']) || !empty($extra['studios']) || !empty($extra['authors']);
-                        @endphp
-                        
-                        @if($hasTechnicalData)
-                        <div class="mt-12 space-y-10">
-                            <!-- Ficha Técnica -->
-                            @if($hasFichaTecnica)
-                            <div class="space-y-4">
-                                <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Ficha
-                                    Técnica</h4>
-                                <div class="grid grid-cols-1 gap-3">
-                                    @if($media->episodes_count)
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
-                                                <i class="fas fa-layer-group text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Episodios</p>
-                                                <p class="text-xs font-bold text-gray-200">{{ $media->episodes_count }}
-                                                    capítulos</p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if($media->episode_duration)
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
-                                                <i class="fas fa-clock text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Duración</p>
-                                                <p class="text-xs font-bold text-gray-200">{{ $media->episode_duration }}
-                                                    @if($media->media_type !== 'peli')@endif</p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if($media->total_duration && $media->media_type === 'peli')
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400">
-                                                <i class="fas fa-film text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Tiempo Total</p>
-                                                <p class="text-xs font-bold text-gray-200">
-                                                    {{ floor($media->total_duration / 60) }}h
-                                                    {{ $media->total_duration % 60 }}min</p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if($media->total_duration && $media->media_type === 'game')
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
-                                                <i class="fas fa-gamepad text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Promedio de Juego</p>
-                                                <p class="text-xs font-bold text-gray-200">{{ $media->total_duration }} horas
-                                                </p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if($media->chapters)
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                                <i class="fas fa-book-open text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Capítulos</p>
-                                                <p class="text-xs font-bold text-gray-200">{{ $media->chapters }}</p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if(!empty($extra['number_of_seasons']))
-                                        <div
-                                            class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
-                                            <div
-                                                class="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
-                                                <i class="fas fa-layer-group text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p
-                                                    class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">
-                                                    Temporadas</p>
-                                                <p class="text-xs font-bold text-gray-200">{{ $extra['number_of_seasons'] }}</p>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
-
-                            @if(!empty($extra['genres']))
-                                <div class="space-y-4">
-                                    <h4 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Géneros</h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach($extra['genres'] as $genre)
-                                            <a href="{{ route('media.explore', ['genre' => $genre]) }}"
-                                                style="background-color: rgba(37, 99, 235, 0.1) !important; color: #60a5fa !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight hover:bg-blue-900/40 hover:scale-105 transition-all inline-block cursor-pointer">
-                                                {{ $genre }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(!empty($extra['categories']))
-                                <div class="space-y-4">
-                                    <h4 class="text-[10px] font-black text-teal-500 uppercase tracking-[0.3em]">Categorías / Etiquetas</h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach((array) $extra['categories'] as $category)
-                                            <span
-                                                style="background-color: rgba(20, 184, 166, 0.1) !important; color: #2dd4bf !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
-                                                {{ is_array($category) ? ($category['name'] ?? '') : $category }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(!empty($extra['platforms']))
-                                <div class="space-y-4">
-                                    <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-[0.3em]">
-                                        Plataformas</h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach($extra['platforms'] as $platform)
-                                            <span
-                                                style="background-color: rgba(147, 51, 234, 0.1) !important; color: #c084fc !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
-                                                {{ $platform }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(!empty($extra['studios']))
-                                <div class="space-y-4">
-                                    <h4 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">Estudios
-                                    </h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach((array) $extra['studios'] as $studio)
-                                            <span
-                                                style="background-color: rgba(5, 150, 105, 0.1) !important; color: #34d399 !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
-                                                {{ is_array($studio) ? ($studio['name'] ?? '') : $studio }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(!empty($extra['authors']))
-                                <div class="space-y-4">
-                                    <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em]">Autores
-                                    </h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach((array) $extra['authors'] as $author)
-                                            <span
-                                                style="background-color: rgba(249, 115, 22, 0.1) !important; color: #fb923c !important;"
-                                                class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
-                                                {{ is_array($author) ? ($author['name'] ?? '') : $author }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
                         </div>
-                        @endif
                     </div>
                 </div>
 
                 <!-- Right Column: Content -->
-                <div class="space-y-20">
+                <div class="right-column space-y-20">
                     <!-- Title & Badges -->
-                    <div class="space-y-6">
+                    <div class="right-column-title space-y-6">
                         <div class="flex flex-wrap gap-2">
                             <span
                                 class="px-3 py-1 bg-purple-600/10 text-purple-400 rounded-full text-[8px] font-black uppercase tracking-widest">{{ $media->source }}</span>
@@ -337,8 +165,161 @@
                         </div>
                     </div>
 
+                    <!-- Metadata -->
+                    @php
+                        $hasFichaTecnica = $media->episodes_count || $media->episode_duration || ($media->total_duration && $media->media_type === 'game') || $media->chapters || !empty($extra['number_of_seasons']);
+                        $hasTechnicalData = $hasFichaTecnica || !empty($extra['genres']) || !empty($extra['categories']) || !empty($extra['platforms']) || !empty($extra['studios']) || !empty($extra['authors']);
+                    @endphp
+                    
+                    @if($hasTechnicalData)
+                    <div class="right-column-metadata mt-8 space-y-8">
+                        <!-- Ficha Técnica -->
+                        @if($hasFichaTecnica)
+                        <div class="space-y-4">
+                            <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Ficha Técnica</h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                @if($media->episodes_count)
+                                    <div class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                            <i class="fas fa-layer-group text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Episodios</p>
+                                            <p class="text-xs font-bold text-gray-200">{{ $media->episodes_count }} capítulos</p>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if($media->episode_duration)
+                                    <div class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
+                                        <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                            <i class="fas fa-clock text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Duración</p>
+                                            <p class="text-xs font-bold text-gray-200">{{ $media->episode_duration }} @if($media->media_type !== 'peli')@endif</p>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if($media->total_duration && $media->media_type === 'game')
+                                    <div class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
+                                        <div class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
+                                            <i class="fas fa-gamepad text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Promedio de Juego</p>
+                                            <p class="text-xs font-bold text-gray-200">{{ $media->total_duration }} horas</p>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if($media->chapters)
+                                    <div class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                            <i class="fas fa-book-open text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Capítulos</p>
+                                            <p class="text-xs font-bold text-gray-200">{{ $media->chapters }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if(!empty($extra['number_of_seasons']))
+                                    <div class="flex items-center gap-4 bg-gray-900/30 p-4 rounded-2xl group transition-colors">
+                                        <div class="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
+                                            <i class="fas fa-layer-group text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Temporadas</p>
+                                            <p class="text-xs font-bold text-gray-200">{{ $extra['number_of_seasons'] }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($extra['genres']))
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Géneros</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($extra['genres'] as $genre)
+                                        <a href="{{ route('media.explore', ['genre' => $genre]) }}"
+                                            style="background-color: rgba(37, 99, 235, 0.1) !important; color: #60a5fa !important;"
+                                            class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight hover:bg-blue-900/40 hover:scale-105 transition-all inline-block cursor-pointer">
+                                            {{ $genre }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!empty($extra['categories']))
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-teal-500 uppercase tracking-[0.3em]">Categorías / Etiquetas</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach((array) $extra['categories'] as $category)
+                                        <span
+                                            style="background-color: rgba(20, 184, 166, 0.1) !important; color: #2dd4bf !important;"
+                                            class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                            {{ is_array($category) ? ($category['name'] ?? '') : $category }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!empty($extra['platforms']))
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-[0.3em]">Plataformas</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($extra['platforms'] as $platform)
+                                        <a href="{{ route('media.explore', ['type' => 'game', 'platform' => $platform]) }}"
+                                            class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight hover:opacity-80 transition-opacity"
+                                            style="background-color: rgba(147, 51, 234, 0.1) !important; color: #c084fc !important;">
+                                            {{ $platform }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!empty($extra['studios']))
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">Estudios</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach((array) $extra['studios'] as $studio)
+                                        <span
+                                            style="background-color: rgba(5, 150, 105, 0.1) !important; color: #34d399 !important;"
+                                            class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                            {{ is_array($studio) ? ($studio['name'] ?? '') : $studio }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!empty($extra['authors']))
+                            <div class="space-y-4">
+                                <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em]">Autores</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach((array) $extra['authors'] as $author)
+                                        <span
+                                            style="background-color: rgba(249, 115, 22, 0.1) !important; color: #fb923c !important;"
+                                            class="rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-tight">
+                                            {{ is_array($author) ? ($author['name'] ?? '') : $author }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    @endif
+
                     <!-- Synopsis -->
-                    <section class="pt-8 space-y-6">
+                    <section class="right-column-synopsis pt-8 space-y-6">
                         <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Sinopsis</h3>
                         <div class="bg-gray-900/20 rounded-3xl p-8">
                             <div class="text-gray-400 text-sm leading-relaxed">
@@ -356,7 +337,7 @@
 
                     <!-- Trailer Section -->
                     @if($trailerUrl)
-                        <section class="pt-8 space-y-6">
+                        <section class="right-column-trailer pt-8 space-y-6">
                             <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.4em]">Multimedia</h3>
                             <div
                                 class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl">
@@ -374,7 +355,9 @@
                     @endif
 
                     <!-- Comments Section -->
-                    <x-comments :model="$media" />
+                    <div class="right-column-comments">
+                        <x-comments :model="$media" />
+                    </div>
                 </div>
             </div>
         </div>

@@ -63,6 +63,16 @@
                             @endforeach
                         </select>
 
+                        @if($allPlatforms->isNotEmpty())
+                            <select name="platform"
+                                class="bg-gray-900/50 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer">
+                                <option value="">Todas las plataformas</option>
+                                @foreach($allPlatforms as $platform)
+                                    <option value="{{ $platform }}" {{ request('platform') == $platform ? 'selected' : '' }}>{{ $platform }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+
                         <button type="submit"
                             class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-600/20 transition-all">
                             Filtrar
@@ -151,7 +161,7 @@
                                     </h3>
 
                                     <!-- Action Buttons -->
-                                    <div class="mt-auto flex items-center justify-between pt-4">
+                                    <div class="mt-auto flex flex-col md:flex-row md:items-center md:justify-between pt-4 gap-2 md:gap-0">
                                         @auth
                                             <button onclick="openListModal({{ $media->id }})"
                                                 class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 text-xs font-bold transition-colors">

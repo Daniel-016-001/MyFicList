@@ -22,6 +22,15 @@ class ExploreController extends Controller
             $query->where('media_type', $request->type);
         }
 
+        // Filtro por plataforma (para videojuegos)
+        if ($request->filled('platform')) {
+            $platform = $request->platform;
+            $query->where(function($q) use ($platform) {
+                $q->whereJsonContains('extra_data->platforms', $platform)
+                  ->orWhere('extra_data->platforms', 'like', '%' . $platform . '%');
+            });
+        }
+
         // Filtro por género (dentro de extra_data JSON)
         if ($request->filled('genre')) {
             $genre = $request->genre;
@@ -57,8 +66,18 @@ class ExploreController extends Controller
             ->sort()
             ->values();
 
+        // Obtener todas las plataformas únicas para el filtro
+        $allPlatforms = Media::where('media_type', 'game')
+            ->pluck('extra_data')
+            ->filter()
+            ->map(fn($data) => $data['platforms'] ?? [])
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values();
+
         $mediaLists = auth()->check() ? auth()->user()->mediaLists : collect();
 
-        return view('explore', compact('mediaItems', 'allGenres', 'mediaLists'));
+        return view('explore', compact('mediaItems', 'allGenres', 'allPlatforms', 'mediaLists'));
     }
 }

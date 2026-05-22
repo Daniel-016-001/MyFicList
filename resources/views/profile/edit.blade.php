@@ -1,11 +1,58 @@
 @extends('layouts.app')
 
-@section('title', 'Mi perfil')
+@section('title', 'Ajustes de Perfil')
 
 @section('content')
     <div class="bg-gray-950 min-h-screen text-gray-100 selection:bg-blue-500/30 pb-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-12">
-            <!-- Sección: Información Pública -->
+            <!-- Tu Perfil Público -->
+            <section id="public-profile" class="glass-premium rounded-[2.5rem] p-10">
+                <div class="space-y-1 mb-8">
+                    <h2 class="text-2xl font-black text-white tracking-tighter uppercase">Tu Perfil Público</h2>
+                    <p class="text-gray-500 text-sm font-medium">Así es como otros usuarios te ven.</p>
+                </div>
+                
+                <!-- Header Cinematográfico del Perfil -->
+                <div class="relative rounded-2xl overflow-hidden bg-gradient-to-b from-blue-600/20 via-purple-600/10 to-gray-900 p-8">
+                    <div class="flex flex-col lg:flex-row items-center lg:items-end gap-8">
+                        <!-- Avatar -->
+                        <div class="relative group/avatar">
+                            <div class="relative w-40 h-40 rounded-2xl overflow-hidden border-4 border-gray-950 bg-gray-900 shadow-2xl">
+                                <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->username }}"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 glass-premium px-4 py-1 rounded-xl border-white/20 shadow-lg">
+                                <span class="text-xs font-black text-white uppercase tracking-tighter">LVL {{ floor($totalCompleted / 5) + 1 ?? 1 }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-1 text-center lg:text-left space-y-4">
+                            <div class="space-y-2">
+                                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">{{ Auth::user()->username }}</h1>
+                                <p class="text-gray-400 font-medium max-w-lg leading-relaxed">"{{ Auth::user()->bio ?? 'Este usuario prefiere el misterio...' }}"</p>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="flex flex-wrap gap-8 pt-4">
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Completados</p>
+                                    <p class="text-2xl font-black text-white tracking-tighter">{{ $totalCompleted ?? 0 }}</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Reconocimiento</p>
+                                    <p class="text-2xl font-black text-white tracking-tighter"><i class="fas fa-heart text-red-500 mr-2"></i>{{ $totalLikes ?? 0 }}</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Seguidores</p>
+                                    <p class="text-2xl font-black text-white tracking-tighter">{{ Auth::user()->followers()->count() ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Sección: Editar Información Pública -->
             <section id="info" class="glass-premium rounded-[2.5rem] p-10">
                 @include('profile.partials.update-profile-information-form')
             </section>
